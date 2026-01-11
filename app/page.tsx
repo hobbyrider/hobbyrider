@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { Suspense, useMemo, useState } from "react"
 import { useSearchParams } from "next/navigation"
 
 type Software = {
@@ -35,7 +35,7 @@ const initialSoftware: Software[] = [
   },
 ]
 
-export default function Home() {
+function HomeContent() {
   const searchParams = useSearchParams()
 
   const submittedName = searchParams.get("name")
@@ -53,9 +53,12 @@ export default function Home() {
         }
       : null
 
-  const [softwareToday, setSoftwareToday] = useState<Software[]>(
-    submittedItem ? [submittedItem, ...initialSoftware] : initialSoftware
+  const initialList = useMemo(
+    () => (submittedItem ? [submittedItem, ...initialSoftware] : initialSoftware),
+    [submittedItem]
   )
+
+  const [softwareToday, setSoftwareToday] = useState<Software[]>(initialList)
 
   function handleUpvote(id: string) {
     setSoftwareToday((prev) =>
@@ -122,5 +125,13 @@ export default function Home() {
         </section>
       </div>
     </main>
+  )
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<div className="min-h-screen px-6 py-12">Loading…</div>}>
+      <HomeContent />
+    </Suspense>
   )
 }
