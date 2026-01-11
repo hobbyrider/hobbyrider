@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useSearchParams } from "next/navigation"
 
 type Software = {
   id: string
@@ -35,9 +36,26 @@ const initialSoftware: Software[] = [
 ]
 
 export default function Home() {
-  // ✅ Hook must be INSIDE the component
-  const [softwareToday, setSoftwareToday] =
-    useState<Software[]>(initialSoftware)
+  const searchParams = useSearchParams()
+
+  const submittedName = searchParams.get("name")
+  const submittedTagline = searchParams.get("tagline")
+  const submittedUrl = searchParams.get("url")
+
+  const submittedItem: Software | null =
+    submittedName && submittedTagline && submittedUrl
+      ? {
+          id: submittedName.toLowerCase().replace(/\s+/g, "-"),
+          name: submittedName,
+          tagline: submittedTagline,
+          url: submittedUrl,
+          upvotes: 1,
+        }
+      : null
+
+  const [softwareToday, setSoftwareToday] = useState<Software[]>(
+    submittedItem ? [submittedItem, ...initialSoftware] : initialSoftware
+  )
 
   function handleUpvote(id: string) {
     setSoftwareToday((prev) =>
@@ -57,13 +75,20 @@ export default function Home() {
           <p className="mt-3 text-gray-600">
             Discover and share software worth riding 🤖
           </p>
+
+          <a
+            href="/submit"
+            className="mt-4 inline-block rounded-lg border px-4 py-2 font-semibold hover:bg-black hover:text-white transition"
+          >
+            Submit software
+          </a>
         </header>
 
         <section>
           <h2 className="text-xl font-semibold">Today</h2>
 
           <ul className="mt-4 space-y-3">
-            {softwareToday
+            {[...softwareToday]
               .sort((a, b) => b.upvotes - a.upvotes)
               .map((item) => (
                 <li
@@ -80,7 +105,9 @@ export default function Home() {
                       >
                         {item.name}
                       </a>
-                      <p className="mt-1 text-gray-600">{item.tagline}</p>
+                      <p className="mt-1 text-gray-600">
+                        {item.tagline}
+                      </p>
                     </div>
 
                     <button
@@ -90,7 +117,9 @@ export default function Home() {
                       <span className="text-sm font-semibold">
                         {item.upvotes}
                       </span>
-                      <span className="text-sm text-gray-600">upvotes</span>
+                      <span className="text-sm text-gray-600">
+                        upvotes
+                      </span>
                     </button>
                   </div>
                 </li>
