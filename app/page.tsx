@@ -1,3 +1,7 @@
+"use client"
+
+import { useState } from "react"
+
 type Software = {
   id: string
   name: string
@@ -6,7 +10,7 @@ type Software = {
   upvotes: number
 }
 
-const softwareToday: Software[] = [
+const initialSoftware: Software[] = [
   {
     id: "guideless",
     name: "Guideless",
@@ -31,13 +35,27 @@ const softwareToday: Software[] = [
 ]
 
 export default function Home() {
+  // ✅ Hook must be INSIDE the component
+  const [softwareToday, setSoftwareToday] =
+    useState<Software[]>(initialSoftware)
+
+  function handleUpvote(id: string) {
+    setSoftwareToday((prev) =>
+      prev.map((item) =>
+        item.id === id
+          ? { ...item, upvotes: item.upvotes + 1 }
+          : item
+      )
+    )
+  }
+
   return (
     <main className="min-h-screen px-6 py-12">
       <div className="mx-auto max-w-3xl">
         <header className="mb-10">
-          <h1 className="text-4xl font-bold">Hobbyrider</h1>
+          <h1 className="text-4xl font-bold">hobbyrider</h1>
           <p className="mt-3 text-gray-600">
-            Discover and share software worth riding 🏂
+            Discover and share software worth riding 🤖
           </p>
         </header>
 
@@ -65,10 +83,15 @@ export default function Home() {
                       <p className="mt-1 text-gray-600">{item.tagline}</p>
                     </div>
 
-                    <div className="flex items-center gap-2 rounded-lg border px-3 py-1">
-                      <span className="text-sm font-semibold">{item.upvotes}</span>
+                    <button
+                      onClick={() => handleUpvote(item.id)}
+                      className="flex items-center gap-2 rounded-lg border px-3 py-1 hover:bg-black hover:text-white transition"
+                    >
+                      <span className="text-sm font-semibold">
+                        {item.upvotes}
+                      </span>
                       <span className="text-sm text-gray-600">upvotes</span>
-                    </div>
+                    </button>
                   </div>
                 </li>
               ))}
