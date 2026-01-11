@@ -60,9 +60,7 @@ export default function Home() {
   function handleUpvote(id: string) {
     setSoftwareToday((prev) =>
       prev.map((item) =>
-        item.id === id
-          ? { ...item, upvotes: item.upvotes + 1 }
-          : item
+        item.id === id ? { ...item, upvotes: item.upvotes + 1 } : item
       )
     )
   }
@@ -105,9 +103,7 @@ export default function Home() {
                       >
                         {item.name}
                       </a>
-                      <p className="mt-1 text-gray-600">
-                        {item.tagline}
-                      </p>
+                      <p className="mt-1 text-gray-600">{item.tagline}</p>
                     </div>
 
                     <button
@@ -117,9 +113,7 @@ export default function Home() {
                       <span className="text-sm font-semibold">
                         {item.upvotes}
                       </span>
-                      <span className="text-sm text-gray-600">
-                        upvotes
-                      </span>
+                      <span className="text-sm text-gray-600">upvotes</span>
                     </button>
                   </div>
                 </li>
