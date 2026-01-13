@@ -4,10 +4,25 @@ import Link from "next/link"
 import { prisma } from "@/lib/prisma"
 import { deleteSoftware } from "@/app/actions/software"
 
+type SoftwareItem = {
+  id: string
+  name: string
+  tagline: string
+  url: string
+  upvotes: number
+}
+
 export default async function Home() {
-  const softwareToday = await prisma.software.findMany({
+  const softwareToday: SoftwareItem[] = await prisma.software.findMany({
     orderBy: [{ upvotes: "desc" }, { createdAt: "desc" }],
     take: 50,
+    select: {
+      id: true,
+      name: true,
+      tagline: true,
+      url: true,
+      upvotes: true,
+    },
   })
 
   return (
@@ -59,7 +74,7 @@ export default async function Home() {
                           "use server"
                           await deleteSoftware(
                             item.id,
-                            formData.get("password") as string
+                            String(formData.get("password") ?? "")
                           )
                         }}
                         className="mt-3 flex gap-2"
