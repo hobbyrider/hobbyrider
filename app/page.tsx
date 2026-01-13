@@ -1,72 +1,14 @@
-"use client"
+export const dynamic = "force-dynamic"
 
-import { Suspense, useMemo, useState } from "react"
-import { useSearchParams } from "next/navigation"
+import Link from "next/link"
+import { prisma } from "@/lib/prisma"
+import { deleteSoftware } from "@/app/actions/software"
 
-type Software = {
-  id: string
-  name: string
-  tagline: string
-  url: string
-  upvotes: number
-}
-
-const initialSoftware: Software[] = [
-  {
-    id: "guideless",
-    name: "Guideless",
-    tagline: "Turn workflows into AI-powered video guides in minutes.",
-    url: "https://guideless.ai",
-    upvotes: 42,
-  },
-  {
-    id: "loom",
-    name: "Loom",
-    tagline: "Record quick video messages to share your screen and ideas.",
-    url: "https://www.loom.com",
-    upvotes: 31,
-  },
-  {
-    id: "notion",
-    name: "Notion",
-    tagline: "Docs, wikis, and projects in one place.",
-    url: "https://www.notion.so",
-    upvotes: 27,
-  },
-]
-
-function HomeContent() {
-  const searchParams = useSearchParams()
-
-  const submittedName = searchParams.get("name")
-  const submittedTagline = searchParams.get("tagline")
-  const submittedUrl = searchParams.get("url")
-
-  const submittedItem: Software | null =
-    submittedName && submittedTagline && submittedUrl
-      ? {
-          id: submittedName.toLowerCase().replace(/\s+/g, "-"),
-          name: submittedName,
-          tagline: submittedTagline,
-          url: submittedUrl,
-          upvotes: 1,
-        }
-      : null
-
-  const initialList = useMemo(
-    () => (submittedItem ? [submittedItem, ...initialSoftware] : initialSoftware),
-    [submittedItem]
-  )
-
-  const [softwareToday, setSoftwareToday] = useState<Software[]>(initialList)
-
-  function handleUpvote(id: string) {
-    setSoftwareToday((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, upvotes: item.upvotes + 1 } : item
-      )
-    )
-  }
+export default async function Home() {
+  const softwareToday = await prisma.software.findMany({
+    orderBy: [{ upvotes: "desc" }, { createdAt: "desc" }],
+    take: 50,
+  })
 
   return (
     <main className="min-h-screen px-6 py-12">
@@ -77,21 +19,24 @@ function HomeContent() {
             Discover and share software worth riding 🤖
           </p>
 
-          <a
+          <Link
             href="/submit"
             className="mt-4 inline-block rounded-lg border px-4 py-2 font-semibold hover:bg-black hover:text-white transition"
           >
             Submit software
-          </a>
+          </Link>
         </header>
 
         <section>
           <h2 className="text-xl font-semibold">Today</h2>
 
-          <ul className="mt-4 space-y-3">
-            {[...softwareToday]
-              .sort((a, b) => b.upvotes - a.upvotes)
-              .map((item) => (
+          {softwareToday.length === 0 ? (
+            <p className="mt-4 text-gray-600">
+              No submissions yet. Be the first!
+            </p>
+          ) : (
+            <ul className="mt-4 space-y-3">
+              {softwareToday.map((item) => (
                 <li
                   key={item.id}
                   className="rounded-xl border p-4 hover:bg-gray-50"
@@ -107,31 +52,47 @@ function HomeContent() {
                         {item.name}
                       </a>
                       <p className="mt-1 text-gray-600">{item.tagline}</p>
+
+                      {/* ADMIN DELETE */}
+                      <form
+                        action={async (formData) => {
+                          "use server"
+                          await deleteSoftware(
+                            item.id,
+                            formData.get("password") as string
+                          )
+                        }}
+                        className="mt-3 flex gap-2"
+                      >
+                        <input
+                          type="password"
+                          name="password"
+                          placeholder="Admin password"
+                          className="rounded border px-2 py-1 text-sm"
+                          required
+                        />
+                        <button
+                          type="submit"
+                          className="text-sm text-red-600 hover:underline"
+                        >
+                          Delete
+                        </button>
+                      </form>
                     </div>
 
-                    <button
-                      onClick={() => handleUpvote(item.id)}
-                      className="flex items-center gap-2 rounded-lg border px-3 py-1 hover:bg-black hover:text-white transition"
-                    >
+                    <div className="flex items-center gap-2 rounded-lg border px-3 py-1">
                       <span className="text-sm font-semibold">
                         {item.upvotes}
                       </span>
                       <span className="text-sm text-gray-600">upvotes</span>
-                    </button>
+                    </div>
                   </div>
                 </li>
               ))}
-          </ul>
+            </ul>
+          )}
         </section>
       </div>
     </main>
-  )
-}
-
-export default function Home() {
-  return (
-    <Suspense fallback={<div className="min-h-screen px-6 py-12">Loading…</div>}>
-      <HomeContent />
-    </Suspense>
   )
 }
