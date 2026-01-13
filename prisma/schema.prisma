@@ -3,13 +3,11 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../app/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  // ❌ NO url here (Prisma 7+)
-  // Connection is configured via prisma.config.ts
+  // Prisma v7 connection URLs are configured via prisma.config.ts
 }
 
 model Software {
