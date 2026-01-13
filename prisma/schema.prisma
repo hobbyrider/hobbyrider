@@ -1,9 +1,15 @@
+// Prisma schema for Hobbyrider
+// Docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider = "prisma-client-js"
+  output   = "../app/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
+  // ❌ NO url here (Prisma 7+)
+  // Connection is configured via prisma.config.ts
 }
 
 model Software {
@@ -13,4 +19,6 @@ model Software {
   url       String   @unique
   upvotes   Int      @default(0)
   createdAt DateTime @default(now())
+
+  @@index([upvotes, createdAt])
 }
