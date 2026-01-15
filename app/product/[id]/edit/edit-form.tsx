@@ -16,28 +16,38 @@ type Product = {
   id: string
   name: string
   tagline: string
+  description?: string | null
   url: string
   thumbnail: string | null
+  embedHtml?: string | null
   categories: { id: string; name: string; slug: string }[]
+}
+
+type ExistingImage = {
+  id: string
+  url: string
 }
 
 type EditProductFormProps = {
   product: Product
   categories: Category[]
-  existingImageUrls: string[]
+  existingImages: ExistingImage[]
 }
 
 export default function EditProductForm({
   product,
   categories,
-  existingImageUrls,
+  existingImages,
 }: EditProductFormProps) {
   const router = useRouter()
   const [name, setName] = useState(product.name)
   const [tagline, setTagline] = useState(product.tagline)
+  const [description, setDescription] = useState(product.description || "")
   const [url, setUrl] = useState(product.url)
   const [thumbnailUrl, setThumbnailUrl] = useState(product.thumbnail || "")
-  const [galleryUrls, setGalleryUrls] = useState<string[]>(existingImageUrls)
+  const [embedHtml, setEmbedHtml] = useState(product.embedHtml || "")
+  const [galleryUrls, setGalleryUrls] = useState<string[]>(existingImages.map((img) => img.url))
+  const [imagesToDelete, setImagesToDelete] = useState<string[]>([]) // Track image IDs to delete
   const [uploading, setUploading] = useState(false)
   const [uploadingGallery, setUploadingGallery] = useState(false)
   const [selectedCategories, setSelectedCategories] = useState<string[]>(
@@ -51,6 +61,7 @@ export default function EditProductForm({
     if (!file) return
 
     setUploading(true)
+    setError(null)
     try {
       const formData = new FormData()
       formData.append("file", file)
@@ -61,14 +72,15 @@ export default function EditProductForm({
       })
 
       if (!response.ok) {
-        throw new Error("Upload failed")
+        const err = await response.json().catch(() => null)
+        throw new Error(err?.error || `Upload failed (${response.status})`)
       }
 
       const data = await response.json()
       setThumbnailUrl(data.url)
     } catch (error) {
       console.error("Upload error:", error)
-      alert("Failed to upload thumbnail. Please try again.")
+      setError(error instanceof Error ? error.message : "Failed to upload thumbnail")
     } finally {
       setUploading(false)
     }
@@ -79,6 +91,7 @@ export default function EditProductForm({
     if (files.length === 0) return
 
     setUploadingGallery(true)
+    setError(null)
     try {
       const formData = new FormData()
       files.forEach((file) => {
@@ -91,7 +104,8 @@ export default function EditProductForm({
       })
 
       if (!response.ok) {
-        throw new Error("Upload failed")
+        const err = await response.json().catch(() => null)
+        throw new Error(err?.error || `Upload failed (${response.status})`)
       }
 
       const data = await response.json()
@@ -99,7 +113,7 @@ export default function EditProductForm({
       setGalleryUrls([...galleryUrls, ...newUrls])
     } catch (error) {
       console.error("Upload error:", error)
-      alert("Failed to upload images. Please try again.")
+      setError(error instanceof Error ? error.message : "Failed to upload images")
     } finally {
       setUploadingGallery(false)
       e.target.value = ""
@@ -107,19 +121,16 @@ export default function EditProductForm({
   }
 
   const handleRemoveGalleryImage = async (url: string, index: number) => {
-    // If it's an existing image (from database), delete it
-    if (existingImageUrls.includes(url)) {
-      try {
-        // Find the image ID - we'd need to pass it, but for now just remove from UI
-        // The image will be orphaned but that's okay for now
-        setGalleryUrls(galleryUrls.filter((_, i) => i !== index))
-      } catch (error) {
-        console.error("Error removing image:", error)
-      }
-    } else {
-      // Just remove from state if it's a newly uploaded image
-      setGalleryUrls(galleryUrls.filter((_, i) => i !== index))
+    // Find if this is an existing image from the database
+    const existingImage = existingImages.find((img) => img.url === url)
+    
+    if (existingImage) {
+      // Mark for deletion when form is submitted
+      setImagesToDelete([...imagesToDelete, existingImage.id])
     }
+    
+    // Remove from UI immediately
+    setGalleryUrls(galleryUrls.filter((_, i) => i !== index))
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -131,9 +142,15 @@ export default function EditProductForm({
       const formData = new FormData()
       formData.append("name", name)
       formData.append("tagline", tagline)
+      if (description.trim()) {
+        formData.append("description", description)
+      }
       formData.append("url", url)
       if (thumbnailUrl) {
         formData.append("thumbnail", thumbnailUrl)
+      }
+      if (embedHtml.trim()) {
+        formData.append("embedHtml", embedHtml)
       }
       selectedCategories.forEach((id) => {
         formData.append("categories", id)
@@ -141,8 +158,17 @@ export default function EditProductForm({
 
       await updateSoftware(product.id, formData)
 
-      // Handle gallery images - for simplicity, we'll just add new ones
-      // In a full implementation, you'd want to track which to delete/add
+      // Delete images that were removed
+      for (const imageId of imagesToDelete) {
+        try {
+          await deleteProductImage(imageId, product.id)
+        } catch (error) {
+          console.error(`Failed to delete image ${imageId}:`, error)
+        }
+      }
+
+      // Add new gallery images (ones not in existing images)
+      const existingImageUrls = existingImages.map((img) => img.url)
       const newGalleryUrls = galleryUrls.filter(
         (url) => !existingImageUrls.includes(url)
       )
@@ -160,7 +186,7 @@ export default function EditProductForm({
   }
 
   return (
-    <main className="min-h-screen px-6 py-12">
+    <main className="px-6 py-12">
       <div className="mx-auto max-w-xl">
         <Link
           href={`/product/${product.id}`}
@@ -204,6 +230,17 @@ export default function EditProductForm({
           </div>
 
           <div>
+            <label className="text-sm font-medium">Description (optional)</label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="mt-1 w-full rounded-lg border px-3 py-2"
+              placeholder="Write a detailed description of what it does, who it’s for, and why it’s different…"
+              rows={5}
+            />
+          </div>
+
+          <div>
             <label className="text-sm font-medium">URL</label>
             <input
               type="url"
@@ -212,6 +249,17 @@ export default function EditProductForm({
               className="mt-1 w-full rounded-lg border px-3 py-2"
               placeholder="https://clickup.com"
               required
+            />
+          </div>
+
+          <div>
+            <label className="text-sm font-medium">Embed (optional)</label>
+            <textarea
+              value={embedHtml}
+              onChange={(e) => setEmbedHtml(e.target.value)}
+              className="mt-1 w-full rounded-lg border px-3 py-2 font-mono text-xs"
+              placeholder='<div style="position: relative; aspect-ratio: 1024/640;"><iframe src="https://..." title="..." frameborder="0" loading="lazy" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;"></iframe></div>'
+              rows={5}
             />
           </div>
 

@@ -54,25 +54,27 @@ export function CommentForm({ productId }: { productId: string }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3">
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          placeholder="Write a comment..."
-          rows={3}
-          className="w-full rounded-lg border px-3 py-2 text-sm resize-none"
+          placeholder="Ask a question or leave a comment..."
+          rows={4}
+          className="w-full rounded-xl border-2 border-gray-200 px-4 py-3 text-sm resize-none focus:border-black focus:outline-none transition"
           required
           disabled={submitting}
         />
       </div>
-      <button
-        type="submit"
-        disabled={submitting || !content.trim()}
-        className="rounded-lg border px-4 py-2 text-sm font-semibold hover:bg-black hover:text-white transition disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        {submitting ? "Posting..." : "Post Comment"}
-      </button>
+      <div className="flex justify-end">
+        <button
+          type="submit"
+          disabled={submitting || !content.trim()}
+          className="rounded-lg bg-black text-white px-6 py-2.5 text-sm font-semibold hover:bg-gray-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {submitting ? "Posting..." : "Post Comment"}
+        </button>
+      </div>
     </form>
   )
 }

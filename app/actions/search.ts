@@ -41,3 +41,31 @@ export async function searchSoftware(query: string) {
     commentCount: item._count.comments,
   }))
 }
+
+export async function getDiscoverData() {
+  const [categories, topProducts] = await Promise.all([
+    prisma.category.findMany({
+      orderBy: { name: "asc" },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        description: true,
+        _count: { select: { products: true } },
+      },
+      take: 30,
+    }),
+    prisma.software.findMany({
+      orderBy: [{ upvotes: "desc" }, { createdAt: "desc" }],
+      take: 8,
+      include: {
+        categories: { select: { id: true, name: true, slug: true } },
+      },
+    }),
+  ])
+
+  return {
+    categories,
+    topProducts,
+  }
+}

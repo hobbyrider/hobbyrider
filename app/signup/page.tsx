@@ -5,6 +5,7 @@ import { signIn } from "next-auth/react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import { AuthProviders } from "@/app/components/auth-providers"
 
 export default function SignupPage() {
   const router = useRouter()
@@ -44,7 +45,7 @@ export default function SignupPage() {
   }
 
   return (
-    <main className="min-h-screen px-6 py-12">
+    <main className="px-6 py-12">
       <div className="mx-auto max-w-md">
         <Link
           href="/"
@@ -58,6 +59,20 @@ export default function SignupPage() {
           <p className="text-gray-600 mb-6">
             Create an account to submit products and engage with the community
           </p>
+
+          {/* OAuth & Magic Link Providers */}
+          <div className="space-y-3 mb-6">
+            <AuthProviders email={email} setEmail={setEmail} loading={loading} />
+          </div>
+
+          <div className="relative mb-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">Or create account with password</span>
+            </div>
+          </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
@@ -131,7 +146,7 @@ export default function SignupPage() {
               disabled={loading}
               className="w-full rounded-lg border px-4 py-2 font-semibold hover:bg-black hover:text-white transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? "Creating account..." : "Sign up"}
+              {loading ? "Creating account..." : "Sign up with Password"}
             </button>
           </form>
 

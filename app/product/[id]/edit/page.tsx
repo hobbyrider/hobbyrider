@@ -49,7 +49,7 @@ export default async function EditProductPage({
     <EditProductForm
       product={product}
       categories={categories}
-      existingImageUrls={product.images.map((img) => img.url)}
+      existingImages={product.images.map((img) => ({ id: img.id, url: img.url }))}
     />
   )
 }

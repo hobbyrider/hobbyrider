@@ -1,3 +1,11 @@
+/**
+ * Utility function to merge class names
+ * Combines class names and handles conditional classes
+ */
+export function cn(...classes: (string | undefined | null | false)[]): string {
+  return classes.filter(Boolean).join(" ")
+}
+
 export function getRelativeTime(date: Date): string {
   const now = new Date()
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
@@ -50,4 +58,34 @@ export function sanitizeInput(input: string, maxLength: number = 1000): string {
   sanitized = sanitized.replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]/g, "")
   
   return sanitized
+}
+
+/**
+ * Very small sanitizer for embedded HTML snippets.
+ * We only intend to support iframe-style embeds (e.g. Guideless, Loom, YouTube).
+ *
+ * NOTE: This is not a full HTML sanitizer. It removes obvious dangerous patterns
+ * (scripts, event handlers, javascript: URLs). For a production-grade app,
+ * use a vetted sanitizer library on the server.
+ */
+export function sanitizeEmbedHtml(input: string, maxLength: number = 10000): string {
+  if (!input) return ""
+
+  let html = input.trim().slice(0, maxLength)
+
+  // Remove script tags entirely
+  html = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
+
+  // Remove inline event handlers like onclick="..."
+  html = html.replace(/\son\w+\s*=\s*(".*?"|'.*?'|[^\s>]+)/gi, "")
+
+  // Disallow javascript: URLs in any attribute value
+  html = html.replace(/javascript:/gi, "")
+
+  // Very basic allow-list intent: must include an iframe to be considered valid
+  if (!/<iframe[\s>]/i.test(html)) {
+    return ""
+  }
+
+  return html
 }

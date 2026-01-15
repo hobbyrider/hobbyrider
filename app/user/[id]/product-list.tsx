@@ -61,41 +61,41 @@ export function ProductList({ products, isOwnProfile }: ProductListProps) {
 
   return (
     <>
-      <ul className="space-y-3">
+      <ul className="space-y-4">
         {products.map((product) => (
           <li
             key={product.id}
-            className="rounded-xl border p-4 hover:bg-gray-50"
+            className="rounded-xl border border-gray-200 bg-white p-5 transition-all hover:border-gray-300 hover:shadow-sm"
           >
             <div className="flex items-start justify-between gap-4">
-              <div className="flex gap-4 flex-1">
+              <div className="flex gap-4 flex-1 min-w-0">
                 {product.thumbnail && (
                   <img
                     src={product.thumbnail}
                     alt={product.name}
-                    className="h-16 w-16 rounded-lg object-cover border flex-shrink-0"
+                    className="h-20 w-20 rounded-lg object-cover border border-gray-200 flex-shrink-0"
                   />
                 )}
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
                     <Link
                       href={`/product/${product.id}`}
-                      className="font-semibold underline underline-offset-4 inline-flex items-center gap-1 hover:text-gray-600"
+                      className="font-semibold text-gray-900 hover:text-gray-700 transition-colors"
                     >
                       {product.name}
                     </Link>
-                    <span className="text-xs text-gray-400">
+                    <span className="text-xs text-gray-500">
                       {getRelativeTime(product.createdAt)}
                     </span>
                   </div>
-                  <p className="mt-1 text-gray-600">{product.tagline}</p>
+                  <p className="text-sm text-gray-600 line-clamp-2">{product.tagline}</p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 flex-shrink-0">
                 <Link
                   href={`/product/${product.id}#comments`}
-                  className="flex items-center gap-1 text-sm text-gray-600 hover:text-black"
+                  className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 transition-colors"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -111,23 +111,23 @@ export function ProductList({ products, isOwnProfile }: ProductListProps) {
                   </svg>
                   <span>{product._count.comments}</span>
                 </Link>
-                <div className="flex items-center gap-2 rounded-lg border px-3 py-1">
-                  <span className="text-sm font-semibold">
+                <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5">
+                  <span className="text-sm font-semibold text-gray-900">
                     {product.upvotes}
                   </span>
                   <span className="text-sm text-gray-600">upvotes</span>
                 </div>
                 {isOwnProfile && (
-                  <div className="flex items-center gap-2 ml-2">
+                  <div className="flex items-center gap-3 ml-2">
                     <Link
                       href={`/product/${product.id}/edit`}
-                      className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                      className="text-sm text-gray-700 hover:text-gray-900 font-medium transition-colors"
                     >
                       Edit
                     </Link>
                     <button
                       onClick={() => handleDeleteClick(product.id)}
-                      className="text-sm text-red-600 hover:text-red-800 font-medium"
+                      className="text-sm text-red-600 hover:text-red-700 font-medium transition-colors"
                     >
                       Delete
                     </button>

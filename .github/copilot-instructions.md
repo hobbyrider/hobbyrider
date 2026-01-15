@@ -30,34 +30,8 @@ This file contains concise, actionable guidance for AI coding agents to be immed
 - Prisma is configured via `prisma.config.ts` (it loads `process.env.DATABASE_URL`).
 - **Important:** Prisma v7 requires connection URLs to be provided via the config file (or client constructor), not inline in `schema.prisma`.
   - Current problematic block in `prisma/schema.prisma`:
-    ```prisma
     datasource db {
       provider = "postgresql"
       url      = env("DATABASE_URL")
     }
-    ```
-  - Fix: remove the `url` line from `schema.prisma` so it becomes:
-    ```prisma
-    datasource db {
-      provider = "postgresql"
-    }
-    ```
-  - Ensure `prisma.config.ts` has `datasource: { url: process.env["DATABASE_URL"] }` (already present), and that `.env` has `DATABASE_URL` and is ignored by git (`.gitignore` contains `.env`).
-- After the fix, run `npx prisma db push` or `npx prisma migrate dev`.
-
-## Integration & external dependencies 🔗
-- No external APIs or serverless functions are configured by default—behavior is client-side.
-- Adding a server or API route should follow Next.js conventions (`/app/api` or `pages/api` for pages router compatibility) and consume Prisma via `@prisma/client`.
-
-## Where to look for changes or patterns
-- `app/` — UI & routing patterns
-- `prisma/schema.prisma` and `prisma.config.ts` — DB model & config
-- `package.json` — scripts and dependency versions
-- `postcss.config.mjs`, `tailwind` — styling setup
-
-## Troubleshooting tips & examples
-- Fixing Prisma P1012: remove `url = env("DATABASE_URL")` from the schema and ensure `prisma.config.ts` uses `process.env["DATABASE_URL"]`, then re-run `npx prisma db push`.
-- If you intend to persist submissions, create a server API route and store items in the DB (add migrations when altering Prisma models).
-
----
-If any of the above is unclear or you'd like me to expand any section (e.g., add example API endpoints, or a PR template to enforce patterns), say which part you want expanded and I'll iterate. ✍️
+    

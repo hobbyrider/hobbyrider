@@ -31,8 +31,8 @@ export default function SubmitPage() {
 
   if (status === "loading") {
     return (
-      <main className="min-h-screen px-6 py-12">
-        <div className="mx-auto max-w-xl">
+      <main className="px-6 py-10">
+        <div className="mx-auto max-w-2xl">
           <p className="text-gray-600">Loading...</p>
         </div>
       </main>
@@ -41,23 +41,30 @@ export default function SubmitPage() {
 
   if (!session) {
     return (
-      <main className="min-h-screen px-6 py-12">
-        <div className="mx-auto max-w-xl">
-          <h1 className="text-3xl font-bold">submit software</h1>
-          <div className="mt-8 rounded-xl border p-8 text-center">
-            <p className="text-gray-600 mb-4">
+      <main className="px-6 py-10">
+        <div className="mx-auto max-w-2xl">
+          <header className="mb-10">
+            <h1 className="mb-2 text-4xl font-semibold tracking-tight text-gray-900">
+              Submit Software
+            </h1>
+            <p className="text-lg text-gray-600">
+              Share a tool you think is worth riding 🤖
+            </p>
+          </header>
+          <div className="rounded-xl border border-gray-200 bg-white p-12 text-center">
+            <p className="mb-6 text-base text-gray-600">
               You must be logged in to submit a product
             </p>
             <div className="flex gap-3 justify-center">
               <Link
                 href="/login"
-                className="px-4 py-2 font-semibold rounded-lg border hover:bg-black hover:text-white transition"
+                className="rounded-lg border-2 border-gray-900 bg-gray-900 px-6 py-2.5 font-semibold text-white transition-colors hover:bg-gray-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
               >
                 Login
               </Link>
               <Link
                 href="/signup"
-                className="px-4 py-2 font-semibold rounded-lg border hover:bg-gray-100 transition"
+                className="rounded-lg border-2 border-gray-300 bg-white px-6 py-2.5 font-semibold text-gray-900 transition-colors hover:bg-gray-50 hover:border-gray-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
               >
                 Sign up
               </Link>
@@ -83,14 +90,15 @@ export default function SubmitPage() {
       })
 
       if (!response.ok) {
-        throw new Error("Upload failed")
+        const err = await response.json().catch(() => null)
+        throw new Error(err?.error || `Upload failed (${response.status})`)
       }
 
       const data = await response.json()
       setThumbnailUrl(data.url)
     } catch (error) {
       console.error("Upload error:", error)
-      alert("Failed to upload thumbnail. Please try again.")
+      alert(error instanceof Error ? error.message : "Failed to upload thumbnail. Please try again.")
     } finally {
       setUploading(false)
     }
@@ -113,7 +121,8 @@ export default function SubmitPage() {
       })
 
       if (!response.ok) {
-        throw new Error("Upload failed")
+        const err = await response.json().catch(() => null)
+        throw new Error(err?.error || `Upload failed (${response.status})`)
       }
 
       const data = await response.json()
@@ -121,7 +130,7 @@ export default function SubmitPage() {
       setGalleryUrls([...galleryUrls, ...newUrls])
     } catch (error) {
       console.error("Upload error:", error)
-      alert("Failed to upload images. Please try again.")
+      alert(error instanceof Error ? error.message : "Failed to upload images. Please try again.")
     } finally {
       setUploadingGallery(false)
       // Reset input
@@ -163,7 +172,7 @@ export default function SubmitPage() {
   }
 
   return (
-    <main className="min-h-screen px-6 py-12">
+    <main className="px-6 py-12">
       <div className="mx-auto max-w-xl">
         <h1 className="text-3xl font-bold">submit software</h1>
         <p className="mt-2 text-gray-600">
@@ -192,6 +201,19 @@ export default function SubmitPage() {
           </div>
 
           <div>
+            <label className="text-sm font-medium">Description (optional)</label>
+            <textarea
+              name="description"
+              className="mt-1 w-full rounded-lg border px-3 py-2"
+              placeholder="Write a detailed description of what it does, who it’s for, and why it’s different…"
+              rows={5}
+            />
+            <p className="mt-1 text-xs text-gray-500">
+              This will be shown on the product page.
+            </p>
+          </div>
+
+          <div>
             <label className="text-sm font-medium">URL</label>
             <input
               name="url"
@@ -203,60 +225,80 @@ export default function SubmitPage() {
           </div>
 
           <div>
-            <label className="text-sm font-medium">Thumbnail (optional)</label>
+            <label className="mb-2 block text-sm font-medium text-gray-900">
+              Embed <span className="text-xs font-normal text-gray-500">(optional)</span>
+            </label>
+            <textarea
+              name="embedHtml"
+              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 font-mono text-xs text-gray-900 placeholder:text-gray-400 focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-0 transition-colors resize-y"
+              placeholder='<div style="position: relative; aspect-ratio: 1024/640;"><iframe src="https://..." title="..." frameborder="0" loading="lazy" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;"></iframe></div>'
+              rows={5}
+            />
+            <p className="mt-1.5 text-xs text-gray-500">
+              Paste an iframe embed snippet (Loom/YouTube/Guideless, etc.).
+            </p>
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm font-medium text-gray-900">
+              Thumbnail <span className="text-xs font-normal text-gray-500">(optional)</span>
+            </label>
             <input
               type="file"
               accept="image/*"
               onChange={handleThumbnailUpload}
               disabled={uploading}
-              className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
+              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 file:mr-4 file:rounded-lg file:border-0 file:bg-gray-100 file:px-4 file:py-2 file:text-sm file:font-medium file:text-gray-700 hover:file:bg-gray-200 focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-0 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             />
             {uploading && (
-              <p className="mt-1 text-xs text-gray-500">Uploading...</p>
+              <p className="mt-1.5 text-xs text-gray-500">Uploading...</p>
             )}
             {thumbnailUrl && (
-              <div className="mt-2">
+              <div className="mt-3">
                 <img
                   src={thumbnailUrl}
                   alt="Thumbnail preview"
-                  className="h-24 w-24 rounded-lg object-cover border"
+                  className="h-24 w-24 rounded-lg border border-gray-200 object-cover"
                 />
                 <input type="hidden" name="thumbnail" value={thumbnailUrl} />
               </div>
             )}
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1.5 text-xs text-gray-500">
               Square image recommended (240x240px). Max 2MB.
             </p>
           </div>
 
           <div>
-            <label className="text-sm font-medium">Screenshots (optional)</label>
+            <label className="mb-2 block text-sm font-medium text-gray-900">
+              Screenshots <span className="text-xs font-normal text-gray-500">(optional)</span>
+            </label>
             <input
               type="file"
               accept="image/*"
               multiple
               onChange={handleGalleryUpload}
               disabled={uploadingGallery}
-              className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
+              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 file:mr-4 file:rounded-lg file:border-0 file:bg-gray-100 file:px-4 file:py-2 file:text-sm file:font-medium file:text-gray-700 hover:file:bg-gray-200 focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-0 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             />
             {uploadingGallery && (
-              <p className="mt-1 text-xs text-gray-500">Uploading...</p>
+              <p className="mt-1.5 text-xs text-gray-500">Uploading...</p>
             )}
             {galleryUrls.length > 0 && (
-              <div className="mt-2 grid grid-cols-3 gap-2">
+              <div className="mt-3 grid grid-cols-3 gap-3">
                 {galleryUrls.map((url, index) => (
-                  <div key={index} className="relative">
+                  <div key={index} className="relative group">
                     <img
                       src={url}
                       alt={`Screenshot ${index + 1}`}
-                      className="h-24 w-full rounded-lg object-cover border"
+                      className="h-24 w-full rounded-lg border border-gray-200 object-cover"
                     />
                     <button
                       type="button"
                       onClick={() => {
                         setGalleryUrls(galleryUrls.filter((_, i) => i !== index))
                       }}
-                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600"
+                      className="absolute top-1.5 right-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-xs font-semibold text-white transition-colors hover:bg-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500"
+                      aria-label={`Remove screenshot ${index + 1}`}
                     >
                       ×
                     </button>
@@ -264,14 +306,16 @@ export default function SubmitPage() {
                 ))}
               </div>
             )}
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1.5 text-xs text-gray-500">
               Upload multiple screenshots to showcase your product. Max 2MB per image.
             </p>
           </div>
 
           <div>
-            <label className="text-sm font-medium">Categories</label>
-            <div className="mt-2 space-y-2 max-h-48 overflow-y-auto border rounded-lg p-3">
+            <label className="mb-2 block text-sm font-medium text-gray-900">
+              Categories <span className="text-xs font-normal text-gray-500">(optional)</span>
+            </label>
+            <div className="max-h-48 space-y-1.5 overflow-y-auto rounded-lg border border-gray-300 bg-white p-3">
               {categories.length === 0 ? (
                 <p className="text-xs text-gray-500">
                   Loading categories... If empty, visit /api/seed-categories to create them.
@@ -280,7 +324,7 @@ export default function SubmitPage() {
                 categories.map((category) => (
                   <label
                     key={category.id}
-                    className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded"
+                    className="flex cursor-pointer items-center gap-2.5 rounded-lg p-2 transition-colors hover:bg-gray-50"
                   >
                     <input
                       type="checkbox"
@@ -296,25 +340,27 @@ export default function SubmitPage() {
                           )
                         }
                       }}
-                      className="rounded"
+                      className="h-4 w-4 rounded border-gray-300 text-gray-900 focus:ring-2 focus:ring-gray-900 focus:ring-offset-0"
                     />
-                    <span className="text-sm">{category.name}</span>
+                    <span className="text-sm text-gray-700">{category.name}</span>
                   </label>
                 ))
               )}
             </div>
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1.5 text-xs text-gray-500">
               Select one or more categories (optional)
             </p>
           </div>
 
-          <button
-            type="submit"
-            disabled={submitting}
-            className="mt-2 w-full rounded-lg border px-4 py-2 font-semibold hover:bg-black hover:text-white transition disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {submitting ? "Submitting..." : "Submit"}
-          </button>
+          <div className="pt-4">
+            <button
+              type="submit"
+              disabled={submitting}
+              className="w-full rounded-lg border-2 border-gray-900 bg-gray-900 px-6 py-3 text-base font-semibold text-white transition-colors hover:bg-gray-800 active:bg-gray-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {submitting ? "Submitting..." : "Submit Product"}
+            </button>
+          </div>
         </form>
       </div>
     </main>

@@ -16,10 +16,10 @@ export function ProductGallery({ images }: { images: ProductImage[] }) {
   const sortedImages = [...images].sort((a, b) => a.order - b.order)
 
   return (
-    <div className="mt-6">
-      <div className="relative">
+    <div>
+      <div className="relative bg-gray-50">
         {/* Main image */}
-        <div className="aspect-video w-full rounded-lg overflow-hidden border bg-gray-100">
+        <div className="aspect-video w-full overflow-hidden bg-white">
           <img
             src={sortedImages[selectedIndex].url}
             alt={`Screenshot ${selectedIndex + 1}`}
@@ -38,7 +38,7 @@ export function ProductGallery({ images }: { images: ProductImage[] }) {
                     : selectedIndex - 1
                 )
               }
-              className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 text-white rounded-full p-2 hover:bg-black/70 transition"
+              className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-sm text-black rounded-full p-3 shadow-lg hover:bg-white transition border border-gray-200"
               aria-label="Previous image"
             >
               <svg
@@ -62,7 +62,7 @@ export function ProductGallery({ images }: { images: ProductImage[] }) {
                     : selectedIndex + 1
                 )
               }
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 text-white rounded-full p-2 hover:bg-black/70 transition"
+              className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-sm text-black rounded-full p-3 shadow-lg hover:bg-white transition border border-gray-200"
               aria-label="Next image"
             >
               <svg
@@ -83,7 +83,7 @@ export function ProductGallery({ images }: { images: ProductImage[] }) {
 
         {/* Image counter */}
         {sortedImages.length > 1 && (
-          <div className="absolute bottom-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded">
+          <div className="absolute bottom-4 right-4 bg-black/70 backdrop-blur-sm text-white text-xs font-medium px-3 py-1.5 rounded-full">
             {selectedIndex + 1} / {sortedImages.length}
           </div>
         )}
@@ -91,24 +91,26 @@ export function ProductGallery({ images }: { images: ProductImage[] }) {
 
       {/* Thumbnail strip */}
       {sortedImages.length > 1 && (
-        <div className="mt-4 flex gap-2 overflow-x-auto pb-2">
-          {sortedImages.map((image, index) => (
-            <button
-              key={image.id}
-              onClick={() => setSelectedIndex(index)}
-              className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition ${
-                selectedIndex === index
-                  ? "border-black"
-                  : "border-gray-200 hover:border-gray-400"
-              }`}
-            >
-              <img
-                src={image.url}
-                alt={`Thumbnail ${index + 1}`}
-                className="w-full h-full object-cover"
-              />
-            </button>
-          ))}
+        <div className="px-4 py-4 bg-white border-t">
+          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+            {sortedImages.map((image, index) => (
+              <button
+                key={image.id}
+                onClick={() => setSelectedIndex(index)}
+                className={`flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden border-2 transition-all ${
+                  selectedIndex === index
+                    ? "border-black ring-2 ring-black ring-offset-2"
+                    : "border-gray-200 hover:border-gray-400 opacity-60 hover:opacity-100"
+                }`}
+              >
+                <img
+                  src={image.url}
+                  alt={`Thumbnail ${index + 1}`}
+                  className="w-full h-full object-cover"
+                />
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </div>

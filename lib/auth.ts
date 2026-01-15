@@ -1,6 +1,8 @@
 import NextAuth from "next-auth"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import Credentials from "next-auth/providers/credentials"
+import Google from "next-auth/providers/google"
+import Email from "next-auth/providers/email"
 import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
 
@@ -8,6 +10,70 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma) as any,
   secret: process.env.NEXTAUTH_SECRET,
   providers: [
+    // Google OAuth (only if configured)
+    ...((process.env.GOOGLE_CLIENT_ID || process.env.AUTH_GOOGLE_ID) &&
+    (process.env.GOOGLE_CLIENT_SECRET || process.env.AUTH_GOOGLE_SECRET)
+      ? [
+          Google({
+            clientId: process.env.GOOGLE_CLIENT_ID || process.env.AUTH_GOOGLE_ID!,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET || process.env.AUTH_GOOGLE_SECRET!,
+            allowDangerousEmailAccountLinking: true, // Allow linking accounts with same email
+          }),
+        ]
+      : []),
+    // Only add Email provider if email is configured
+    ...(process.env.RESEND_API_KEY || (process.env.SMTP_HOST && process.env.SMTP_USER)
+      ? [
+          Email({
+            server: process.env.RESEND_API_KEY
+              ? {
+                  // Dummy server config when using Resend (required by NextAuth)
+                  host: "smtp.resend.com",
+                  port: 587,
+                  auth: {
+                    user: "resend",
+                    pass: "dummy",
+                  },
+                }
+              : {
+                  host: process.env.SMTP_HOST!,
+                  port: parseInt(process.env.SMTP_PORT || "587", 10),
+                  auth: {
+                    user: process.env.SMTP_USER!,
+                    pass: process.env.SMTP_PASSWORD!,
+                  },
+                },
+            from: process.env.SMTP_FROM || process.env.EMAIL_FROM || "noreply@hobbyrider.vercel.app",
+            sendVerificationRequest: async ({ identifier, url, provider }) => {
+              // Use Resend if API key is available (recommended)
+              if (process.env.RESEND_API_KEY) {
+                const { getEmailHtml, getEmailText } = await import("./email-template")
+                
+                const result = await fetch("https://api.resend.com/emails", {
+                  method: "POST",
+                  headers: {
+                    Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    from: provider.from,
+                    to: identifier,
+                    subject: "Sign in to Hobbyrider",
+                    html: getEmailHtml({ url, host: new URL(url).host }),
+                    text: getEmailText({ url, host: new URL(url).host }),
+                  }),
+                })
+
+                if (!result.ok) {
+                  const error = await result.json().catch(() => ({}))
+                  throw new Error(`Failed to send email: ${error.message || "Unknown error"}`)
+                }
+              }
+              // If using SMTP, NextAuth will handle it automatically with the server config above
+            },
+          }),
+        ]
+      : []),
     Credentials({
       credentials: {
         email: { label: "Email", type: "email" },
@@ -40,6 +106,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           email: user.email,
           name: user.name,
           username: user.username,
+          image: user.image,
         }
       },
     }),
@@ -53,10 +120,48 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     error: "/login",
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async signIn({ user, account, profile }) {
+      // For OAuth providers, ensure user has a username
+      if (account?.provider !== "credentials" && user.email) {
+        const existingUser = await prisma.user.findUnique({
+          where: { email: user.email },
+        })
+
+        // If user exists but doesn't have username, generate one
+        if (existingUser && !existingUser.username) {
+          const baseUsername = user.email.split("@")[0].toLowerCase().replace(/[^a-z0-9_]/g, "")
+          let username = baseUsername
+          let counter = 1
+
+          // Find unique username
+          while (await prisma.user.findUnique({ where: { username } })) {
+            username = `${baseUsername}${counter}`
+            counter++
+          }
+
+          await prisma.user.update({
+            where: { id: existingUser.id },
+            data: { username },
+          })
+        }
+      }
+      return true
+    },
+    async jwt({ token, user, account }) {
       if (user) {
         token.id = user.id
-        token.username = (user as any).username
+        // Fetch username and image from database for OAuth users
+        if (account?.provider !== "credentials") {
+          const dbUser = await prisma.user.findUnique({
+            where: { id: user.id },
+            select: { username: true, image: true },
+          })
+          token.username = dbUser?.username || null
+          token.image = dbUser?.image || user.image || null
+        } else {
+          token.username = (user as any).username
+          token.image = (user as any).image || null
+        }
       }
       return token
     },
@@ -64,6 +169,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (session.user) {
         session.user.id = token.id as string
         session.user.username = token.username as string | null
+        session.user.image = token.image as string | null
       }
       return session
     },

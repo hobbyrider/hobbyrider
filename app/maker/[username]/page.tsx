@@ -42,7 +42,7 @@ export default async function MakerPage({
   const displayName = user?.name || user?.username || username
 
   return (
-    <main className="min-h-screen px-6 py-12">
+    <main className="px-6 py-12">
       <div className="mx-auto max-w-3xl">
         <Link
           href="/"

@@ -11,22 +11,28 @@ datasource db {
 }
 
 model Software {
-  id        String    @id @default(cuid())
-  name      String
-  tagline   String
-  url       String    @unique
-  maker     String?   // Keep for backward compatibility
-  makerId   String?
-  makerUser User?     @relation("MadeProducts", fields: [makerId], references: [id], onDelete: SetNull)
-  thumbnail String?
-  upvotes   Int       @default(0)
-  createdAt DateTime  @default(now())
-  comments  Comment[]
-  categories Category[]
-  images    ProductImage[]
+  id          String         @id @default(cuid())
+  name        String
+  tagline     String
+  description String?        @db.Text
+  url         String         @unique
+  maker       String? // Keep for backward compatibility
+  makerId     String?
+  makerUser   User?          @relation("MadeProducts", fields: [makerId], references: [id], onDelete: SetNull)
+  thumbnail   String?
+  embedHtml   String?        @db.Text
+  upvotes     Int            @default(0)
+  isHidden    Boolean        @default(false)
+  createdAt   DateTime       @default(now())
+  comments    Comment[]
+  categories  Category[]
+  images      ProductImage[]
+  upvotedBy   Upvote[]
+  reports     Report[]
 
   @@index([upvotes, createdAt])
   @@index([makerId])
+  @@index([isHidden])
 }
 
 model ProductImage {
@@ -41,28 +47,31 @@ model ProductImage {
 }
 
 model Category {
-  id        String    @id @default(cuid())
-  name      String    @unique
-  slug      String    @unique
+  id          String     @id @default(cuid())
+  name        String     @unique
+  slug        String     @unique
   description String?
-  createdAt DateTime  @default(now())
-  products  Software[]
+  createdAt   DateTime   @default(now())
+  products    Software[]
 
   @@index([slug])
 }
 
 model Comment {
-  id        String   @id @default(cuid())
-  content   String
-  author    String   // Keep for backward compatibility
-  authorId  String?
-  authorUser User?   @relation("Comments", fields: [authorId], references: [id], onDelete: SetNull)
-  productId String
-  product   Software @relation(fields: [productId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
+  id         String   @id @default(cuid())
+  content    String
+  author     String // Keep for backward compatibility
+  authorId   String?
+  authorUser User?    @relation("Comments", fields: [authorId], references: [id], onDelete: SetNull)
+  productId  String
+  product    Software @relation(fields: [productId], references: [id], onDelete: Cascade)
+  isHidden   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  reports    Report[]
 
   @@index([productId, createdAt])
   @@index([authorId])
+  @@index([isHidden])
 }
 
 model User {
@@ -72,17 +81,27 @@ model User {
   emailVerified DateTime?
   username      String?   @unique
   image         String?
-  password      String?   // Hashed password for credentials provider
+  password      String? // Hashed password for credentials provider
+  headline      String? // Short tagline/bio line
+  bio           String?   @db.Text // Full bio/description
+  website       String? // Personal website URL
+  linkedin      String? // LinkedIn profile URL
+  twitter       String? // Twitter/X profile URL
+  isAdmin       Boolean   @default(false)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  
-  accounts      Account[]
-  sessions      Session[]
-  madeProducts  Software[] @relation("MadeProducts")
-  comments      Comment[]  @relation("Comments")
+
+  accounts       Account[]
+  sessions       Session[]
+  madeProducts   Software[] @relation("MadeProducts")
+  comments       Comment[]  @relation("Comments")
+  upvotes        Upvote[]
+  reportsMade    Report[]   @relation("ReportsMade")
+  reportsReceived Report[]  @relation("ReportsReceived")
 
   @@index([email])
   @@index([username])
+  @@index([isAdmin])
 }
 
 model Account {
@@ -121,4 +140,43 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Upvote {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Software @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+  @@index([productId])
+  @@index([userId])
+}
+
+model Report {
+  id            String    @id @default(cuid())
+  reporterId    String
+  reporter      User      @relation("ReportsMade", fields: [reporterId], references: [id], onDelete: Cascade)
+  productId     String?
+  product       Software? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  commentId     String?
+  comment       Comment?  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  reportedUserId String?
+  reportedUser  User?     @relation("ReportsReceived", fields: [reportedUserId], references: [id], onDelete: Cascade)
+  reason        String    @db.Text
+  status        String    @default("pending") // pending, reviewed, dismissed, resolved
+  isArchived    Boolean   @default(false)
+  reviewedBy    String?
+  reviewedAt    DateTime?
+  createdAt     DateTime  @default(now())
+
+  @@index([status])
+  @@index([isArchived])
+  @@index([productId])
+  @@index([commentId])
+  @@index([reportedUserId])
+  @@index([reporterId])
+  @@index([createdAt])
 }

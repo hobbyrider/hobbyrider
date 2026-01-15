@@ -1,11 +1,12 @@
 export const dynamic = "force-dynamic"
 
-import Link from "next/link"
 import { prisma } from "@/lib/prisma"
-import { getAllCategories, ensureCategoriesExist } from "@/app/actions/categories"
-import { getRelativeTime } from "@/lib/utils"
-import { UpvoteButton } from "@/app/components/upvote-button"
-import { UserMenu } from "@/app/components/user-menu"
+import { ensureCategoriesExist } from "@/app/actions/categories"
+import { getDateFilter, calculateTrendingScore, type SortOption, type DateFilter } from "@/lib/filters"
+import { Pagination } from "@/app/components/pagination"
+import { FilterControls } from "@/app/components/filter-controls"
+import { FeedItemCard } from "@/app/components/feed-item-card"
+import { getSession } from "@/lib/get-session"
 
 type SoftwareItem = {
   id: string
@@ -23,206 +24,175 @@ type SoftwareItem = {
 export default async function Home({
   searchParams,
 }: {
-  searchParams: Promise<{ category?: string }>
+  searchParams: Promise<{ category?: string; sort?: string; date?: string; page?: string }>
 }) {
-  const { category: categorySlug } = await searchParams
+  const { category: categorySlug, sort = "upvotes", date = "all", page } = await searchParams
+  const currentPage = Math.max(1, parseInt(page || "1", 10))
+  const itemsPerPage = 20
+  const session = await getSession()
 
   // Ensure categories exist (idempotent)
   await ensureCategoriesExist()
 
-  const [softwareToday, categories] = await Promise.all([
-    prisma.software.findMany({
-      where: categorySlug
-        ? {
-            categories: {
-              some: {
-                slug: categorySlug,
-              },
+  // Parse and validate sort and date filters
+  const sortOption = (sort === "newest" || sort === "comments" || sort === "trending") ? sort : "upvotes"
+  const dateFilter = (date === "today" || date === "week" || date === "month") ? date : "all"
+
+  // Build where clause
+  const dateFilterClause = getDateFilter(dateFilter as DateFilter)
+  const whereClause = {
+    ...(categorySlug
+      ? {
+          categories: {
+            some: {
+              slug: categorySlug,
             },
-          }
-        : undefined,
-      orderBy: [{ upvotes: "desc" }, { createdAt: "desc" }],
-      take: 50,
-      select: {
-        id: true,
-        name: true,
-        tagline: true,
-        url: true,
-        maker: true,
-        thumbnail: true,
-        upvotes: true,
-        createdAt: true,
-        categories: {
-          select: {
-            id: true,
-            name: true,
-            slug: true,
           },
-        },
-        _count: {
-          select: {
-            comments: true,
-          },
+        }
+      : {}),
+    ...(dateFilterClause ? { createdAt: dateFilterClause } : {}),
+  }
+
+  // Fetch all products (we'll sort in memory for trending)
+  const allProducts = await prisma.software.findMany({
+    where: {
+      ...(Object.keys(whereClause).length > 0 ? whereClause : {}),
+      isHidden: false,
+    },
+    // Note: Cast to `any` to avoid occasional stale Prisma type issues in tooling.
+    // Runtime schema includes these fields (see prisma/schema.prisma).
+    select: {
+      id: true,
+      name: true,
+      tagline: true,
+      url: true,
+      maker: true,
+      thumbnail: true,
+      upvotes: true,
+      createdAt: true,
+      categories: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
         },
       },
-    }),
-    getAllCategories(),
-  ])
+      _count: {
+        select: {
+          comments: true,
+        },
+      },
+    } as any,
+  })
 
-  const softwareWithCounts: SoftwareItem[] = softwareToday.map((item) => ({
+  // Map to include comment counts
+  let softwareWithCounts: SoftwareItem[] = allProducts.map((item: any) => ({
     ...item,
     commentCount: item._count.comments,
   }))
 
-  return (
-    <main className="min-h-screen px-6 py-12">
-      <div className="mx-auto max-w-3xl">
-        <header className="mb-10">
-          <h1 className="text-4xl font-bold">hobbyrider</h1>
-          <p className="mt-3 text-gray-600">
-            Discover and share software worth riding 🤖
-          </p>
+  // Apply sorting
+  switch (sortOption) {
+    case "newest":
+      softwareWithCounts.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      break
+    case "comments":
+      softwareWithCounts.sort((a, b) => b.commentCount - a.commentCount)
+      break
+    case "trending":
+      softwareWithCounts.sort((a, b) => {
+        const scoreA = calculateTrendingScore(a.upvotes, a.createdAt)
+        const scoreB = calculateTrendingScore(b.upvotes, b.createdAt)
+        return scoreB - scoreA
+      })
+      break
+    case "upvotes":
+    default:
+      softwareWithCounts.sort((a, b) => {
+        if (b.upvotes !== a.upvotes) {
+          return b.upvotes - a.upvotes
+        }
+        return b.createdAt.getTime() - a.createdAt.getTime()
+      })
+      break
+  }
 
-          <div className="mt-4 flex items-center justify-between">
-            <div className="flex gap-3">
-              <Link
-                href="/submit"
-                className="inline-block rounded-lg border px-4 py-2 font-semibold hover:bg-black hover:text-white transition"
-              >
-                Submit software
-              </Link>
-              <Link
-                href="/search"
-                className="inline-block rounded-lg border px-4 py-2 font-semibold hover:bg-gray-100 transition"
-              >
-                Search
-              </Link>
-            </div>
-            <UserMenu />
-          </div>
+  // Calculate pagination
+  const totalItems = softwareWithCounts.length
+  const totalPages = Math.ceil(totalItems / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  
+  // Apply pagination
+  const paginatedProducts = softwareWithCounts.slice(startIndex, endIndex)
+
+  // Fetch upvote status for all paginated products if user is logged in
+  const upvotedProductIds = new Set<string>()
+  if (session?.user?.id) {
+    const upvotes = (await (prisma as any).upvote.findMany({
+      where: {
+        userId: session.user.id,
+        productId: { in: paginatedProducts.map((p) => p.id) },
+      },
+      select: { productId: true },
+    })) as Array<{ productId: string }>
+    upvotes.forEach((u: { productId: string }) => upvotedProductIds.add(u.productId))
+  }
+
+  return (
+    <main className="px-6 py-10">
+      <div className="mx-auto max-w-5xl">
+        {/* Page Header */}
+        <header className="mb-8">
+          <h1 className="text-3xl font-semibold tracking-tight text-gray-900">
+            {categorySlug 
+              ? `Top in ${categorySlug.replace(/-/g, " ")}` 
+              : "Today's launches"}
+          </h1>
+          <p className="mt-2 text-base text-gray-600">
+            Discover and share software worth riding.
+          </p>
         </header>
 
-        {/* Category Filter */}
-        <div className="mb-6">
-          <div className="flex flex-wrap gap-2">
-            <Link
-              href="/"
-              className={`px-3 py-1 rounded-full text-sm border transition ${
-                !categorySlug
-                  ? "bg-black text-white border-black"
-                  : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-              }`}
-            >
-              All
-            </Link>
-            {categories.map((category) => (
-              <Link
-                key={category.id}
-                href={`/?category=${category.slug}`}
-                className={`px-3 py-1 rounded-full text-sm border transition ${
-                  categorySlug === category.slug
-                    ? "bg-black text-white border-black"
-                    : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-                }`}
-              >
-                {category.name}
-              </Link>
-            ))}
-          </div>
-        </div>
+        {/* Filter Controls */}
+        <FilterControls />
 
+        {/* Feed Section */}
         <section>
-          <h2 className="text-xl font-semibold">
-            {categorySlug
-              ? categories.find((c) => c.slug === categorySlug)?.name || "Products"
-              : "Today"}
-          </h2>
-
-          {softwareWithCounts.length === 0 ? (
-            <p className="mt-4 text-gray-600">
-              No submissions yet. Be the first!
-            </p>
+          {paginatedProducts.length === 0 ? (
+            <div className="rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 p-12 text-center">
+              <p className="text-base text-gray-600">
+                {totalItems === 0
+                  ? "No submissions yet. Be the first!"
+                  : "No products on this page."}
+              </p>
+            </div>
           ) : (
-            <ul className="mt-4 space-y-3">
-              {softwareWithCounts.map((item) => (
-                <li
-                  key={item.id}
-                  className="rounded-xl border p-4 hover:bg-gray-50"
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex gap-4 flex-1">
-                      {item.thumbnail && (
-                        <img
-                          src={item.thumbnail}
-                          alt={item.name}
-                          className="h-16 w-16 rounded-lg object-cover border flex-shrink-0"
-                        />
-                      )}
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <Link
-                            href={`/product/${item.id}`}
-                            className="font-semibold underline underline-offset-4 hover:text-gray-600"
-                          >
-                            {item.name}
-                          </Link>
-                          <span className="text-xs text-gray-400">
-                            {getRelativeTime(item.createdAt)}
-                          </span>
-                        </div>
-                      <p className="mt-1 text-gray-600">{item.tagline}</p>
-                      {item.categories.length > 0 && (
-                        <div className="mt-2 flex flex-wrap gap-1">
-                          {item.categories.map((category) => (
-                            <Link
-                              key={category.id}
-                              href={`/?category=${category.slug}`}
-                              className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 transition"
-                            >
-                              {category.name}
-                            </Link>
-                          ))}
-                        </div>
-                      )}
-                      {item.maker && (
-                        <p className="mt-1 text-xs text-gray-500">
-                          Submitted by{" "}
-                          <Link
-                            href={`/maker/${item.maker}`}
-                            className="font-semibold hover:underline"
-                          >
-                            @{item.maker}
-                          </Link>
-                        </p>
-                      )}
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                      <Link
-                        href={`/product/${item.id}#comments`}
-                        className="flex items-center gap-1 text-sm text-gray-600 hover:text-black"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                          className="w-4 h-4"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M10 2c-2.236 0-4.43.18-6.57.524C1.993 2.755 1 4.014 1 5.426v5.148c0 1.413.993 2.67 2.43 2.902.848.188 1.705.338 2.57.45v3.025a.75.75 0 001.163.638l3.086-2.126a26.75 26.75 0 001.88-.128c2.14-.344 4.334-.524 6.57-.524h.25a.75.75 0 00.75-.75v-5.148c0-1.413-.993-2.67-2.43-2.902A41.403 41.403 0 0010 2zm8.75 10.5h-.25a25.25 25.25 0 00-6.57.524c-1.437.232-2.43 1.49-2.43 2.902v.25a.75.75 0 00.75.75h.25a25.25 25.25 0 006.57-.524c1.437-.232 2.43-1.49 2.43-2.902v-.25a.75.75 0 00-.75-.75zM8.75 6.75a.75.75 0 000 1.5h2.5a.75.75 0 000-1.5h-2.5zm0 3a.75.75 0 000 1.5h4.5a.75.75 0 000-1.5h-4.5z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                        <span>{item.commentCount}</span>
-                      </Link>
-                      <UpvoteButton id={item.id} upvotes={item.upvotes} />
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
+            <>
+              <ul className="space-y-3">
+                {paginatedProducts.map((item) => (
+                  <FeedItemCard
+                    key={item.id}
+                    item={item}
+                    hasUpvoted={upvotedProductIds.has(item.id)}
+                    isLoggedIn={!!session?.user?.id}
+                  />
+                ))}
+              </ul>
+              
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="mt-8">
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    category={categorySlug}
+                    sort={sortOption}
+                    date={dateFilter as DateFilter}
+                  />
+                </div>
+              )}
+            </>
           )}
         </section>
       </div>
