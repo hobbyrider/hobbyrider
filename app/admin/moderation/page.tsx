@@ -62,9 +62,9 @@ export default async function ModerationPage() {
   const reports = await getReports()
   const archivedReports = await getReports(undefined, true)
 
-  const pendingReports = reports.filter((r) => r.status === "pending" && !r.isArchived)
-  const reviewedReports = reports.filter((r) => r.status !== "pending" && !r.isArchived)
-  const archived = archivedReports.filter((r) => r.isArchived)
+  const pendingReports = reports.filter((r: any) => r.status === "pending" && !r.isArchived)
+  const reviewedReports = reports.filter((r: any) => r.status !== "pending" && !r.isArchived)
+  const archived = archivedReports.filter((r: any) => r.isArchived)
 
   return (
     <main className="px-6 py-10">
