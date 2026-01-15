@@ -101,7 +101,7 @@ export default async function ModerationPage() {
           </div>
         ) : (
           <div className="space-y-4">
-            {pendingReports.map((report) => (
+            {pendingReports.map((report: any) => (
               <ModerationPanel key={report.id} report={report} />
             ))}
           </div>
@@ -116,7 +116,7 @@ export default async function ModerationPage() {
               Manage previously reviewed reports. You can unhide hidden content or permanently delete it.
             </p>
             <div className="space-y-4">
-              {reviewedReports.map((report) => (
+              {reviewedReports.map((report: any) => (
                 <ResolvedReportPanel key={report.id} report={report} />
               ))}
             </div>
@@ -132,7 +132,7 @@ export default async function ModerationPage() {
               Archived reports are hidden from the main view but can be restored if needed.
             </p>
             <div className="space-y-4">
-              {archived.map((report) => (
+              {archived.map((report: any) => (
                 <ResolvedReportPanel key={report.id} report={report} />
               ))}
             </div>
