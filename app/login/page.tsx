@@ -23,7 +23,7 @@ export default function LoginPage() {
         email,
         password,
         redirect: false,
-      })
+      }) as { error?: string } | undefined
 
       if (result?.error) {
         setError("Invalid email or password")

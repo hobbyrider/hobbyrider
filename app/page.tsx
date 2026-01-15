@@ -8,7 +8,7 @@ import { FilterControls } from "@/app/components/filter-controls"
 import { FeedItemCard } from "@/app/components/feed-item-card"
 import { getSession } from "@/lib/get-session"
 
-type SoftwareItem = {
+export type SoftwareItem = {
   id: string
   name: string
   tagline: string

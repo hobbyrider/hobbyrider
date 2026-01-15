@@ -14,7 +14,7 @@ type Product = {
   thumbnail: string | null
   upvotes: number
   createdAt: Date
-  _count: {
+  _count?: {
     comments: number
   }
 }
@@ -109,7 +109,7 @@ export function ProductList({ products, isOwnProfile }: ProductListProps) {
                       clipRule="evenodd"
                     />
                   </svg>
-                  <span>{product._count.comments}</span>
+                  <span>{product._count?.comments || 0}</span>
                 </Link>
                 <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5">
                   <span className="text-sm font-semibold text-gray-900">

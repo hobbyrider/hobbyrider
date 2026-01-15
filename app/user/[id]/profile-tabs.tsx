@@ -29,7 +29,7 @@ type Product = {
   thumbnail: string | null
   upvotes: number
   createdAt: Date
-  _count: {
+  _count?: {
     comments: number
   }
 }

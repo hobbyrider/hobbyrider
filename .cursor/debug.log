@@ -1,0 +1,6 @@
+{"location":"app/product/[id]/page.tsx:20","message":"ProductPage entry","data":{"productId":"cmke9mnhs000004l72uo3nqm9"},"timestamp":1768484582166,"sessionId":"debug-session","runId":"run1","hypothesisId":"B"}
+{"location":"app/product/[id]/page.tsx:25","message":"getSession result","data":{"hasSession":true,"userId":"cmke58pfh0000nnjy6xra1w07"},"timestamp":1768484582180,"sessionId":"debug-session","runId":"run1","hypothesisId":"B"}
+{"location":"app/product/[id]/page.tsx:32","message":"Before product query","data":{"productId":"cmke9mnhs000004l72uo3nqm9"},"timestamp":1768484582181,"sessionId":"debug-session","runId":"run1","hypothesisId":"C"}
+{"location":"app/product/[id]/page.tsx:65","message":"Product query result","data":{"found":true,"hasMakerId":true},"timestamp":1768484582697,"sessionId":"debug-session","runId":"run1","hypothesisId":"C"}
+{"location":"app/product/[id]/page.tsx:72","message":"Before upvote query","data":{"userId":"cmke58pfh0000nnjy6xra1w07","productId":"cmke9mnhs000004l72uo3nqm9"},"timestamp":1768484582699,"sessionId":"debug-session","runId":"run1","hypothesisId":"A"}
+{"location":"app/product/[id]/page.tsx:84","message":"Upvote query success","data":{"found":true},"timestamp":1768484582742,"sessionId":"debug-session","runId":"run1","hypothesisId":"A"}

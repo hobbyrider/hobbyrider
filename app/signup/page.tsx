@@ -29,7 +29,7 @@ export default function SignupPage() {
         email,
         password,
         redirect: false,
-      })
+      }) as { error?: string } | undefined
 
       if (result?.error) {
         setError("Account created but sign in failed. Please try logging in.")

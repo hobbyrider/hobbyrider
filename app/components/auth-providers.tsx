@@ -21,14 +21,11 @@ export function AuthProviders({ email, setEmail, loading = false }: AuthProvider
   const handleGoogleSignIn = async () => {
     try {
       setError("")
-      const result = await signIn("google", {
+      await signIn("google", {
         callbackUrl: "/",
         redirect: true,
       })
-      // If redirect is false, check for errors
-      if (result?.error) {
-        setError("Failed to sign in with Google. Please try again.")
-      }
+      // Note: With redirect: true, signIn will redirect and not return
     } catch (error: any) {
       console.error("Google sign in error:", error)
       setError(error.message || "Failed to sign in with Google")

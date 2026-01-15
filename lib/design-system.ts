@@ -37,18 +37,18 @@ export const typography = {
   bold: '700',
   
   // Line heights (refined for readability)
-  tight: '1.25',      // Headings
-  snug: '1.375',      // Subheadings
-  normal: '1.5',     // Body text
-  relaxed: '1.625',   // Long-form content
-  loose: '2',         // Spacious content
+  lineHeightTight: '1.25',      // Headings
+  lineHeightSnug: '1.375',      // Subheadings
+  lineHeightNormal: '1.5',     // Body text
+  lineHeightRelaxed: '1.625',   // Long-form content
+  lineHeightLoose: '2',         // Spacious content
   
   // Letter spacing (refined)
-  tighter: '-0.025em',  // Large headings
-  tight: '-0.01em',     // Medium headings
-  normal: '0',          // Body text
-  wide: '0.025em',      // Uppercase labels
-  wider: '0.05em',      // Display text
+  letterSpacingTighter: '-0.025em',  // Large headings
+  letterSpacingTight: '-0.01em',     // Medium headings
+  letterSpacingNormal: '0',          // Body text
+  letterSpacingWide: '0.025em',      // Uppercase labels
+  letterSpacingWider: '0.05em',      // Display text
 } as const
 
 // Color Palette (semantic tokens)
