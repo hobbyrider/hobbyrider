@@ -12,7 +12,7 @@ export function SiteFooter() {
               <span className="font-semibold text-gray-900">hobbyrider</span>
             </Text>
             <Muted className="mb-2 text-sm">
-              Built by builders, for builders. Trusted by professionals across industries.
+              Built by builders, for builders. Trusted by professionals.
             </Muted>
             <Caption className="text-gray-400">
               <Link
