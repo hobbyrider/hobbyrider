@@ -168,10 +168,10 @@ export default async function Home({
           <PageTitle className="text-3xl text-gray-900">
             {categorySlug 
               ? `Top in ${categorySlug.replace(/-/g, " ")}` 
-              : "Today's launches"}
+              : "Cut through one-day hype. Discover and launch software people return to."}
           </PageTitle>
           <Muted className="mt-2">
-            Discover and share software worth riding.
+            Discover software worth riding. Curated, community-ranked collections for builders.
           </Muted>
         </header>
 
