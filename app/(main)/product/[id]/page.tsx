@@ -375,7 +375,7 @@ export default async function ProductPage({
             {/* Comments Section */}
             <section id="comments" className="border-t border-gray-200 pt-10">
               <SectionTitle className="mb-6 text-gray-900">
-                Discussion ({comments.length})
+                Comments ({comments.length})
               </SectionTitle>
 
               <CommentForm productId={id} />
