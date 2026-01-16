@@ -8,13 +8,13 @@ import Image from "next/image"
 import { cache } from "react"
 import { CommentForm } from "./comment-form"
 import { CommentItem } from "./comment-item"
-import { UpvoteButton } from "@/app/components/upvote-button"
 import { ProductGallery } from "@/app/components/product-gallery"
 import { SidebarBlock } from "@/app/components/sidebar-block"
 import { ReportButton } from "@/app/components/report-button"
 import { getSession } from "@/lib/get-session"
 import type { Metadata } from "next"
 import { PageTitle, SectionTitle, Text, Muted, Small } from "@/app/components/typography"
+import { ProductActions } from "./product-actions"
 
 export const dynamic = "force-dynamic"
 export const revalidate = 60 // Revalidate product pages every 60 seconds
@@ -403,16 +403,15 @@ export default async function ProductPage({
           {/* Sidebar */}
           <aside className="space-y-6">
             <div className="sticky top-24 space-y-6">
-              {/* Upvote Section */}
+              {/* Actions Section */}
               <SidebarBlock>
-                <div className="text-center">
-                  <UpvoteButton 
-                    id={product.id} 
-                    upvotes={product.upvotes} 
-                    hasUpvoted={hasUpvoted}
-                    isLoggedIn={!!session?.user?.id}
-                  />
-                </div>
+                <ProductActions
+                  productId={product.id}
+                  upvotes={product.upvotes}
+                  hasUpvoted={hasUpvoted}
+                  isLoggedIn={!!session?.user?.id}
+                  commentCount={comments.length}
+                />
               </SidebarBlock>
 
               {/* Stats Section */}
