@@ -25,7 +25,7 @@ export function SiteHeader() {
               href="/submit"
               className="rounded-lg px-3 py-1.5 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-700"
             >
-              <NavLinkText className="text-base text-gray-700">Submit</NavLinkText>
+              <NavLinkText className="text-base text-gray-700">Submit a product</NavLinkText>
             </Link>
           </nav>
         </div>
@@ -39,7 +39,7 @@ export function SiteHeader() {
               href="/submit"
               className="rounded-lg border border-gray-300 px-3 py-1.5 transition-colors hover:bg-gray-50 hover:border-gray-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-700"
             >
-              <NavLinkText className="text-base text-gray-700">Submit</NavLinkText>
+              <NavLinkText className="text-base text-gray-700">Submit a product</NavLinkText>
             </Link>
           </div>
           <UserMenu />

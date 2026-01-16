@@ -345,7 +345,7 @@ export default async function ProductPage({
               </div>
             )}
 
-            {/* Description & Demo */}
+            {/* Description & Video */}
             {(product.description || product.embedHtml) && (
               <div className="space-y-6 sm:space-y-10">
                 {product.description && (
@@ -361,7 +361,7 @@ export default async function ProductPage({
 
                 {product.embedHtml && (
                   <section>
-                    <SectionTitle className="mb-4 text-gray-900">Demo</SectionTitle>
+                    <SectionTitle className="mb-4 text-gray-900">Video</SectionTitle>
                     <div
                       className="overflow-hidden rounded-xl border border-gray-200 bg-white"
                       // embedHtml is sanitized on save (server action)

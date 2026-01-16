@@ -59,7 +59,7 @@ export function SiteFooter() {
                     href="/submit"
                     className="text-gray-600 transition-colors hover:text-gray-900 hover:underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded"
                   >
-                    Submit
+                    Submit a product
                   </Link>
                 </li>
               </ul>
