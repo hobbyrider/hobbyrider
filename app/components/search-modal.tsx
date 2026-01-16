@@ -175,7 +175,7 @@ export function SearchModal({
             ref={inputRef}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search for products, launches, or people…"
+            placeholder="Search for products or builders..."
             className="flex-1 bg-transparent text-base text-gray-900 outline-none placeholder:text-gray-500"
           />
 
