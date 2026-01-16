@@ -17,6 +17,12 @@
  *   - DATABASE_URL must point to production database
  */
 
+// Load environment variables from .env.local
+import { config } from "dotenv"
+import { resolve } from "path"
+config({ path: resolve(process.cwd(), ".env.local") })
+config() // Also load .env if it exists
+
 import { put } from "@vercel/blob"
 import { prisma } from "../lib/prisma"
 import { readFile } from "node:fs/promises"
