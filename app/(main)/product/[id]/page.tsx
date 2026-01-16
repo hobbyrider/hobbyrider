@@ -334,7 +334,6 @@ export default async function ProductPage({
                     />
                   </svg>
                 </a>
-                <ReportButton type="product" contentId={product.id} contentName={product.name} />
               </div>
             </div>
 
@@ -407,6 +406,7 @@ export default async function ProductPage({
               <SidebarBlock>
                 <ProductActions
                   productId={product.id}
+                  productName={product.name}
                   upvotes={product.upvotes}
                   hasUpvoted={hasUpvoted}
                   isLoggedIn={!!session?.user?.id}

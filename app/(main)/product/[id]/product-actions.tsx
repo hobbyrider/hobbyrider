@@ -3,12 +3,14 @@
 import { useRouter, usePathname } from "next/navigation"
 import Link from "next/link"
 import { useState } from "react"
-import { UpvoteIcon, CommentIcon, CopyIcon } from "@/app/components/icons"
+import { UpvoteIcon, CommentIcon, CopyIcon, ReportIcon } from "@/app/components/icons"
 import { upvoteSoftware } from "@/app/actions/software"
+import { ReportButton } from "@/app/components/report-button"
 import toast from "react-hot-toast"
 
 type ProductActionsProps = {
   productId: string
+  productName: string
   upvotes: number
   hasUpvoted: boolean
   isLoggedIn: boolean
@@ -17,6 +19,7 @@ type ProductActionsProps = {
 
 export function ProductActions({
   productId,
+  productName,
   upvotes,
   hasUpvoted,
   isLoggedIn,
@@ -113,6 +116,9 @@ export function ProductActions({
       >
         <CopyIcon className="w-5 h-5" />
       </button>
+
+      {/* Report button */}
+      <ReportButton type="product" contentId={productId} contentName={productName} />
     </div>
   )
 }

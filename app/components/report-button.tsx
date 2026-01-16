@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { reportContent, type ReportReason } from "@/app/actions/moderation"
 import { useRouter } from "next/navigation"
+import { ReportIcon } from "@/app/components/icons"
 
 type ReportButtonProps = {
   type: "product" | "comment" | "user"
@@ -65,11 +66,11 @@ export function ReportButton({ type, contentId, contentName }: ReportButtonProps
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="text-sm text-gray-500 hover:text-gray-700 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600 rounded"
+        className="flex flex-col items-center justify-center gap-1 h-12 w-12 rounded-lg border-2 border-gray-300 bg-white text-gray-900 hover:border-gray-900 hover:bg-gray-50 transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
         title="Report content"
         aria-label={`Report ${type}`}
       >
-        Report
+        <ReportIcon className="w-5 h-5" />
       </button>
 
       {isOpen && (
