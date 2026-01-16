@@ -112,8 +112,8 @@ export default function TermsPage() {
             <SectionTitle className="text-xl text-gray-900 mb-4">8. Intellectual Property</SectionTitle>
             <Text className="text-gray-700 mb-4">
               If you believe that any content on the Service infringes your copyright or other intellectual property rights, please contact us at{" "}
-              <a href="mailto:bieliunas.evaldas@gmail.com" className="text-gray-900 underline hover:text-gray-700">
-                bieliunas.evaldas@gmail.com
+              <a href="mailto:team@hobbyrider.io" className="text-gray-900 underline hover:text-gray-700">
+                team@hobbyrider.io
               </a>{" "}
               with a detailed description of the alleged infringement.
             </Text>
@@ -174,8 +174,8 @@ export default function TermsPage() {
             </Text>
             <Text className="text-gray-700">
               Email:{" "}
-              <a href="mailto:bieliunas.evaldas@gmail.com" className="text-gray-900 underline hover:text-gray-700">
-                bieliunas.evaldas@gmail.com
+              <a href="mailto:team@hobbyrider.io" className="text-gray-900 underline hover:text-gray-700">
+                team@hobbyrider.io
               </a>
             </Text>
           </section>

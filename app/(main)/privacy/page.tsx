@@ -96,8 +96,8 @@ export default function PrivacyPage() {
             </ul>
             <Text className="text-gray-700 mb-4">
               To exercise these rights, please contact us at{" "}
-              <a href="mailto:bieliunas.evaldas@gmail.com" className="text-gray-900 underline hover:text-gray-700">
-                bieliunas.evaldas@gmail.com
+              <a href="mailto:team@hobbyrider.io" className="text-gray-900 underline hover:text-gray-700">
+                team@hobbyrider.io
               </a>
             </Text>
           </section>
@@ -130,8 +130,8 @@ export default function PrivacyPage() {
             </Text>
             <Text className="text-gray-700">
               Email:{" "}
-              <a href="mailto:bieliunas.evaldas@gmail.com" className="text-gray-900 underline hover:text-gray-700">
-                bieliunas.evaldas@gmail.com
+              <a href="mailto:team@hobbyrider.io" className="text-gray-900 underline hover:text-gray-700">
+                team@hobbyrider.io
               </a>
             </Text>
           </section>

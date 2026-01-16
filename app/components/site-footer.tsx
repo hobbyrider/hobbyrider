@@ -97,7 +97,7 @@ export function SiteFooter() {
               <ul className="flex flex-col gap-2 text-base">
                 <li>
                   <a
-                    href="mailto:bieliunas.evaldas@gmail.com"
+                    href="mailto:team@hobbyrider.io"
                     className="text-gray-600 transition-colors hover:text-gray-900 hover:underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded"
                   >
                     Email
