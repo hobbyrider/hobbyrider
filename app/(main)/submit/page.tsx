@@ -103,10 +103,10 @@ export default function SubmitPage() {
 
       const data = await response.json()
       setThumbnailUrl(data.url)
-      toast.success("Thumbnail uploaded successfully!")
+      toast.success("Logo uploaded successfully!")
     } catch (error) {
       console.error("Upload error:", error)
-      toast.error(error instanceof Error ? error.message : "Failed to upload thumbnail. Please try again.")
+      toast.error(error instanceof Error ? error.message : "Failed to upload logo. Please try again.")
     } finally {
       setUploading(false)
     }
@@ -195,7 +195,7 @@ export default function SubmitPage() {
             <input
               name="name"
               className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5 text-base focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-0"
-              placeholder="ClickUp"
+              placeholder="Guideless"
               required
             />
           </div>
@@ -205,7 +205,7 @@ export default function SubmitPage() {
             <input
               name="tagline"
               className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5 text-base focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-0"
-              placeholder="Manage tasks, docs, and projects in one place."
+              placeholder="The easiest way to make software video guides."
               required
             />
           </div>
@@ -229,14 +229,14 @@ export default function SubmitPage() {
               name="url"
               type="url"
               className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5 text-base focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-0"
-              placeholder="https://clickup.com"
+              placeholder="https://guideless.ai/"
               required
             />
           </div>
 
           <div>
             <LabelText className="mb-2 block text-gray-900">
-              Embed <span className="text-xs font-normal text-gray-500">(optional)</span>
+              Video <span className="text-xs font-normal text-gray-500">(optional)</span>
             </LabelText>
             <textarea
               name="embedHtml"
@@ -251,7 +251,7 @@ export default function SubmitPage() {
 
           <div>
             <LabelText className="mb-2 block text-gray-900">
-              Thumbnail <span className="text-xs font-normal text-gray-500">(optional)</span>
+              Logo <span className="text-xs font-normal text-gray-500">(optional)</span>
             </LabelText>
             <input
               type="file"
@@ -267,7 +267,7 @@ export default function SubmitPage() {
               <div className="mt-3">
                 <img
                   src={thumbnailUrl}
-                  alt="Thumbnail preview"
+                  alt="Logo preview"
                   className="h-24 w-24 rounded-lg border border-gray-200 object-cover"
                 />
                 <input type="hidden" name="thumbnail" value={thumbnailUrl} />
