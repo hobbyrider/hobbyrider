@@ -350,7 +350,7 @@ export default async function ProductPage({
               <div className="space-y-10">
                 {product.description && (
                   <section>
-                    <SectionTitle className="mb-4 text-gray-900">About</SectionTitle>
+                    <SectionTitle className="mb-4 text-gray-900">Overview</SectionTitle>
                     <div className="prose prose-gray max-w-none">
                       <Text className="whitespace-pre-wrap text-gray-700">
                         {product.description}
