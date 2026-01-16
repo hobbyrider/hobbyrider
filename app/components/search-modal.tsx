@@ -152,15 +152,15 @@ export function SearchModal({
       />
 
       {/* Modal */}
-      <div className="relative mx-auto mt-20 w-[min(920px,calc(100%-2rem))] rounded-2xl border border-gray-200 bg-white shadow-xl">
+      <div className="relative mx-auto mt-12 sm:mt-20 w-[min(920px,calc(100%-1rem))] sm:w-[min(920px,calc(100%-2rem))] rounded-xl sm:rounded-2xl border border-gray-200 bg-white shadow-xl">
         {/* Search Input Header */}
-        <div className="flex items-center gap-3 border-b border-gray-200 px-6 py-4">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100">
+        <div className="flex items-center gap-2 sm:gap-3 border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4">
+          <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-lg bg-gray-100">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 20 20"
               fill="currentColor"
-              className="h-5 w-5 text-gray-600"
+              className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600"
               aria-hidden="true"
             >
               <path
@@ -176,7 +176,7 @@ export function SearchModal({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search for products or builders..."
-            className="flex-1 bg-transparent text-base text-gray-900 outline-none placeholder:text-gray-500"
+            className="flex-1 bg-transparent text-sm sm:text-base text-gray-900 outline-none placeholder:text-gray-500"
           />
 
           <div className="flex items-center gap-2">
@@ -208,7 +208,7 @@ export function SearchModal({
 
         <div className="grid gap-0 md:grid-cols-[1fr_320px]">
           {/* Left - Main Content */}
-          <div className="max-h-[70vh] overflow-auto px-6 py-6">
+          <div className="max-h-[70vh] overflow-auto px-4 sm:px-6 py-4 sm:py-6">
             {showSearchResults ? (
               <>
                 {results.length === 0 && !searching ? (

@@ -69,30 +69,30 @@ export default function SearchPage() {
   }
 
   return (
-    <main className="px-6 py-12">
+    <main className="px-4 py-8 sm:px-6 sm:py-12">
       <div className="mx-auto max-w-3xl">
         <Link
           href="/"
-          className="text-sm text-gray-600 hover:text-black mb-6 inline-block"
+          className="text-sm text-gray-600 hover:text-black mb-4 sm:mb-6 inline-block"
         >
           ← Back to home
         </Link>
 
-        <header className="mb-8">
-          <h1 className="text-4xl font-bold">Search</h1>
-          <p className="mt-2 text-gray-600">
+        <header className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-4xl font-bold">Search</h1>
+          <p className="mt-2 text-sm sm:text-base text-gray-600">
             Search for products by name, tagline, or builder
           </p>
         </header>
 
-        <form onSubmit={handleSearch} className="mb-8">
+        <form onSubmit={handleSearch} className="mb-6 sm:mb-8">
           <div className="flex gap-2">
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search... (results update as you type)"
-              className="flex-1 rounded-lg border px-4 py-2"
+              className="flex-1 rounded-lg border border-gray-300 px-3 sm:px-4 py-2 text-base focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-0"
               autoFocus
             />
             {searching && (
@@ -113,27 +113,27 @@ export default function SearchPage() {
               {results.map((item) => (
                 <li
                   key={item.id}
-                  className="rounded-xl border p-4 hover:bg-gray-50"
+                  className="rounded-xl border p-3 sm:p-4 hover:bg-gray-50"
                 >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex gap-4 flex-1">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
+                    <div className="flex gap-3 sm:gap-4 flex-1">
                       {item.thumbnail && (
-                        <div className="h-16 w-16 rounded-lg overflow-hidden border flex-shrink-0 relative">
+                        <div className="h-12 w-12 sm:h-16 sm:w-16 rounded-lg overflow-hidden border flex-shrink-0 relative">
                           <Image
                             src={item.thumbnail}
                             alt={item.name}
                             fill
                             className="object-cover"
-                            sizes="64px"
+                            sizes="(max-width: 640px) 48px, 64px"
                             loading="lazy"
                           />
                         </div>
                       )}
-                      <div>
-                        <div className="flex items-center gap-2">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
                           <Link
                             href={`/product/${item.id}`}
-                            className="font-semibold underline underline-offset-4 inline-flex items-center gap-1 hover:text-gray-600"
+                            className="font-semibold text-sm sm:text-base underline underline-offset-4 inline-flex items-center gap-1 hover:text-gray-600"
                           >
                             {item.name}
                           </Link>
@@ -141,7 +141,7 @@ export default function SearchPage() {
                             {getRelativeTime(item.createdAt)}
                           </span>
                         </div>
-                        <p className="mt-1 text-gray-600">{item.tagline}</p>
+                        <p className="mt-1 text-sm sm:text-base text-gray-600 line-clamp-2">{item.tagline}</p>
                         {item.categories && item.categories.length > 0 && (
                           <div className="mt-2 flex flex-wrap gap-1">
                             {item.categories.map((category) => (
@@ -169,10 +169,10 @@ export default function SearchPage() {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
                       <Link
                         href={`/product/${item.id}#comments`}
-                        className="flex items-center gap-1 text-sm text-gray-600 hover:text-black"
+                        className="flex items-center gap-1 text-xs sm:text-sm text-gray-600 hover:text-black"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"

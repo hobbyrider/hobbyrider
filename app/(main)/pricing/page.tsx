@@ -21,21 +21,21 @@ export const metadata: Metadata = {
 
 export default function PricingPage() {
   return (
-    <main className="px-6 py-10 md:py-16">
+    <main className="px-4 py-8 sm:px-6 sm:py-10 md:py-16">
       <div className="mx-auto max-w-4xl">
         {/* Header */}
-        <header className="mb-12 text-center">
-          <PageTitle className="text-gray-900 md:text-5xl">
+        <header className="mb-8 sm:mb-12 text-center">
+          <PageTitle className="text-3xl sm:text-4xl md:text-5xl text-gray-900">
             Pricing
           </PageTitle>
-          <Muted className="mt-4 text-xl">
+          <Muted className="mt-3 sm:mt-4 text-base sm:text-lg md:text-xl">
             Simple, transparent pricing for builders
           </Muted>
         </header>
 
         {/* Main Pricing Card */}
-        <div className="mb-16">
-          <div className="rounded-2xl border-2 border-gray-200 bg-white p-8 shadow-sm md:p-12">
+        <div className="mb-12 sm:mb-16">
+          <div className="rounded-2xl border-2 border-gray-200 bg-white p-6 sm:p-8 md:p-12 shadow-sm">
             <div className="mb-6">
               <div className="mb-4 inline-block rounded-full bg-green-50 px-4 py-1.5 text-sm font-medium text-green-700">
                 Free to Start
@@ -51,8 +51,8 @@ export default function PricingPage() {
             <div className="mb-8 border-t border-gray-200 pt-8">
               <div className="mb-6">
                 <div className="flex items-baseline gap-2">
-                  <span className="text-5xl font-semibold text-gray-900">$0</span>
-                  <span className="text-lg text-gray-600">to get started</span>
+                  <span className="text-4xl sm:text-5xl font-semibold text-gray-900">$0</span>
+                  <span className="text-base sm:text-lg text-gray-600">to get started</span>
                 </div>
                 <Small className="mt-2 text-gray-500">
                   No credit card required. No hidden fees.
@@ -217,8 +217,8 @@ export default function PricingPage() {
         </div>
 
         {/* FAQ Section */}
-        <div className="mt-16">
-          <SectionTitle className="mb-8 text-gray-900">Frequently Asked Questions</SectionTitle>
+        <div className="mt-12 sm:mt-16">
+          <SectionTitle className="mb-6 sm:mb-8 text-xl sm:text-2xl text-gray-900">Frequently Asked Questions</SectionTitle>
           <div className="space-y-8">
             <div>
               <CardTitle className="mb-2 text-gray-900">

@@ -89,8 +89,8 @@ export function CommentItem({ comment, productId }: CommentItemProps) {
   }
 
   return (
-    <div className="border-b border-gray-200 pb-6 last:border-b-0 last:pb-0">
-      <div className="mb-3 flex items-center gap-2.5">
+    <div className="border-b border-gray-200 pb-4 sm:pb-6 last:border-b-0 last:pb-0">
+      <div className="mb-3 flex items-center gap-2 sm:gap-2.5 flex-wrap">
         {comment.authorUser ? (
           <>
             {comment.authorUser.image ? (
@@ -139,7 +139,7 @@ export function CommentItem({ comment, productId }: CommentItemProps) {
             value={editContent}
             onChange={(e) => setEditContent(e.target.value)}
             rows={4}
-            className="w-full rounded-xl border-2 border-gray-200 px-4 py-3 text-sm resize-none focus:border-gray-900 focus:outline-none transition"
+            className="w-full rounded-xl border-2 border-gray-200 px-3 sm:px-4 py-2.5 sm:py-3 text-sm resize-none focus:border-gray-900 focus:outline-none transition"
             disabled={isPending}
             autoFocus
           />

@@ -182,19 +182,19 @@ export default function SubmitPage() {
   }
 
   return (
-    <main className="px-6 py-12">
+    <main className="px-4 py-8 sm:px-6 sm:py-12">
       <div className="mx-auto max-w-xl">
-        <PageTitle className="text-3xl text-gray-900">submit software</PageTitle>
-        <Muted className="mt-2">
+        <PageTitle className="text-2xl sm:text-3xl text-gray-900">submit software</PageTitle>
+        <Muted className="mt-2 text-sm sm:text-base">
           Share a tool you think is worth riding 🤖
         </Muted>
 
-        <form onSubmit={handleSubmit} className="mt-8 space-y-4">
+        <form onSubmit={handleSubmit} className="mt-6 sm:mt-8 space-y-4 sm:space-y-6">
           <div>
             <LabelText>Name</LabelText>
             <input
               name="name"
-              className="mt-1 w-full rounded-lg border px-3 py-2"
+              className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5 text-base focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-0"
               placeholder="ClickUp"
               required
             />
@@ -204,7 +204,7 @@ export default function SubmitPage() {
             <LabelText>Tagline</LabelText>
             <input
               name="tagline"
-              className="mt-1 w-full rounded-lg border px-3 py-2"
+              className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5 text-base focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-0"
               placeholder="Manage tasks, docs, and projects in one place."
               required
             />
@@ -228,7 +228,7 @@ export default function SubmitPage() {
             <input
               name="url"
               type="url"
-              className="mt-1 w-full rounded-lg border px-3 py-2"
+              className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5 text-base focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-0"
               placeholder="https://clickup.com"
               required
             />
@@ -366,7 +366,7 @@ export default function SubmitPage() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full rounded-lg border-2 border-gray-900 bg-gray-900 px-6 py-3 text-base font-semibold text-white transition-colors hover:bg-gray-800 active:bg-gray-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 disabled:cursor-not-allowed disabled:opacity-50"
+              className="w-full rounded-lg border-2 border-gray-900 bg-gray-900 px-6 py-3 text-sm sm:text-base font-semibold text-white transition-colors hover:bg-gray-800 active:bg-gray-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {submitting ? "Submitting..." : "Submit Product"}
             </button>

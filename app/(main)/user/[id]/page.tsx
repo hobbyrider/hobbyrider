@@ -147,7 +147,7 @@ export default async function UserPage({
   const isOwnProfile = session?.user?.id === user.id
 
   return (
-    <main className="px-6 py-10">
+    <main className="px-4 py-8 sm:px-6 sm:py-10">
       <div className="mx-auto max-w-5xl">
         {/* Profile Header */}
         <header className="mb-8">
@@ -174,16 +174,16 @@ export default async function UserPage({
 
             {/* User Info */}
             <div className="flex-1 min-w-0">
-              <h1 className="text-4xl font-semibold tracking-tight text-gray-900 mb-2">
+              <h1 className="text-2xl sm:text-4xl font-semibold tracking-tight text-gray-900 mb-2">
                 {user.name || user.username || user.email}
               </h1>
               {user.headline && (
-                <p className="text-lg text-gray-600 mb-3">
+                <p className="text-base sm:text-lg text-gray-600 mb-3">
                   {user.headline}
                 </p>
               )}
               {user.username && (
-                <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
+                <div className="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600 mb-3 flex-wrap">
                   <span>@{user.username}</span>
                   <span>•</span>
                   <span>0 followers</span>

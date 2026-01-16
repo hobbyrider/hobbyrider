@@ -56,14 +56,14 @@ export function CommentForm({ productId }: { productId: string }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
       <div>
         <textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder="Ask a question or leave a comment..."
           rows={4}
-          className="w-full rounded-xl border-2 border-gray-200 px-4 py-3 text-sm resize-none focus:border-black focus:outline-none transition"
+          className="w-full rounded-xl border-2 border-gray-200 px-3 sm:px-4 py-2.5 sm:py-3 text-sm resize-none focus:border-black focus:outline-none transition"
           required
           disabled={submitting}
         />
@@ -72,7 +72,7 @@ export function CommentForm({ productId }: { productId: string }) {
         <button
           type="submit"
           disabled={submitting || !content.trim()}
-          className="rounded-lg bg-black text-white px-6 py-2.5 text-sm font-semibold hover:bg-gray-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
+          className="rounded-lg bg-black text-white px-5 sm:px-6 py-2 sm:py-2.5 text-sm font-semibold hover:bg-gray-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {submitting ? "Posting..." : "Post Comment"}
         </button>

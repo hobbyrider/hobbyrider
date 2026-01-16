@@ -130,10 +130,10 @@ export function EditProfileForm({ user }: EditProfileFormProps) {
             <img
               src={profileImagePreview}
               alt="Profile preview"
-              className="h-32 w-32 rounded-full object-cover border-2 border-gray-200"
+              className="h-24 w-24 sm:h-32 sm:w-32 rounded-full object-cover border-2 border-gray-200"
             />
           ) : (
-            <div className="flex h-32 w-32 items-center justify-center rounded-full bg-gray-200 text-4xl font-bold text-gray-700 border-2 border-gray-300">
+            <div className="flex h-24 w-24 sm:h-32 sm:w-32 items-center justify-center rounded-full bg-gray-200 text-2xl sm:text-4xl font-bold text-gray-700 border-2 border-gray-300">
               {(formData.name || formData.username || user.email || "?")[0].toUpperCase()}
             </div>
           )}

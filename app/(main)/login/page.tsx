@@ -39,18 +39,18 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="px-6 py-12">
+    <main className="px-4 py-8 sm:px-6 sm:py-12">
       <div className="mx-auto max-w-md">
         <Link
           href="/"
-          className="text-sm text-gray-600 hover:text-black mb-6 inline-block"
+          className="text-sm text-gray-600 hover:text-black mb-4 sm:mb-6 inline-block"
         >
           ← Back to home
         </Link>
 
-        <div className="rounded-xl border p-8">
-          <h1 className="text-3xl font-bold mb-2">Login</h1>
-          <p className="text-gray-600 mb-6">
+        <div className="rounded-xl border p-6 sm:p-8">
+          <h1 className="text-2xl sm:text-3xl font-bold mb-2">Login</h1>
+          <p className="text-sm sm:text-base text-gray-600 mb-6">
             Sign in to your account to submit products and comment
           </p>
 

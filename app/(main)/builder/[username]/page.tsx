@@ -43,23 +43,23 @@ export default async function BuilderPage({
   const displayName = user?.name || user?.username || username
 
   return (
-    <main className="px-6 py-12">
+    <main className="px-4 py-8 sm:px-6 sm:py-12">
       <div className="mx-auto max-w-3xl">
         <Link
           href="/"
-          className="text-sm text-gray-600 hover:text-black mb-6 inline-block"
+          className="text-sm text-gray-600 hover:text-black mb-4 sm:mb-6 inline-block"
         >
           ← Back to home
         </Link>
 
-        <header className="mb-8">
-          <h1 className="text-4xl font-bold">
+        <header className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-4xl font-bold">
             {user ? displayName : `@${username}`}
           </h1>
           {user?.username && (
-            <p className="mt-1 text-gray-600">@{user.username}</p>
+            <p className="mt-1 text-sm sm:text-base text-gray-600">@{user.username}</p>
           )}
-          <div className="mt-4 flex gap-6 text-sm text-gray-600">
+          <div className="mt-4 flex gap-4 sm:gap-6 text-sm text-gray-600">
             <div>
               <span className="font-semibold text-black">{totalProducts}</span>{" "}
               {totalProducts === 1 ? "product" : "products"}
@@ -72,33 +72,33 @@ export default async function BuilderPage({
         </header>
 
         <section>
-          <h2 className="text-xl font-semibold mb-4">Products</h2>
+          <h2 className="text-lg sm:text-xl font-semibold mb-4">Products</h2>
 
           <ul className="space-y-3">
             {products.map((product) => (
               <li
                 key={product.id}
-                className="rounded-xl border p-4 hover:bg-gray-50"
+                className="rounded-xl border p-3 sm:p-4 hover:bg-gray-50"
               >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex gap-4 flex-1">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
+                  <div className="flex gap-3 sm:gap-4 flex-1">
                     {product.thumbnail && (
-                      <div className="h-16 w-16 rounded-lg overflow-hidden border flex-shrink-0 relative">
+                      <div className="h-12 w-12 sm:h-16 sm:w-16 rounded-lg overflow-hidden border flex-shrink-0 relative">
                         <Image
                           src={product.thumbnail}
                           alt={product.name}
                           fill
                           className="object-cover"
-                          sizes="64px"
+                          sizes="(max-width: 640px) 48px, 64px"
                           loading="lazy"
                         />
                       </div>
                     )}
-                    <div>
-                      <div className="flex items-center gap-2">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <Link
                           href={`/product/${product.id}`}
-                          className="font-semibold underline underline-offset-4 inline-flex items-center gap-1 hover:text-gray-600"
+                          className="font-semibold text-sm sm:text-base underline underline-offset-4 inline-flex items-center gap-1 hover:text-gray-600"
                         >
                           {product.name}
                         </Link>
@@ -106,12 +106,12 @@ export default async function BuilderPage({
                           {getRelativeTime(product.createdAt)}
                         </span>
                       </div>
-                      <p className="mt-1 text-gray-600">{product.tagline}</p>
+                      <p className="mt-1 text-sm sm:text-base text-gray-600 line-clamp-2">{product.tagline}</p>
                       <a
                         href={product.url}
                         target="_blank"
                         rel="noreferrer"
-                        className="mt-1 text-xs text-gray-500 hover:text-gray-700 inline-flex items-center gap-1"
+                        className="mt-1 text-xs text-gray-500 hover:text-gray-700 inline-flex items-center gap-1 break-all"
                       >
                         {product.url}
                         <svg
@@ -135,11 +135,11 @@ export default async function BuilderPage({
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 rounded-lg border px-3 py-1">
+                  <div className="flex items-center gap-2 rounded-lg border px-2 sm:px-3 py-1 flex-shrink-0">
                     <span className="text-sm font-semibold">
                       {product.upvotes}
                     </span>
-                    <span className="text-sm text-gray-600">upvotes</span>
+                    <span className="text-xs sm:text-sm text-gray-600">upvotes</span>
                   </div>
                 </div>
               </li>

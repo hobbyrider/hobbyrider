@@ -34,9 +34,9 @@ export default async function EditProfilePage({
   }
 
   return (
-    <main className="px-6 py-10">
+    <main className="px-4 py-8 sm:px-6 sm:py-10">
       <div className="mx-auto max-w-3xl">
-        <h1 className="text-3xl font-semibold text-gray-900 mb-8">Edit Profile</h1>
+        <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900 mb-6 sm:mb-8">Edit Profile</h1>
         <EditProfileForm user={user} />
       </div>
     </main>

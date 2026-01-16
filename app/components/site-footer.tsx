@@ -3,9 +3,9 @@ import { Text, Muted, Caption, SmallHeading } from "@/app/components/typography"
 
 export function SiteFooter() {
   return (
-    <footer className="mt-20 border-t border-gray-200 bg-white">
-      <div className="mx-auto max-w-5xl px-6 py-12">
-        <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
+    <footer className="mt-12 sm:mt-20 border-t border-gray-200 bg-white">
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 py-8 sm:py-12">
+        <div className="flex flex-col gap-6 sm:gap-8 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <Text className="mb-2 text-gray-600">
               © {new Date().getFullYear()}{" "}
@@ -24,7 +24,7 @@ export function SiteFooter() {
             </Caption>
           </div>
 
-          <nav className="flex flex-col gap-4 sm:flex-row sm:gap-8" aria-label="Footer navigation">
+          <nav className="grid grid-cols-2 sm:flex sm:flex-row gap-4 sm:gap-6 lg:gap-8" aria-label="Footer navigation">
             <div>
               <SmallHeading className="mb-2 text-gray-500">
                 Navigation

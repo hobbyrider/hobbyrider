@@ -80,21 +80,21 @@ export default async function CategoryPage({
   }
 
   return (
-    <main className="px-6 py-10">
+    <main className="px-4 py-8 sm:px-6 sm:py-10">
       <div className="mx-auto max-w-5xl">
         <Link
           href="/"
-          className="mb-6 inline-block text-sm font-medium text-gray-600 transition-colors hover:text-gray-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded"
+          className="mb-4 sm:mb-6 inline-block text-sm font-medium text-gray-600 transition-colors hover:text-gray-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded"
         >
           ← Back to home
         </Link>
 
-        <header className="mb-10">
-          <h1 className="mb-2 text-4xl font-semibold tracking-tight text-gray-900">
+        <header className="mb-8 sm:mb-10">
+          <h1 className="mb-2 text-2xl sm:text-4xl font-semibold tracking-tight text-gray-900">
             {category.name}
           </h1>
           {category.description && (
-            <p className="mb-4 text-lg leading-relaxed text-gray-600">
+            <p className="mb-4 text-base sm:text-lg leading-relaxed text-gray-600">
               {category.description}
             </p>
           )}

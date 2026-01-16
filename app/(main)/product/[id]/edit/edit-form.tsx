@@ -186,7 +186,7 @@ export default function EditProductForm({
   }
 
   return (
-    <main className="px-6 py-12">
+    <main className="px-4 py-8 sm:px-6 sm:py-12">
       <div className="mx-auto max-w-xl">
         <Link
           href={`/product/${product.id}`}

@@ -255,39 +255,39 @@ export default async function ProductPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-      <main className="px-6 py-10">
+      <main className="px-4 py-6 sm:px-6 sm:py-10">
       <div className="mx-auto max-w-7xl">
         <Link
           href="/"
-          className="mb-6 inline-block text-sm font-medium text-gray-600 transition-colors hover:text-gray-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded"
+          className="mb-4 sm:mb-6 inline-block text-sm font-medium text-gray-600 transition-colors hover:text-gray-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded"
         >
           ← Back to home
         </Link>
 
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_360px]">
+        <div className="grid grid-cols-1 gap-6 lg:gap-8 lg:grid-cols-[1fr_360px]">
           {/* Main Content */}
           <div className="space-y-10">
             {/* Product Header */}
             <div>
-              <div className="mb-6 flex items-start gap-5">
+              <div className="mb-4 sm:mb-6 flex items-start gap-3 sm:gap-5">
                 {product.thumbnail && (
-                  <div className="h-24 w-24 flex-shrink-0 rounded-xl border border-gray-200 overflow-hidden relative">
+                  <div className="h-16 w-16 sm:h-24 sm:w-24 flex-shrink-0 rounded-xl border border-gray-200 overflow-hidden relative">
                     <Image
                       src={product.thumbnail}
                       alt={product.name}
                       fill
                       className="object-cover"
-                      sizes="96px"
+                      sizes="(max-width: 640px) 64px, 96px"
                       priority
                       unoptimized={process.env.NODE_ENV === 'development'}
                     />
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <PageTitle className="mb-2 text-gray-900">
+                  <PageTitle className="mb-2 text-2xl sm:text-4xl text-gray-900">
                     {product.name}
                   </PageTitle>
-                  <Muted className="mb-4 text-xl">
+                  <Muted className="mb-4 text-base sm:text-xl">
                     {product.tagline}
                   </Muted>
                   
@@ -307,12 +307,12 @@ export default async function ProductPage({
                 </div>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                 <a
                   href={product.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2 rounded-lg border-2 border-gray-300 bg-white px-5 py-2.5 font-semibold text-gray-900 transition-all hover:border-gray-900 hover:bg-gray-900 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
+                  className="inline-flex items-center justify-center gap-2 rounded-lg border-2 border-gray-300 bg-white px-4 sm:px-5 py-2.5 text-sm sm:text-base font-semibold text-gray-900 transition-all hover:border-gray-900 hover:bg-gray-900 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
                 >
                   Visit Website
                   <svg
@@ -340,14 +340,14 @@ export default async function ProductPage({
 
             {/* Media Gallery */}
             {product.images && product.images.length > 0 && (
-              <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
+              <div className="overflow-hidden rounded-xl sm:rounded-2xl border border-gray-200 bg-white">
                 <ProductGallery images={product.images} />
               </div>
             )}
 
             {/* Description & Demo */}
             {(product.description || product.embedHtml) && (
-              <div className="space-y-10">
+              <div className="space-y-6 sm:space-y-10">
                 {product.description && (
                   <section>
                     <SectionTitle className="mb-4 text-gray-900">Overview</SectionTitle>
@@ -373,8 +373,8 @@ export default async function ProductPage({
             )}
 
             {/* Comments Section */}
-            <section id="comments" className="border-t border-gray-200 pt-10">
-              <SectionTitle className="mb-6 text-gray-900">
+            <section id="comments" className="border-t border-gray-200 pt-6 sm:pt-10">
+              <SectionTitle className="mb-4 sm:mb-6 text-xl sm:text-2xl text-gray-900">
                 Comments ({comments.length})
               </SectionTitle>
 
@@ -382,8 +382,8 @@ export default async function ProductPage({
 
               <div className="mt-8 space-y-6">
                 {comments.length === 0 ? (
-                  <div className="rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 py-12 text-center">
-                    <Text className="text-gray-600">
+                  <div className="rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 py-8 sm:py-12 text-center">
+                    <Text className="text-sm sm:text-base text-gray-600">
                       No comments yet. Be the first to comment!
                     </Text>
                   </div>
@@ -401,8 +401,8 @@ export default async function ProductPage({
           </div>
 
           {/* Sidebar */}
-          <aside className="space-y-6">
-            <div className="sticky top-24 space-y-6">
+          <aside className="space-y-4 sm:space-y-6">
+            <div className="sticky top-20 sm:top-24 space-y-4 sm:space-y-6">
               {/* Actions Section */}
               <SidebarBlock>
                 <ProductActions

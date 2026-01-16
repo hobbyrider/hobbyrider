@@ -8,13 +8,13 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <main className="px-6 py-10">
+    <main className="px-4 py-8 sm:px-6 sm:py-10">
       <div className="mx-auto max-w-3xl">
-        <header className="mb-8">
-          <PageTitle className="text-3xl text-gray-900">
+        <header className="mb-6 sm:mb-8">
+          <PageTitle className="text-2xl sm:text-3xl text-gray-900">
             Terms of Service
           </PageTitle>
-          <Muted className="mt-2">
+          <Muted className="mt-2 text-sm sm:text-base">
             Last updated: {new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
           </Muted>
         </header>
@@ -37,7 +37,7 @@ export default function TermsPage() {
           <section className="mb-8">
             <SectionTitle className="text-xl text-gray-900 mb-4">3. User Accounts</SectionTitle>
             
-            <CardTitle className="text-lg font-medium text-gray-800 mb-3">3.1 Registration</CardTitle>
+            <CardTitle className="text-base sm:text-lg font-medium text-gray-800 mb-2 sm:mb-3">3.1 Registration</CardTitle>
             <Text className="text-gray-700 mb-4">
               To use certain features of the Service, you must register for an account. You agree to:
             </Text>

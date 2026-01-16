@@ -8,20 +8,20 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <main className="px-6 py-10">
+    <main className="px-4 py-8 sm:px-6 sm:py-10">
       <div className="mx-auto max-w-3xl">
-        <header className="mb-8">
-          <PageTitle className="text-3xl text-gray-900">
+        <header className="mb-6 sm:mb-8">
+          <PageTitle className="text-2xl sm:text-3xl text-gray-900">
             Privacy Policy
           </PageTitle>
-          <Muted className="mt-2">
+          <Muted className="mt-2 text-sm sm:text-base">
             Last updated: {new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
           </Muted>
         </header>
 
         <div className="prose prose-gray max-w-none">
-          <section className="mb-8">
-            <SectionTitle className="text-xl text-gray-900 mb-4">1. Introduction</SectionTitle>
+          <section className="mb-6 sm:mb-8">
+            <SectionTitle className="text-lg sm:text-xl text-gray-900 mb-3 sm:mb-4">1. Introduction</SectionTitle>
             <Text className="text-gray-700 mb-4">
               Welcome to hobbyrider ("we," "our," or "us"). We are committed to protecting your privacy and ensuring you have a positive experience on our platform. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our service.
             </Text>
@@ -30,7 +30,7 @@ export default function PrivacyPage() {
           <section className="mb-8">
             <SectionTitle className="text-xl text-gray-900 mb-4">2. Information We Collect</SectionTitle>
             
-            <CardTitle className="text-lg font-medium text-gray-800 mb-3">2.1 Information You Provide</CardTitle>
+            <CardTitle className="text-base sm:text-lg font-medium text-gray-800 mb-2 sm:mb-3">2.1 Information You Provide</CardTitle>
             <ul className="list-disc list-inside space-y-2 mb-4">
               <li className="text-gray-700"><strong>Account Information:</strong> When you register, we collect your name, email address, username, and password (hashed).</li>
               <li className="text-gray-700"><strong>Profile Information:</strong> You may choose to provide additional information such as a profile picture, bio, headline, website, LinkedIn, and Twitter/X links.</li>

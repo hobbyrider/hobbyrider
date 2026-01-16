@@ -18,27 +18,27 @@ export default async function CategoriesPage() {
   })
 
   return (
-    <main className="px-6 py-10">
+    <main className="px-4 py-8 sm:px-6 sm:py-10">
       <div className="mx-auto max-w-6xl">
         <Link
           href="/"
-          className="mb-6 inline-block text-sm font-medium text-gray-600 transition-colors hover:text-gray-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded"
+          className="mb-4 sm:mb-6 inline-block text-sm font-medium text-gray-600 transition-colors hover:text-gray-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded"
         >
           ← Back to home
         </Link>
 
-        <header className="mb-10">
-          <PageTitle className="mb-2 text-gray-900">
+        <header className="mb-8 sm:mb-10">
+          <PageTitle className="mb-2 text-2xl sm:text-4xl text-gray-900">
             Product Categories
           </PageTitle>
-          <Muted className="text-lg">
+          <Muted className="text-base sm:text-lg">
             Browse products by category.
           </Muted>
         </header>
 
-        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {categories.map((c) => (
-            <li key={c.id} className="group rounded-xl border border-gray-200 bg-white p-5 transition-all hover:border-gray-300 hover:bg-gray-50 hover:shadow-sm">
+            <li key={c.id} className="group rounded-xl border border-gray-200 bg-white p-4 sm:p-5 transition-all hover:border-gray-300 hover:bg-gray-50 hover:shadow-sm">
               <Link href={`/?category=${c.slug}`} className="block">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">

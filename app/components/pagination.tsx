@@ -62,18 +62,18 @@ export function Pagination({
   }
 
   return (
-    <nav className="flex items-center justify-center gap-2" aria-label="Pagination">
+    <nav className="flex items-center justify-center gap-1 sm:gap-2 flex-wrap" aria-label="Pagination">
       {/* Previous Button */}
       {currentPage > 1 ? (
         <Link
           href={getPageUrl(currentPage - 1)}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3.5 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:border-gray-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
+          className="inline-flex items-center gap-1 sm:gap-1.5 rounded-lg border border-gray-300 bg-white px-2.5 sm:px-3.5 py-2 text-xs sm:text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:border-gray-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 20 20"
             fill="currentColor"
-            className="h-4 w-4"
+            className="h-3 w-3 sm:h-4 sm:w-4"
             aria-hidden="true"
           >
             <path
@@ -82,15 +82,15 @@ export function Pagination({
               clipRule="evenodd"
             />
           </svg>
-          Previous
+          <span className="hidden sm:inline">Previous</span>
         </Link>
       ) : (
-        <span className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-gray-50 px-3.5 py-2 text-sm font-medium text-gray-400 cursor-not-allowed">
+        <span className="inline-flex items-center gap-1 sm:gap-1.5 rounded-lg border border-gray-200 bg-gray-50 px-2.5 sm:px-3.5 py-2 text-xs sm:text-sm font-medium text-gray-400 cursor-not-allowed">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 20 20"
             fill="currentColor"
-            className="h-4 w-4"
+            className="h-3 w-3 sm:h-4 sm:w-4"
             aria-hidden="true"
           >
             <path
@@ -99,7 +99,7 @@ export function Pagination({
               clipRule="evenodd"
             />
           </svg>
-          Previous
+          <span className="hidden sm:inline">Previous</span>
         </span>
       )}
 
@@ -125,7 +125,7 @@ export function Pagination({
             <Link
               key={pageNum}
               href={getPageUrl(pageNum)}
-              className={`inline-flex items-center justify-center min-w-[2.5rem] px-3 py-2 rounded-lg border text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 ${
+              className={`inline-flex items-center justify-center min-w-[2rem] sm:min-w-[2.5rem] px-2 sm:px-3 py-2 rounded-lg border text-xs sm:text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 ${
                 isActive
                   ? "bg-gray-900 text-white border-gray-900"
                   : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50 hover:border-gray-400"
@@ -143,14 +143,14 @@ export function Pagination({
       {currentPage < totalPages ? (
         <Link
           href={getPageUrl(currentPage + 1)}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3.5 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:border-gray-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
+          className="inline-flex items-center gap-1 sm:gap-1.5 rounded-lg border border-gray-300 bg-white px-2.5 sm:px-3.5 py-2 text-xs sm:text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:border-gray-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
         >
-          Next
+          <span className="hidden sm:inline">Next</span>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 20 20"
             fill="currentColor"
-            className="h-4 w-4"
+            className="h-3 w-3 sm:h-4 sm:w-4"
             aria-hidden="true"
           >
             <path
@@ -161,13 +161,13 @@ export function Pagination({
           </svg>
         </Link>
       ) : (
-        <span className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-gray-50 px-3.5 py-2 text-sm font-medium text-gray-400 cursor-not-allowed">
-          Next
+        <span className="inline-flex items-center gap-1 sm:gap-1.5 rounded-lg border border-gray-200 bg-gray-50 px-2.5 sm:px-3.5 py-2 text-xs sm:text-sm font-medium text-gray-400 cursor-not-allowed">
+          <span className="hidden sm:inline">Next</span>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 20 20"
             fill="currentColor"
-            className="h-4 w-4"
+            className="h-3 w-3 sm:h-4 sm:w-4"
             aria-hidden="true"
           >
             <path
@@ -180,7 +180,7 @@ export function Pagination({
       )}
 
       {/* Page Info */}
-      <div className="ml-4 text-sm text-gray-600">
+      <div className="ml-2 sm:ml-4 text-xs sm:text-sm text-gray-600 whitespace-nowrap">
         Page <span className="font-medium text-gray-900">{currentPage}</span> of{" "}
         <span className="font-medium text-gray-900">{totalPages}</span>
       </div>

@@ -161,16 +161,16 @@ export default async function Home({
   }
 
   return (
-    <main className="px-6 py-10">
+    <main className="px-4 py-6 sm:px-6 sm:py-10">
       <div className="mx-auto max-w-5xl">
         {/* Page Header */}
-        <header className="mb-8">
-          <PageTitle className="text-3xl text-gray-900">
+        <header className="mb-6 sm:mb-8">
+          <PageTitle className="text-2xl sm:text-3xl text-gray-900">
             {categorySlug 
               ? `Top in ${categorySlug.replace(/-/g, " ")}` 
               : "Discover software worth riding"}
           </PageTitle>
-          <Muted className="mt-2">
+          <Muted className="mt-2 text-sm sm:text-base">
             Curated, community-ranked collections for builders.
           </Muted>
         </header>

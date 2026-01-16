@@ -36,7 +36,7 @@ export function SearchTrigger() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-3 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-left hover:border-gray-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 transition-colors"
+        className="inline-flex items-center gap-2 sm:gap-3 rounded-lg border border-gray-200 bg-white px-3 sm:px-4 py-2 sm:py-2.5 text-left hover:border-gray-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 transition-colors"
         aria-haspopup="dialog"
         aria-expanded={open}
       >
@@ -44,7 +44,7 @@ export function SearchTrigger() {
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 20 20"
           fill="currentColor"
-          className="h-5 w-5 flex-shrink-0 text-gray-400"
+          className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0 text-gray-400"
           aria-hidden="true"
         >
           <path
@@ -53,7 +53,7 @@ export function SearchTrigger() {
             clipRule="evenodd"
           />
         </svg>
-        <span className="text-base text-gray-400">Search products...</span>
+        <span className="text-sm sm:text-base text-gray-400 hidden sm:inline">Search products...</span>
       </button>
 
       <SearchModal open={open} onClose={() => setOpen(false)} />

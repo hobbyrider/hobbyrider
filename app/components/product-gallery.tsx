@@ -56,14 +56,14 @@ export function ProductGallery({ images }: { images: ProductImage[] }) {
                     : selectedIndex - 1
                 )
               }
-              className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-sm text-black rounded-full p-3 shadow-lg hover:bg-white transition border border-gray-200"
+              className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-sm text-black rounded-full p-2 sm:p-3 shadow-lg hover:bg-white transition border border-gray-200"
               aria-label="Previous image"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 20 20"
                 fill="currentColor"
-                className="w-5 h-5"
+                className="w-4 h-4 sm:w-5 sm:h-5"
               >
                 <path
                   fillRule="evenodd"
@@ -101,7 +101,7 @@ export function ProductGallery({ images }: { images: ProductImage[] }) {
 
         {/* Image counter */}
         {sortedImages.length > 1 && (
-          <div className="absolute bottom-4 right-4 bg-black/70 backdrop-blur-sm text-white text-xs font-medium px-3 py-1.5 rounded-full">
+          <div className="absolute bottom-2 sm:bottom-4 right-2 sm:right-4 bg-black/70 backdrop-blur-sm text-white text-xs font-medium px-2 sm:px-3 py-1 sm:py-1.5 rounded-full">
             {selectedIndex + 1} / {sortedImages.length}
           </div>
         )}
@@ -109,15 +109,15 @@ export function ProductGallery({ images }: { images: ProductImage[] }) {
 
       {/* Thumbnail strip */}
       {sortedImages.length > 1 && (
-        <div className="px-4 py-4 bg-white border-t">
-          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+        <div className="px-2 sm:px-4 py-3 sm:py-4 bg-white border-t">
+          <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 scrollbar-hide">
             {sortedImages.map((image, index) => (
               <button
                 key={image.id}
                 onClick={() => setSelectedIndex(index)}
-                className={`flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden border-2 transition-all relative ${
+                className={`flex-shrink-0 w-16 h-16 sm:w-24 sm:h-24 rounded-lg overflow-hidden border-2 transition-all relative ${
                   selectedIndex === index
-                    ? "border-black ring-2 ring-black ring-offset-2"
+                    ? "border-black ring-2 ring-black ring-offset-1 sm:ring-offset-2"
                     : "border-gray-200 hover:border-gray-400 opacity-60 hover:opacity-100"
                 }`}
               >
