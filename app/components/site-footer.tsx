@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { Text, Muted, Caption, SmallHeading } from "@/app/components/typography"
 
 export function SiteFooter() {
   return (
@@ -6,28 +7,28 @@ export function SiteFooter() {
       <div className="mx-auto max-w-5xl px-6 py-12">
         <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <p className="mb-2 text-base text-gray-600">
+            <Text className="mb-2 text-gray-600">
               © {new Date().getFullYear()}{" "}
               <span className="font-semibold text-gray-900">hobbyrider</span>
-            </p>
-            <p className="mb-2 text-sm text-gray-500">
+            </Text>
+            <Muted className="mb-2 text-sm">
               Built by builders, for builders. Trusted by professionals across industries.
-            </p>
-            <p className="text-xs text-gray-400">
+            </Muted>
+            <Caption className="text-gray-400">
               <Link
                 href="/admin/moderation"
                 className="transition-colors hover:text-gray-600 hover:underline underline-offset-2"
               >
                 Admin-only
               </Link>
-            </p>
+            </Caption>
           </div>
 
           <nav className="flex flex-col gap-4 sm:flex-row sm:gap-8" aria-label="Footer navigation">
             <div>
-              <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-500">
+              <SmallHeading className="mb-2 text-gray-500">
                 Navigation
-              </h3>
+              </SmallHeading>
               <ul className="flex flex-col gap-2 text-base">
                 <li>
                   <Link
@@ -65,9 +66,9 @@ export function SiteFooter() {
             </div>
 
             <div>
-              <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-500">
+              <SmallHeading className="mb-2 text-gray-500">
                 Product
-              </h3>
+              </SmallHeading>
               <ul className="flex flex-col gap-2 text-base">
                 <li>
                   <Link
@@ -90,9 +91,9 @@ export function SiteFooter() {
             </div>
 
             <div>
-              <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-500">
+              <SmallHeading className="mb-2 text-gray-500">
                 Connect
-              </h3>
+              </SmallHeading>
               <ul className="flex flex-col gap-2 text-base">
                 <li>
                   <a
@@ -116,9 +117,9 @@ export function SiteFooter() {
             </div>
 
             <div>
-              <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-500">
+              <SmallHeading className="mb-2 text-gray-500">
                 Legal
-              </h3>
+              </SmallHeading>
               <ul className="flex flex-col gap-2 text-base">
                 <li>
                   <Link

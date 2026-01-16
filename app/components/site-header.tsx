@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { UserMenu } from "@/app/components/user-menu"
 import { SearchTrigger } from "@/app/components/search-trigger"
+import { PageTitle, NavLinkText } from "@/app/components/typography"
 
 export function SiteHeader() {
   return (
@@ -10,9 +11,11 @@ export function SiteHeader() {
         <div className="flex items-center gap-6">
           <Link 
             href="/" 
-            className="text-xl font-semibold tracking-tight text-gray-900 hover:text-gray-700 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded"
+            className="hover:text-gray-700 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded"
           >
-            hobbyrider
+            <PageTitle as="span" className="text-xl text-gray-900">
+              hobbyrider
+            </PageTitle>
           </Link>
 
           {/* Desktop navigation */}
@@ -20,9 +23,9 @@ export function SiteHeader() {
             <SearchTrigger />
             <Link
               href="/submit"
-              className="rounded-lg px-3 py-1.5 text-base font-medium text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-700"
+              className="rounded-lg px-3 py-1.5 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-700"
             >
-              Submit
+              <NavLinkText className="text-base text-gray-700">Submit</NavLinkText>
             </Link>
           </nav>
         </div>
@@ -34,9 +37,9 @@ export function SiteHeader() {
             <SearchTrigger />
             <Link
               href="/submit"
-              className="rounded-lg border border-gray-300 px-3 py-1.5 text-base font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:border-gray-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-700"
+              className="rounded-lg border border-gray-300 px-3 py-1.5 transition-colors hover:bg-gray-50 hover:border-gray-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-700"
             >
-              Submit
+              <NavLinkText className="text-base text-gray-700">Submit</NavLinkText>
             </Link>
           </div>
           <UserMenu />

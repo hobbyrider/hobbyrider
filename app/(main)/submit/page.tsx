@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
 import Link from "next/link"
 import toast from "react-hot-toast"
+import { PageTitle, Muted, Text, SmallHeading, LabelText, Small as SmallText, Caption } from "@/app/components/typography"
 
 type Category = {
   id: string
@@ -39,7 +40,7 @@ export default function SubmitPage() {
     return (
       <main className="px-6 py-10">
         <div className="mx-auto max-w-2xl">
-          <p className="text-gray-600">Loading...</p>
+          <Muted>Loading...</Muted>
         </div>
       </main>
     )
@@ -50,17 +51,17 @@ export default function SubmitPage() {
       <main className="px-6 py-10">
         <div className="mx-auto max-w-2xl">
           <header className="mb-10">
-            <h1 className="mb-2 text-4xl font-semibold tracking-tight text-gray-900">
+            <PageTitle className="mb-2 text-gray-900">
               Submit Software
-            </h1>
-            <p className="text-lg text-gray-600">
+            </PageTitle>
+            <Muted className="text-lg">
               Share a tool you think is worth riding 🤖
-            </p>
+            </Muted>
           </header>
           <div className="rounded-xl border border-gray-200 bg-white p-12 text-center">
-            <p className="mb-6 text-base text-gray-600">
+            <Text className="mb-6 text-gray-600">
               You must be logged in to submit a product
-            </p>
+            </Text>
             <div className="flex gap-3 justify-center">
               <Link
                 href="/login"
@@ -183,14 +184,14 @@ export default function SubmitPage() {
   return (
     <main className="px-6 py-12">
       <div className="mx-auto max-w-xl">
-        <h1 className="text-3xl font-bold">submit software</h1>
-        <p className="mt-2 text-gray-600">
+        <PageTitle className="text-3xl text-gray-900">submit software</PageTitle>
+        <Muted className="mt-2">
           Share a tool you think is worth riding 🤖
-        </p>
+        </Muted>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-4">
           <div>
-            <label className="text-sm font-medium">Name</label>
+            <LabelText>Name</LabelText>
             <input
               name="name"
               className="mt-1 w-full rounded-lg border px-3 py-2"
@@ -200,7 +201,7 @@ export default function SubmitPage() {
           </div>
 
           <div>
-            <label className="text-sm font-medium">Tagline</label>
+            <LabelText>Tagline</LabelText>
             <input
               name="tagline"
               className="mt-1 w-full rounded-lg border px-3 py-2"
@@ -210,20 +211,20 @@ export default function SubmitPage() {
           </div>
 
           <div>
-            <label className="text-sm font-medium">Description (optional)</label>
+            <LabelText>Description (optional)</LabelText>
             <textarea
               name="description"
               className="mt-1 w-full rounded-lg border px-3 py-2"
               placeholder="Write a detailed description of what it does, who it’s for, and why it’s different…"
               rows={5}
             />
-            <p className="mt-1 text-xs text-gray-500">
+            <Caption className="mt-1">
               This will be shown on the product page.
-            </p>
+            </Caption>
           </div>
 
           <div>
-            <label className="text-sm font-medium">URL</label>
+            <LabelText>URL</LabelText>
             <input
               name="url"
               type="url"
@@ -234,24 +235,24 @@ export default function SubmitPage() {
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-gray-900">
+            <LabelText className="mb-2 block text-gray-900">
               Embed <span className="text-xs font-normal text-gray-500">(optional)</span>
-            </label>
+            </LabelText>
             <textarea
               name="embedHtml"
               className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 font-mono text-xs text-gray-900 placeholder:text-gray-400 focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-0 transition-colors resize-y"
               placeholder='<div style="position: relative; aspect-ratio: 1024/640;"><iframe src="https://..." title="..." frameborder="0" loading="lazy" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;"></iframe></div>'
               rows={5}
             />
-            <p className="mt-1.5 text-xs text-gray-500">
+            <Caption className="mt-1.5">
               Paste an iframe embed snippet (Loom/YouTube/Guideless, etc.).
-            </p>
+            </Caption>
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-gray-900">
+            <LabelText className="mb-2 block text-gray-900">
               Thumbnail <span className="text-xs font-normal text-gray-500">(optional)</span>
-            </label>
+            </LabelText>
             <input
               type="file"
               accept="image/*"
@@ -260,7 +261,7 @@ export default function SubmitPage() {
               className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 file:mr-4 file:rounded-lg file:border-0 file:bg-gray-100 file:px-4 file:py-2 file:text-sm file:font-medium file:text-gray-700 hover:file:bg-gray-200 focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-0 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             />
             {uploading && (
-              <p className="mt-1.5 text-xs text-gray-500">Uploading...</p>
+              <Caption className="mt-1.5">Uploading...</Caption>
             )}
             {thumbnailUrl && (
               <div className="mt-3">
@@ -272,15 +273,15 @@ export default function SubmitPage() {
                 <input type="hidden" name="thumbnail" value={thumbnailUrl} />
               </div>
             )}
-            <p className="mt-1.5 text-xs text-gray-500">
+            <Caption className="mt-1.5">
               Square image recommended (240x240px). Max 2MB.
-            </p>
+            </Caption>
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-gray-900">
+            <LabelText className="mb-2 block text-gray-900">
               Screenshots <span className="text-xs font-normal text-gray-500">(optional)</span>
-            </label>
+            </LabelText>
             <input
               type="file"
               accept="image/*"
@@ -290,7 +291,7 @@ export default function SubmitPage() {
               className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 file:mr-4 file:rounded-lg file:border-0 file:bg-gray-100 file:px-4 file:py-2 file:text-sm file:font-medium file:text-gray-700 hover:file:bg-gray-200 focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-0 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             />
             {uploadingGallery && (
-              <p className="mt-1.5 text-xs text-gray-500">Uploading...</p>
+              <Caption className="mt-1.5">Uploading...</Caption>
             )}
             {galleryUrls.length > 0 && (
               <div className="mt-3 grid grid-cols-3 gap-3">
@@ -315,20 +316,20 @@ export default function SubmitPage() {
                 ))}
               </div>
             )}
-            <p className="mt-1.5 text-xs text-gray-500">
+            <Caption className="mt-1.5">
               Upload multiple screenshots to showcase your product. Max 2MB per image.
-            </p>
+            </Caption>
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-gray-900">
+            <LabelText className="mb-2 block text-gray-900">
               Categories <span className="text-xs font-normal text-gray-500">(optional)</span>
-            </label>
+            </LabelText>
             <div className="max-h-48 space-y-1.5 overflow-y-auto rounded-lg border border-gray-300 bg-white p-3">
               {categories.length === 0 ? (
-                <p className="text-xs text-gray-500">
+                <Caption>
                   Loading categories... If empty, visit /api/seed-categories to create them.
-                </p>
+                </Caption>
               ) : (
                 categories.map((category) => (
                   <label
@@ -356,9 +357,9 @@ export default function SubmitPage() {
                 ))
               )}
             </div>
-            <p className="mt-1.5 text-xs text-gray-500">
+            <Caption className="mt-1.5">
               Select one or more categories (optional)
-            </p>
+            </Caption>
           </div>
 
           <div className="pt-4">

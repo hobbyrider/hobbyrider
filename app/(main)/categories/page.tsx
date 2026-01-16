@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
+import { PageTitle, Muted, CardTitle, Small } from "@/app/components/typography"
 
 export const dynamic = "force-dynamic"
 export const revalidate = 600 // Revalidate categories list every 10 minutes
@@ -27,12 +28,12 @@ export default async function CategoriesPage() {
         </Link>
 
         <header className="mb-10">
-          <h1 className="mb-2 text-4xl font-semibold tracking-tight text-gray-900">
+          <PageTitle className="mb-2 text-gray-900">
             Product Categories
-          </h1>
-          <p className="text-lg text-gray-600">
+          </PageTitle>
+          <Muted className="text-lg">
             Browse products by category.
-          </p>
+          </Muted>
         </header>
 
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -42,9 +43,9 @@ export default async function CategoriesPage() {
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="mb-1.5 flex items-center gap-2">
-                      <h3 className="text-lg font-semibold text-gray-900 group-hover:text-gray-700">
+                      <CardTitle className="text-gray-900 group-hover:text-gray-700">
                         {c.name}
-                      </h3>
+                      </CardTitle>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 20 20"
@@ -60,9 +61,9 @@ export default async function CategoriesPage() {
                       </svg>
                     </div>
                     {c.description && (
-                      <p className="text-sm leading-relaxed text-gray-600 line-clamp-2">
+                      <Small className="text-gray-600 line-clamp-2">
                         {c.description}
-                      </p>
+                      </Small>
                     )}
                   </div>
                   <div className="flex-shrink-0 rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 text-sm font-semibold text-gray-900">

@@ -1,5 +1,14 @@
 import type { Metadata } from "next"
 import Link from "next/link"
+import {
+  PageTitle,
+  SectionTitle,
+  CardTitle,
+  Text,
+  Muted,
+  Small,
+  SmallHeading,
+} from "@/app/components/typography"
 
 export const metadata: Metadata = {
   title: "Pricing",
@@ -16,12 +25,12 @@ export default function PricingPage() {
       <div className="mx-auto max-w-4xl">
         {/* Header */}
         <header className="mb-12 text-center">
-          <h1 className="text-4xl font-semibold tracking-tight text-gray-900 md:text-5xl">
+          <PageTitle className="text-gray-900 md:text-5xl">
             Pricing
-          </h1>
-          <p className="mt-4 text-xl text-gray-600">
+          </PageTitle>
+          <Muted className="mt-4 text-xl">
             Simple, transparent pricing for makers
-          </p>
+          </Muted>
         </header>
 
         {/* Main Pricing Card */}
@@ -31,12 +40,12 @@ export default function PricingPage() {
               <div className="mb-4 inline-block rounded-full bg-green-50 px-4 py-1.5 text-sm font-medium text-green-700">
                 Free to Start
               </div>
-              <h2 className="text-3xl font-semibold text-gray-900">
+              <SectionTitle className="text-3xl text-gray-900">
                 List Your Software
-              </h2>
-              <p className="mt-2 text-lg text-gray-600">
+              </SectionTitle>
+              <Muted className="mt-2 text-lg">
                 Share your product with thousands of builders and professionals actively discovering new software solutions
-              </p>
+              </Muted>
             </div>
 
             <div className="mb-8 border-t border-gray-200 pt-8">
@@ -45,9 +54,9 @@ export default function PricingPage() {
                   <span className="text-5xl font-semibold text-gray-900">$0</span>
                   <span className="text-lg text-gray-600">to get started</span>
                 </div>
-                <p className="mt-2 text-sm text-gray-500">
+                <Small className="mt-2 text-gray-500">
                   No credit card required. No hidden fees.
-                </p>
+                </Small>
               </div>
 
               <ul className="space-y-4">
@@ -65,9 +74,9 @@ export default function PricingPage() {
                       d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  <span className="text-base text-gray-700">
+                  <Text className="text-gray-700">
                     <strong className="font-medium text-gray-900">Unlimited listings</strong> – Post as many products as you want
-                  </span>
+                  </Text>
                 </li>
                 <li className="flex items-start gap-3">
                   <svg
@@ -83,9 +92,9 @@ export default function PricingPage() {
                       d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  <span className="text-base text-gray-700">
+                  <Text className="text-gray-700">
                     <strong className="font-medium text-gray-900">Full product page</strong> – Complete control over your listing
-                  </span>
+                  </Text>
                 </li>
                 <li className="flex items-start gap-3">
                   <svg
@@ -101,9 +110,9 @@ export default function PricingPage() {
                       d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  <span className="text-base text-gray-700">
+                  <Text className="text-gray-700">
                     <strong className="font-medium text-gray-900">Community engagement</strong> – Get upvotes, comments, and feedback
-                  </span>
+                  </Text>
                 </li>
                 <li className="flex items-start gap-3">
                   <svg
@@ -119,9 +128,9 @@ export default function PricingPage() {
                       d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  <span className="text-base text-gray-700">
+                  <Text className="text-gray-700">
                     <strong className="font-medium text-gray-900">Analytics included</strong> – Track views, engagement, and more
-                  </span>
+                  </Text>
                 </li>
                 <li className="flex items-start gap-3">
                   <svg
@@ -137,9 +146,9 @@ export default function PricingPage() {
                       d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  <span className="text-base text-gray-700">
+                  <Text className="text-gray-700">
                     <strong className="font-medium text-gray-900">SEO optimized</strong> – Built-in search engine optimization
-                  </span>
+                  </Text>
                 </li>
               </ul>
 
@@ -186,15 +195,15 @@ export default function PricingPage() {
                 />
               </svg>
             </div>
-            <h3 className="text-xl font-semibold text-gray-900">Coming Soon</h3>
+            <CardTitle className="text-xl text-gray-900">Coming Soon</CardTitle>
           </div>
-          <p className="text-base text-gray-700 leading-relaxed">
+          <Text className="text-gray-700">
             We're working on additional advertising and promotion options to help you reach even more potential users. 
             These will include featured placements, promoted listings, and other tools to boost your visibility. 
             Stay tuned for updates!
-          </p>
+          </Text>
           <div className="mt-6">
-            <p className="text-sm text-gray-600">
+            <Small className="text-gray-600">
               Want to be notified when new options are available?{" "}
               <Link
                 href="/submit"
@@ -203,52 +212,52 @@ export default function PricingPage() {
                 Submit your product
               </Link>{" "}
               and we'll keep you in the loop.
-            </p>
+            </Small>
           </div>
         </div>
 
         {/* FAQ Section */}
         <div className="mt-16">
-          <h2 className="mb-8 text-2xl font-semibold text-gray-900">Frequently Asked Questions</h2>
+          <SectionTitle className="mb-8 text-gray-900">Frequently Asked Questions</SectionTitle>
           <div className="space-y-8">
             <div>
-              <h3 className="mb-2 text-lg font-medium text-gray-900">
+              <CardTitle className="mb-2 text-gray-900">
                 Is it free to list my software?
-              </h3>
-              <p className="text-base text-gray-700 leading-relaxed">
+              </CardTitle>
+              <Text className="text-gray-700">
                 Yes! Currently, listing your software on hobbyrider is completely free. 
                 You can create product listings at no cost. We may introduce different tiers 
                 with additional features in the future, but basic listings will always be available.
-              </p>
+              </Text>
             </div>
             <div>
-              <h3 className="mb-2 text-lg font-medium text-gray-900">
+              <CardTitle className="mb-2 text-gray-900">
                 What do I get with a free listing?
-              </h3>
-              <p className="text-base text-gray-700 leading-relaxed">
+              </CardTitle>
+              <Text className="text-gray-700">
                 You get a full product page with all the details about your software, community engagement 
                 features (upvotes, comments), analytics to track views and engagement, and SEO optimization 
                 to help people discover your product.
-              </p>
+              </Text>
             </div>
             <div>
-              <h3 className="mb-2 text-lg font-medium text-gray-900">
+              <CardTitle className="mb-2 text-gray-900">
                 What advertising options are coming?
-              </h3>
-              <p className="text-base text-gray-700 leading-relaxed">
+              </CardTitle>
+              <Text className="text-gray-700">
                 We're planning to introduce optional paid features like featured placements, promoted listings, 
                 and enhanced visibility options. We may also introduce different tiers with additional functionality. 
                 These will be clearly communicated when available.
-              </p>
+              </Text>
             </div>
             <div>
-              <h3 className="mb-2 text-lg font-medium text-gray-900">
+              <CardTitle className="mb-2 text-gray-900">
                 Do you take any commission from sales?
-              </h3>
-              <p className="text-base text-gray-700 leading-relaxed">
+              </CardTitle>
+              <Text className="text-gray-700">
                 No. hobbyrider doesn't take any commission from your sales or subscriptions. 
                 We're here to help you get discovered, not to take a cut of your business.
-              </p>
+              </Text>
             </div>
           </div>
         </div>

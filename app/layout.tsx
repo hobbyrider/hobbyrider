@@ -1,4 +1,12 @@
 import type { Metadata } from "next"
+import { Inter } from "next/font/google"
+import "./globals.css"
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+})
 
 export const metadata: Metadata = {
   title: {
@@ -21,8 +29,8 @@ export default function RootLayout({
   // PayloadCMS's RootLayout also renders these, causing nesting
   // suppressHydrationWarning prevents React from throwing errors
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={inter.variable}>
+      <body suppressHydrationWarning className="font-sans">
         {children}
       </body>
     </html>

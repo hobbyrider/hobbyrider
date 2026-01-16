@@ -1,20 +1,9 @@
 import type { Metadata } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
 import "../globals.css"
 import { AuthProvider } from "@/app/components/auth-provider"
 import { SiteHeader } from "@/app/components/site-header"
 import { SiteFooter } from "@/app/components/site-footer"
 import { Toaster } from "react-hot-toast"
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-})
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-})
 
 export const metadata: Metadata = {
   title: {
@@ -33,9 +22,9 @@ export default function MainLayout({
   children: React.ReactNode
 }>) {
   // This layout is nested inside the root layout which already has <html> and <body>
-  // So we just return the content without HTML/body tags
+  // Font is now set in root layout.tsx with Inter
   return (
-    <div className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+    <div className="antialiased">
         <AuthProvider>
           <a
             href="#content"

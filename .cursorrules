@@ -1,0 +1,28 @@
+# Cursor Rules for hobbyrider
+
+## Typography Rules (CRITICAL)
+
+**Typography styles must only come from typography components.**
+- Direct Tailwind typography utilities (text-*, leading-*, tracking-*, font-*) are FORBIDDEN outside of `components/typography.tsx`.
+- Always use components from `app/components/typography.tsx`:
+  - `<PageTitle>` for h1
+  - `<SectionTitle>` for h2
+  - `<CardTitle>` for h3
+  - `<SmallHeading>` for h4
+  - `<Text>` for body text
+  - `<Muted>` for muted paragraphs
+  - `<Small>` for small text
+  - `<Caption>` for fine print/footer disclaimers
+  - `<NavLinkText>`, `<ButtonText>`, `<LabelText>` for specific UI elements
+
+## Font Family
+
+- Only Inter font is used. Set in `app/layout.tsx`.
+- Do not mix fonts or add additional font families.
+
+## Code Style
+
+- Use TypeScript for all new files
+- Use Next.js App Router conventions
+- Follow existing patterns in the codebase
+- Use `cn()` utility from `lib/cn.ts` for className merging

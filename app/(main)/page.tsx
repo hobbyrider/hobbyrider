@@ -24,6 +24,7 @@ import { Pagination } from "@/app/components/pagination"
 import { FilterControls } from "@/app/components/filter-controls"
 import { FeedItemCard } from "@/app/components/feed-item-card"
 import { getSession } from "@/lib/get-session"
+import { PageTitle, Muted, Text } from "@/app/components/typography"
 
 export type SoftwareItem = {
   id: string
@@ -164,14 +165,14 @@ export default async function Home({
       <div className="mx-auto max-w-5xl">
         {/* Page Header */}
         <header className="mb-8">
-          <h1 className="text-3xl font-semibold tracking-tight text-gray-900">
+          <PageTitle className="text-3xl text-gray-900">
             {categorySlug 
               ? `Top in ${categorySlug.replace(/-/g, " ")}` 
               : "Today's launches"}
-          </h1>
-          <p className="mt-2 text-base text-gray-600">
+          </PageTitle>
+          <Muted className="mt-2">
             Discover and share software worth riding.
-          </p>
+          </Muted>
         </header>
 
         {/* Filter Controls */}
@@ -181,11 +182,11 @@ export default async function Home({
         <section>
           {paginatedProducts.length === 0 ? (
             <div className="rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 p-12 text-center">
-              <p className="text-base text-gray-600">
+              <Text className="text-gray-600">
                 {totalItems === 0
                   ? "No submissions yet. Be the first!"
                   : "No products on this page."}
-              </p>
+              </Text>
             </div>
           ) : (
             <>
