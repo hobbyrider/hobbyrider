@@ -86,15 +86,22 @@ export function ProductActions({
       </button>
 
       {/* Comment button */}
-      <Link
+      <a
         href="#comments"
+        onClick={(e) => {
+          e.preventDefault()
+          const commentsSection = document.getElementById("comments")
+          if (commentsSection) {
+            commentsSection.scrollIntoView({ behavior: "smooth", block: "start" })
+          }
+        }}
         className="flex flex-col items-center justify-center gap-1 h-12 w-12 rounded-lg border-2 border-gray-300 bg-white text-gray-900 hover:border-gray-900 hover:bg-gray-50 transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
         title="View comments"
         aria-label={`${commentCount} comments`}
       >
         <CommentIcon className="w-5 h-5" />
         <span className="text-xs font-semibold leading-none">{commentCount}</span>
-      </Link>
+      </a>
 
       {/* Copy URL button */}
       <button
