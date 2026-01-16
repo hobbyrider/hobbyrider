@@ -214,7 +214,7 @@ export default function SubmitPage() {
             <LabelText>Description (optional)</LabelText>
             <textarea
               name="description"
-              className="mt-1 w-full rounded-lg border px-3 py-2"
+              className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5 text-base resize-y focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-0"
               placeholder="Write a detailed description of what it does, who it’s for, and why it’s different…"
               rows={5}
             />
