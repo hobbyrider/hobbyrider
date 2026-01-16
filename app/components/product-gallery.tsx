@@ -117,8 +117,8 @@ export function ProductGallery({ images }: { images: ProductImage[] }) {
                 onClick={() => setSelectedIndex(index)}
                 className={`flex-shrink-0 w-16 h-16 sm:w-24 sm:h-24 rounded-lg overflow-hidden border-2 transition-all relative ${
                   selectedIndex === index
-                    ? "border-gray-400 ring-2 ring-gray-300 ring-offset-1 sm:ring-offset-2"
-                    : "border-gray-200 hover:border-gray-400 opacity-60 hover:opacity-100"
+                    ? "border-gray-300 ring-2 ring-gray-200 ring-offset-1 sm:ring-offset-2"
+                    : "border-gray-200 hover:border-gray-300 opacity-60 hover:opacity-100"
                 }`}
               >
                 <Image
