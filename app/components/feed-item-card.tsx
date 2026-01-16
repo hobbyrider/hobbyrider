@@ -5,6 +5,7 @@ import { UpvoteButton } from "@/app/components/upvote-button"
 import { ShareButton } from "@/app/components/share-button"
 import { CommentIcon } from "@/app/components/icons"
 import type { SoftwareItem } from "@/app/(main)/page"
+import { CardTitle, Small, Caption, NavLinkText } from "@/app/components/typography"
 
 type FeedItemCardProps = {
   item: SoftwareItem
@@ -47,19 +48,19 @@ export function FeedItemCard({ item, hasUpvoted, isLoggedIn }: FeedItemCardProps
             <div className="flex items-baseline gap-2.5 flex-wrap">
               <Link
                 href={`/product/${item.id}`}
-                className="text-xl font-semibold leading-tight text-gray-900 transition-colors hover:text-gray-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded"
+                className="transition-colors hover:text-gray-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded"
               >
-                {item.name}
+                <CardTitle className="text-xl text-gray-900">{item.name}</CardTitle>
               </Link>
-              <span className="text-xs text-gray-500 whitespace-nowrap">
+              <Caption className="whitespace-nowrap">
                 {getRelativeTime(item.createdAt)}
-              </span>
+              </Caption>
             </div>
             
             {/* Tagline */}
-            <p className="mt-1.5 text-sm leading-relaxed text-gray-600 line-clamp-2">
+            <Small className="mt-1.5 text-gray-600 line-clamp-2">
               {item.tagline}
-            </p>
+            </Small>
             
             {/* Categories and Maker */}
             <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -76,9 +77,9 @@ export function FeedItemCard({ item, hasUpvoted, isLoggedIn }: FeedItemCardProps
                     </Link>
                   ))}
                   {item.categories.length > 3 && (
-                    <span className="text-xs text-gray-500">
+                    <Caption>
                       +{item.categories.length - 3} more
-                    </span>
+                    </Caption>
                   )}
                 </div>
               )}
@@ -89,7 +90,7 @@ export function FeedItemCard({ item, hasUpvoted, isLoggedIn }: FeedItemCardProps
                   by{" "}
                   <Link
                     href={`/maker/${item.maker}`}
-                    className="font-medium text-gray-700 transition-colors hover:text-gray-900 hover:underline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-gray-700 rounded"
+                    className="transition-colors hover:text-gray-900 hover:underline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-gray-700 rounded"
                   >
                     @{item.maker}
                   </Link>
@@ -118,7 +119,7 @@ export function FeedItemCard({ item, hasUpvoted, isLoggedIn }: FeedItemCardProps
             aria-label={`${item.commentCount} comments`}
           >
             <CommentIcon />
-            <span className="text-sm font-medium">{item.commentCount}</span>
+                <NavLinkText>{item.commentCount}</NavLinkText>
           </Link>
           
           {/* Share button */}

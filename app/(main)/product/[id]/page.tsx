@@ -14,6 +14,7 @@ import { SidebarBlock } from "@/app/components/sidebar-block"
 import { ReportButton } from "@/app/components/report-button"
 import { getSession } from "@/lib/get-session"
 import type { Metadata } from "next"
+import { PageTitle, SectionTitle, Text, Muted, Small } from "@/app/components/typography"
 
 export const dynamic = "force-dynamic"
 export const revalidate = 60 // Revalidate product pages every 60 seconds
@@ -283,12 +284,12 @@ export default async function ProductPage({
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <h1 className="mb-2 text-4xl font-semibold leading-tight tracking-tight text-gray-900">
+                  <PageTitle className="mb-2 text-gray-900">
                     {product.name}
-                  </h1>
-                  <p className="mb-4 text-xl leading-relaxed text-gray-600">
+                  </PageTitle>
+                  <Muted className="mb-4 text-xl">
                     {product.tagline}
-                  </p>
+                  </Muted>
                   
                   {product.categories.length > 0 && (
                     <div className="flex flex-wrap gap-2">
@@ -349,18 +350,18 @@ export default async function ProductPage({
               <div className="space-y-10">
                 {product.description && (
                   <section>
-                    <h2 className="mb-4 text-2xl font-semibold text-gray-900">About</h2>
+                    <SectionTitle className="mb-4 text-gray-900">About</SectionTitle>
                     <div className="prose prose-gray max-w-none">
-                      <p className="whitespace-pre-wrap leading-relaxed text-gray-700">
+                      <Text className="whitespace-pre-wrap text-gray-700">
                         {product.description}
-                      </p>
+                      </Text>
                     </div>
                   </section>
                 )}
 
                 {product.embedHtml && (
                   <section>
-                    <h2 className="mb-4 text-2xl font-semibold text-gray-900">Demo</h2>
+                    <SectionTitle className="mb-4 text-gray-900">Demo</SectionTitle>
                     <div
                       className="overflow-hidden rounded-xl border border-gray-200 bg-white"
                       // embedHtml is sanitized on save (server action)
@@ -373,18 +374,18 @@ export default async function ProductPage({
 
             {/* Comments Section */}
             <section id="comments" className="border-t border-gray-200 pt-10">
-              <h2 className="mb-6 text-2xl font-semibold text-gray-900">
+              <SectionTitle className="mb-6 text-gray-900">
                 Discussion ({comments.length})
-              </h2>
+              </SectionTitle>
 
               <CommentForm productId={id} />
 
               <div className="mt-8 space-y-6">
                 {comments.length === 0 ? (
                   <div className="rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 py-12 text-center">
-                    <p className="text-gray-600">
+                    <Text className="text-gray-600">
                       No comments yet. Be the first to comment!
-                    </p>
+                    </Text>
                   </div>
                 ) : (
                   comments.map((comment) => (
@@ -418,15 +419,15 @@ export default async function ProductPage({
               <SidebarBlock title="Stats">
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Views</span>
+                    <Small className="text-gray-600">Views</Small>
                     <span className="font-semibold text-gray-900">{product.viewCount || 0}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Upvotes</span>
+                    <Small className="text-gray-600">Upvotes</Small>
                     <span className="font-semibold text-gray-900">{product.upvotes}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Comments</span>
+                    <Small className="text-gray-600">Comments</Small>
                     <span className="font-semibold text-gray-900">{comments.length}</span>
                   </div>
                 </div>
