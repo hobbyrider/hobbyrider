@@ -29,7 +29,7 @@ export function SiteFooter() {
               <SmallHeading className="mb-2 text-gray-500">
                 Navigation
               </SmallHeading>
-              <ul className="flex flex-col gap-2 text-base">
+              <ul className="flex flex-col gap-2 text-sm">
                 <li>
                   <Link
                     href="/"
@@ -69,7 +69,7 @@ export function SiteFooter() {
               <SmallHeading className="mb-2 text-gray-500">
                 Product
               </SmallHeading>
-              <ul className="flex flex-col gap-2 text-base">
+              <ul className="flex flex-col gap-2 text-sm">
                 <li>
                   <Link
                     href="/pricing"
@@ -94,7 +94,7 @@ export function SiteFooter() {
               <SmallHeading className="mb-2 text-gray-500">
                 Connect
               </SmallHeading>
-              <ul className="flex flex-col gap-2 text-base">
+              <ul className="flex flex-col gap-2 text-sm">
                 <li>
                   <a
                     href="mailto:team@hobbyrider.io"
@@ -120,7 +120,7 @@ export function SiteFooter() {
               <SmallHeading className="mb-2 text-gray-500">
                 Legal
               </SmallHeading>
-              <ul className="flex flex-col gap-2 text-base">
+              <ul className="flex flex-col gap-2 text-sm">
                 <li>
                   <Link
                     href="/privacy"
