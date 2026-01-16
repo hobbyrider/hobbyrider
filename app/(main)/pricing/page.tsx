@@ -29,7 +29,7 @@ export default function PricingPage() {
             Pricing
           </PageTitle>
           <Muted className="mt-4 text-xl">
-            Simple, transparent pricing for makers
+            Simple, transparent pricing for builders
           </Muted>
         </header>
 

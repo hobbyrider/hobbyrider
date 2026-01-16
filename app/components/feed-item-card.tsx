@@ -62,7 +62,7 @@ export function FeedItemCard({ item, hasUpvoted, isLoggedIn }: FeedItemCardProps
               {item.tagline}
             </Small>
             
-            {/* Categories and Maker */}
+            {/* Categories and Builder */}
             <div className="mt-3 flex flex-wrap items-center gap-2">
               {/* Categories */}
               {item.categories.length > 0 && (
@@ -84,12 +84,12 @@ export function FeedItemCard({ item, hasUpvoted, isLoggedIn }: FeedItemCardProps
                 </div>
               )}
               
-              {/* Maker attribution */}
+              {/* Builder attribution */}
               {item.maker && (
                 <span className="text-xs text-gray-500">
                   by{" "}
                   <Link
-                    href={`/maker/${item.maker}`}
+                    href={`/builder/${item.maker}`}
                     className="transition-colors hover:text-gray-900 hover:underline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-gray-700 rounded"
                   >
                     @{item.maker}

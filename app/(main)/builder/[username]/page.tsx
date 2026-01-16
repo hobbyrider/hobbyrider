@@ -6,14 +6,14 @@ import { getRelativeTime } from "@/lib/utils"
 
 export const dynamic = "force-dynamic"
 
-export default async function MakerPage({
+export default async function BuilderPage({
   params,
 }: {
   params: Promise<{ username: string }>
 }) {
   const { username } = await params
 
-  // Try to find user first, then fall back to old maker string
+  // Try to find user first, then fall back to old maker string (backward compatibility)
   const user = await prisma.user.findFirst({
     where: {
       OR: [{ username }, { id: username }],

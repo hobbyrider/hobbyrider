@@ -81,7 +81,7 @@ export default function SearchPage() {
         <header className="mb-8">
           <h1 className="text-4xl font-bold">Search</h1>
           <p className="mt-2 text-gray-600">
-            Search for products by name, tagline, or maker
+            Search for products by name, tagline, or builder
           </p>
         </header>
 
@@ -159,7 +159,7 @@ export default function SearchPage() {
                           <p className="mt-1 text-xs text-gray-500">
                             Submitted by{" "}
                             <Link
-                              href={`/maker/${item.maker}`}
+                              href={`/builder/${item.maker}`}
                               className="font-semibold hover:underline"
                             >
                               @{item.maker}

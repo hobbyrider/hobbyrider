@@ -10,7 +10,7 @@ type SidebarBlockProps = {
  * SidebarBlock - Reusable container for sidebar content
  * 
  * Provides consistent styling and spacing for sidebar sections.
- * Used for voting, maker info, related content, etc.
+ * Used for voting, builder info, related content, etc.
  */
 export function SidebarBlock({ title, children, className = "" }: SidebarBlockProps) {
   return (

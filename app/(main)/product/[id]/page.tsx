@@ -433,9 +433,9 @@ export default async function ProductPage({
                 </div>
               </SidebarBlock>
 
-              {/* Maker Info */}
+              {/* Builder Info */}
               {(product.makerUser || product.maker) && (
-                <SidebarBlock title="Maker">
+                <SidebarBlock title="Builder">
                   <div className="flex items-center gap-3">
                     {product.makerUser ? (
                       <>
@@ -443,7 +443,7 @@ export default async function ProductPage({
                           <div className="h-12 w-12 rounded-full overflow-hidden border border-gray-200 relative">
                             <Image
                               src={product.makerUser.image}
-                              alt={product.makerUser.username || product.makerUser.name || "Maker"}
+                              alt={product.makerUser.username || product.makerUser.name || "Builder"}
                               fill
                               className="object-cover"
                               sizes="48px"
@@ -473,7 +473,7 @@ export default async function ProductPage({
                         </div>
                         <div>
                           <Link
-                            href={`/maker/${product.maker}`}
+                            href={`/builder/${product.maker}`}
                             className="block font-semibold text-gray-900 transition-colors hover:text-gray-700 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded"
                           >
                             @{product.maker}
