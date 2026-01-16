@@ -184,9 +184,9 @@ export default function SubmitPage() {
   return (
     <main className="px-4 py-8 sm:px-6 sm:py-12">
       <div className="mx-auto max-w-xl">
-        <PageTitle className="text-2xl sm:text-3xl text-gray-900">submit software</PageTitle>
+        <PageTitle className="text-2xl sm:text-3xl text-gray-900">Submit your product</PageTitle>
         <Muted className="mt-2 text-sm sm:text-base">
-          Share a tool you think is worth riding 🤖
+          Get ranked by the community and discovered by your future users.
         </Muted>
 
         <form onSubmit={handleSubmit} className="mt-6 sm:mt-8 space-y-4 sm:space-y-6">
