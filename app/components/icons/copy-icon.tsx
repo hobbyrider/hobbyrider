@@ -3,6 +3,7 @@ type CopyIconProps = {
 }
 
 export function CopyIcon({ className = "w-5 h-5" }: CopyIconProps) {
+  // Standard link icon for "Copy URL" - cleaner and more recognizable
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -15,8 +16,7 @@ export function CopyIcon({ className = "w-5 h-5" }: CopyIconProps) {
       className={className}
       aria-hidden="true"
     >
-      <rect x="4" y="4" width="10" height="12" rx="1.5" />
-      <rect x="6" y="6" width="10" height="12" rx="1.5" />
+      <path d="M8.464 5.464a3 3 0 014.243 0l2.828 2.829a3 3 0 01-4.243 4.242l-.707-.707M8.464 5.464L7.757 6.17m3.535 6.364l.707.707m0 0l2.829 2.828a3 3 0 01-4.243 4.243l-2.828-2.829m4.243 0L7.757 13.536" />
     </svg>
   )
 }
