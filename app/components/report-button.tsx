@@ -85,7 +85,7 @@ export function ReportButton({ type, contentId, contentName }: ReportButtonProps
           />
 
           {/* Modal */}
-          <div className="absolute right-0 top-8 z-50 w-80 rounded-lg border border-gray-200 bg-white p-4 shadow-lg">
+          <div className="absolute right-0 top-full mt-2 z-50 w-80 rounded-lg border border-gray-200 bg-white p-4 shadow-lg">
             <h3 className="mb-3 text-sm font-semibold text-gray-900">
               Report {type === "product" ? "Product" : type === "comment" ? "Comment" : "User"}
             </h3>
