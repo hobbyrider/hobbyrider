@@ -20,6 +20,26 @@
 - Only Inter font is used. Set in `app/layout.tsx`.
 - Do not mix fonts or add additional font families.
 
+## Mobile Responsiveness (CRITICAL)
+
+**All new development MUST be mobile-responsive from the start.**
+- Every new page, component, and feature must work on both desktop and mobile devices.
+- Use Tailwind responsive breakpoints consistently:
+  - Mobile-first: Base styles for mobile (< 640px)
+  - `sm:` prefix for tablet/desktop (640px+)
+  - `lg:` prefix for large desktop (1024px+)
+- Common responsive patterns to follow:
+  - Padding: `px-4 sm:px-6`, `py-6 sm:py-10`
+  - Text sizes: `text-2xl sm:text-3xl`, `text-sm sm:text-base`
+  - Images: `h-16 w-16 sm:h-24 sm:w-24`
+  - Grids: `grid-cols-1 sm:grid-cols-2 lg:grid-cols-3`
+  - Spacing: `gap-2 sm:gap-4`, `space-y-4 sm:space-y-6`
+  - Flex direction: `flex-col sm:flex-row`
+- Always test layouts on mobile viewport (320px - 640px width).
+- Buttons and interactive elements must have adequate touch targets (min 44x44px).
+- Forms and inputs must be easily usable on mobile devices.
+- Navigation and menus must be mobile-friendly (consider hamburger menus for complex nav).
+
 ## Code Style
 
 - Use TypeScript for all new files

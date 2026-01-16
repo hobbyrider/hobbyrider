@@ -25,6 +25,7 @@ This file contains concise, actionable guidance for AI coding agents to be immed
 - The submit flow is intentionally client-only: submissions are encoded into query parameters and the home page reads them via `useSearchParams`. There are currently no server endpoints or persistence for submissions.
 - Upvotes are stored in local React state only (no backend). If you add server persistence, update both the UI and the submission/upvote flow accordingly.
 - CSS/Tailwind classes are used widely—prefer utility classes for small components.
+- **Mobile Responsiveness**: All new features must be mobile-responsive from the start. Use Tailwind responsive breakpoints (`sm:`, `lg:`) following the patterns established in the codebase. Test on mobile viewport (320px-640px).
 
 ## Prisma & DB notes (critical) ⚠️
 - Prisma is configured via `prisma.config.ts` (it loads `process.env.DATABASE_URL`).
