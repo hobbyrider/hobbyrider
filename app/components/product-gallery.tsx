@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import Image from "next/image"
 
 type ProductImage = {
   id: string
@@ -10,20 +11,37 @@ type ProductImage = {
 
 export function ProductGallery({ images }: { images: ProductImage[] }) {
   const [selectedIndex, setSelectedIndex] = useState(0)
+  const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set([0]))
 
   if (images.length === 0) return null
 
   const sortedImages = [...images].sort((a, b) => a.order - b.order)
 
+  // Preload next image when current image is viewed
+  useEffect(() => {
+    const nextIndex = (selectedIndex + 1) % sortedImages.length
+    if (!loadedImages.has(nextIndex)) {
+      const img = new window.Image()
+      img.src = sortedImages[nextIndex].url
+      img.onload = () => {
+        setLoadedImages(prev => new Set([...prev, nextIndex]))
+      }
+    }
+  }, [selectedIndex, sortedImages, loadedImages])
+
   return (
     <div>
       <div className="relative bg-gray-50">
         {/* Main image */}
-        <div className="aspect-video w-full overflow-hidden bg-white">
-          <img
+        <div className="aspect-video w-full overflow-hidden bg-white relative">
+          <Image
             src={sortedImages[selectedIndex].url}
             alt={`Screenshot ${selectedIndex + 1}`}
-            className="w-full h-full object-contain"
+            fill
+            className="object-contain"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
+            priority={selectedIndex === 0}
+            unoptimized={process.env.NODE_ENV === 'development'}
           />
         </div>
 
@@ -97,16 +115,20 @@ export function ProductGallery({ images }: { images: ProductImage[] }) {
               <button
                 key={image.id}
                 onClick={() => setSelectedIndex(index)}
-                className={`flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden border-2 transition-all ${
+                className={`flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden border-2 transition-all relative ${
                   selectedIndex === index
                     ? "border-black ring-2 ring-black ring-offset-2"
                     : "border-gray-200 hover:border-gray-400 opacity-60 hover:opacity-100"
                 }`}
               >
-                <img
+                <Image
                   src={image.url}
                   alt={`Thumbnail ${index + 1}`}
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
+                  sizes="96px"
+                  loading="lazy"
+                  unoptimized={process.env.NODE_ENV === 'development'}
                 />
               </button>
             ))}

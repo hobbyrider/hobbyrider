@@ -77,14 +77,15 @@ export function SiteFooter() {
                     Pricing
                   </Link>
                 </li>
-                <li>
+                {/* Blog disabled (depends on PayloadCMS - see docs/archive/payloadcms/) */}
+                {/* <li>
                   <Link
                     href="/blog"
                     className="text-gray-600 transition-colors hover:text-gray-900 hover:underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded"
                   >
                     Blog
                   </Link>
-                </li>
+                </li> */}
               </ul>
             </div>
 

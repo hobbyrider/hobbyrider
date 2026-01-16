@@ -22,8 +22,10 @@ model Software {
   thumbnail   String?
   embedHtml   String?        @db.Text
   upvotes     Int            @default(0)
+  viewCount   Int            @default(0)
   isHidden    Boolean        @default(false)
   createdAt   DateTime       @default(now())
+  lastViewedAt DateTime?
   comments    Comment[]
   categories  Category[]
   images      ProductImage[]
@@ -31,6 +33,7 @@ model Software {
   reports     Report[]
 
   @@index([upvotes, createdAt])
+  @@index([viewCount, createdAt])
   @@index([makerId])
   @@index([isHidden])
 }

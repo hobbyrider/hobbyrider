@@ -14,7 +14,16 @@ export async function getCategoryBySlug(slug: string) {
     include: {
       products: {
         orderBy: [{ upvotes: "desc" }, { createdAt: "desc" }],
-        include: {
+        select: {
+          id: true,
+          name: true,
+          tagline: true,
+          url: true,
+          maker: true,
+          thumbnail: true,
+          upvotes: true,
+          viewCount: true,
+          createdAt: true,
           _count: {
             select: {
               comments: true,

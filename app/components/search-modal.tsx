@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { searchSoftware, getDiscoverData } from "@/app/actions/search"
 import { FilterControls } from "@/app/components/filter-controls"
@@ -227,11 +228,16 @@ export function SearchModal({
                           <div className="flex items-start justify-between gap-4">
                             <div className="flex gap-3 flex-1 min-w-0">
                               {item.thumbnail && (
-                                <img
-                                  src={item.thumbnail}
-                                  alt={item.name}
-                                  className="h-12 w-12 flex-shrink-0 rounded-lg border border-gray-200 object-cover"
-                                />
+                                <div className="h-12 w-12 flex-shrink-0 rounded-lg overflow-hidden border border-gray-200 relative">
+                                  <Image
+                                    src={item.thumbnail}
+                                    alt={item.name}
+                                    fill
+                                    className="object-cover"
+                                    sizes="48px"
+                                    loading="lazy"
+                                  />
+                                </div>
                               )}
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 flex-wrap">
@@ -323,11 +329,16 @@ export function SearchModal({
                             <div className="flex items-center justify-between gap-3">
                               <div className="flex items-center gap-3 flex-1 min-w-0">
                                 {p.thumbnail && (
-                                  <img
-                                    src={p.thumbnail}
-                                    alt={p.name}
-                                    className="h-10 w-10 flex-shrink-0 rounded-lg border border-gray-200 object-cover"
-                                  />
+                                  <div className="h-10 w-10 flex-shrink-0 rounded-lg overflow-hidden border border-gray-200 relative">
+                                    <Image
+                                      src={p.thumbnail}
+                                      alt={p.name}
+                                      fill
+                                      className="object-cover"
+                                      sizes="40px"
+                                      loading="lazy"
+                                    />
+                                  </div>
                                 )}
                                 <div className="flex-1 min-w-0">
                                   <div className="font-semibold text-gray-900">{p.name}</div>

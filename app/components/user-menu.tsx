@@ -2,6 +2,7 @@
 
 import { useSession, signOut } from "next-auth/react"
 import Link from "next/link"
+import Image from "next/image"
 import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
 
@@ -66,11 +67,15 @@ export function UserMenu() {
         aria-expanded={isOpen}
       >
         {user.image ? (
-          <img
-            src={user.image}
-            alt={displayName}
-            className="h-8 w-8 rounded-full object-cover border border-gray-200"
-          />
+          <div className="h-8 w-8 rounded-full overflow-hidden border border-gray-200 relative">
+            <Image
+              src={user.image}
+              alt={displayName}
+              fill
+              className="object-cover"
+              sizes="32px"
+            />
+          </div>
         ) : (
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-sm font-semibold text-gray-700 border border-gray-300">
             {displayName[0].toUpperCase()}

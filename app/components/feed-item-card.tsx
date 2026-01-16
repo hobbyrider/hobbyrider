@@ -1,9 +1,10 @@
 import Link from "next/link"
+import Image from "next/image"
 import { getRelativeTime } from "@/lib/utils"
 import { UpvoteButton } from "@/app/components/upvote-button"
 import { ShareButton } from "@/app/components/share-button"
 import { CommentIcon } from "@/app/components/icons"
-import type { SoftwareItem } from "@/app/page"
+import type { SoftwareItem } from "@/app/(main)/page"
 
 type FeedItemCardProps = {
   item: SoftwareItem
@@ -28,11 +29,16 @@ export function FeedItemCard({ item, hasUpvoted, isLoggedIn }: FeedItemCardProps
         <div className="flex gap-4 flex-1 min-w-0">
           {/* Thumbnail */}
           {item.thumbnail && (
-            <img
-              src={item.thumbnail}
-              alt={item.name}
-              className="h-16 w-16 flex-shrink-0 rounded-lg border border-gray-200 object-cover transition-transform duration-200 group-hover:scale-[1.02]"
-            />
+            <div className="h-16 w-16 flex-shrink-0 rounded-lg border border-gray-200 overflow-hidden relative">
+              <Image
+                src={item.thumbnail}
+                alt={item.name}
+                fill
+                className="object-cover transition-transform duration-200 group-hover:scale-[1.02]"
+                sizes="64px"
+                loading="lazy"
+              />
+            </div>
           )}
           
           {/* Content */}

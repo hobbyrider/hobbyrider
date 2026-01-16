@@ -34,6 +34,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly",
       priority: 0.8,
     },
+    // Blog route disabled (depends on PayloadCMS - see docs/archive/payloadcms/)
+    // {
+    //   url: `${baseUrl}/blog`,
+    //   lastModified: new Date(),
+    //   changeFrequency: "daily",
+    //   priority: 0.7,
+    // },
     {
       url: `${baseUrl}/privacy`,
       lastModified: new Date(),
@@ -68,6 +75,38 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     }))
 
+    // Blog posts from PayloadCMS (currently disabled - see docs/archive/payloadcms/)
+    // When PayloadCMS is re-enabled, uncomment this section
+    const blogPages: MetadataRoute.Sitemap = []
+    // try {
+    //   const { getPayload } = await import('payload')
+    //   const configPromise = await import('@/payload.config')
+    //   const payload = await getPayload({ config: await configPromise.default })
+    //   
+    //   const { docs: blogPosts } = await payload.find({
+    //     collection: 'blog-posts',
+    //     where: {
+    //       status: {
+    //         equals: 'published',
+    //       },
+    //     },
+    //     select: {
+    //       slug: true,
+    //       updatedAt: true,
+    //     },
+    //     limit: 1000,
+    //   })
+    //
+    //   blogPages = blogPosts.map((post: any) => ({
+    //     url: `${baseUrl}/blog/${post.slug}`,
+    //     lastModified: post.updatedAt || new Date(),
+    //     changeFrequency: "monthly",
+    //     priority: 0.6,
+    //   }))
+    // } catch (error) {
+    //   console.warn('Could not fetch blog posts for sitemap:', error)
+    // }
+
     // Category pages
     const categories = await prisma.category.findMany({
       select: {
@@ -82,7 +121,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.6,
     }))
 
-    return [...staticPages, ...productPages, ...categoryPages]
+    return [...staticPages, ...productPages, ...categoryPages, ...blogPages]
   } catch (error) {
     console.error("Error generating sitemap:", error)
     // Return at least static pages if database query fails
