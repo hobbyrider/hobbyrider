@@ -11,7 +11,7 @@ export function SiteFooter() {
               <span className="font-semibold text-gray-900">hobbyrider</span>
             </p>
             <p className="mb-2 text-sm text-gray-500">
-              Built for learning. Products and votes are for demonstration purposes.
+              Built by builders, for builders. Trusted by professionals across industries.
             </p>
             <p className="text-xs text-gray-400">
               <Link

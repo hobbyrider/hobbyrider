@@ -35,7 +35,7 @@ export default function PricingPage() {
                 List Your Software
               </h2>
               <p className="mt-2 text-lg text-gray-600">
-                Share your product with thousands of makers and builders
+                Share your product with thousands of builders and professionals actively discovering new software solutions
               </p>
             </div>
 
