@@ -4,8 +4,53 @@ import Link from "next/link"
 import { FeedItemCard } from "@/app/components/feed-item-card"
 import { getSession } from "@/lib/get-session"
 import { prisma } from "@/lib/prisma"
+import type { Metadata } from "next"
 
 export const dynamic = "force-dynamic"
+
+function getBaseUrl() {
+  if (process.env.NEXTAUTH_URL) {
+    return process.env.NEXTAUTH_URL
+  }
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`
+  }
+  return "https://hobbyrider.vercel.app"
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}): Promise<Metadata> {
+  const { slug } = await params
+  const category = await getCategoryBySlug(slug)
+
+  if (!category) {
+    return {
+      title: "Category Not Found",
+    }
+  }
+
+  const baseUrl = getBaseUrl()
+  const categoryUrl = `${baseUrl}/category/${slug}`
+
+  return {
+    title: `${category.name} · hobbyrider`,
+    description: `Discover ${category.name} products on hobbyrider. Find the best ${category.name.toLowerCase()} tools and software.`,
+    openGraph: {
+      title: `${category.name} Products · hobbyrider`,
+      description: `Discover ${category.name} products on hobbyrider`,
+      url: categoryUrl,
+      type: "website",
+    },
+    twitter: {
+      card: "summary",
+      title: `${category.name} · hobbyrider`,
+      description: `Discover ${category.name} products`,
+    },
+  }
+}
 
 export default async function CategoryPage({
   params,

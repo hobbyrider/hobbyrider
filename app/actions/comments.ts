@@ -4,6 +4,18 @@ import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 import { sanitizeInput } from "@/lib/utils"
 import { getSession } from "@/lib/get-session"
+import { checkRateLimit, RATE_LIMITS } from "@/lib/rate-limit"
+import { sendCommentNotification } from "@/lib/email"
+
+function getBaseUrl() {
+  if (process.env.NEXTAUTH_URL) {
+    return process.env.NEXTAUTH_URL
+  }
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`
+  }
+  return "https://hobbyrider.vercel.app"
+}
 
 export async function createComment(
   productId: string,
@@ -30,8 +42,18 @@ export async function createComment(
 
   const sanitizedContent = sanitizeInput(content, 2000)
   
-  if (!sanitizedContent) {
-    throw new Error("Content is required")
+  if (!sanitizedContent || sanitizedContent.trim().length === 0) {
+    throw new Error("Please enter a comment before submitting")
+  }
+
+  // Check rate limit for comments
+  const rateLimit = await checkRateLimit(
+    session.user.id,
+    "comment",
+    RATE_LIMITS.comment
+  )
+  if (!rateLimit.allowed) {
+    throw new Error(rateLimit.error || "Rate limit exceeded for comments")
   }
 
   // #region agent log
@@ -57,6 +79,23 @@ export async function createComment(
   // #region agent log
   fetch('http://127.0.0.1:7242/ingest/4547670b-f49c-49d0-8d5b-e313b24778f7',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/actions/comments.ts:40',message:'Before comment create',data:{productId,hasAuthorId:true},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
   // #endregion
+  
+  // Get product and owner info for email notification
+  const product = await prisma.software.findUnique({
+    where: { id: productId },
+    include: {
+      makerUser: {
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          username: true,
+        },
+      },
+    },
+  })
+
+  // Create the comment
   await prisma.comment.create({
     data: {
       content: sanitizedContent,
@@ -65,6 +104,27 @@ export async function createComment(
       productId,
     },
   })
+
+  // Send email notification to product owner (if different from commenter)
+  if (product?.makerUser?.email && product.makerUser.id !== session.user.id) {
+    const baseUrl = getBaseUrl()
+    const commentUrl = `${baseUrl}/product/${productId}#comments`
+    const commenterName = user?.name || user?.username || "Someone"
+    
+    // Send email asynchronously (don't block the response)
+    sendCommentNotification({
+      productOwnerEmail: product.makerUser.email,
+      productOwnerName: product.makerUser.name || product.makerUser.username || "User",
+      productName: product.name,
+      productId: product.id,
+      commenterName,
+      commentContent: sanitizedContent,
+      commentUrl,
+    }).catch((error) => {
+      // Log error but don't fail the comment creation
+      console.error("Failed to send comment notification email:", error)
+    })
+  }
 
   revalidatePath(`/product/${productId}`)
 }

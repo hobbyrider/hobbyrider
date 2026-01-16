@@ -4,6 +4,7 @@ import { useState, useTransition } from "react"
 import { reviewReport } from "@/app/actions/moderation"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import toast from "react-hot-toast"
 
 function getRelativeTime(date: Date): string {
   const now = new Date()
@@ -87,9 +88,17 @@ export function ModerationPanel({ report }: ModerationPanelProps) {
     startTransition(async () => {
       try {
         await reviewReport(report.id, action)
+        const actionMessages = {
+          dismiss: "Report dismissed",
+          hide: "Content hidden successfully",
+          remove: "Content removed successfully",
+        }
+        toast.success(actionMessages[action])
         router.refresh()
       } catch (err: any) {
-        setError(err.message || "Failed to process action")
+        const errorMessage = err.message || "Failed to process action"
+        setError(errorMessage)
+        toast.error(errorMessage)
       }
     })
   }
@@ -232,7 +241,7 @@ export function ModerationPanel({ report }: ModerationPanelProps) {
           onClick={() => {
             if (report.product?.isHidden || report.comment?.isHidden) {
               // If already hidden, show message
-              alert("Content is already hidden. Use 'Reviewed Reports' section to unhide it.")
+              toast.error("Content is already hidden. Use 'Reviewed Reports' section to unhide it.")
               return
             }
             handleAction("hide")

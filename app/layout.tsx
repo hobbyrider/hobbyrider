@@ -4,6 +4,7 @@ import "./globals.css"
 import { AuthProvider } from "./components/auth-provider"
 import { SiteHeader } from "@/app/components/site-header"
 import { SiteFooter } from "@/app/components/site-footer"
+import { Toaster } from "react-hot-toast"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -51,6 +52,33 @@ export default function RootLayout({
             </main>
             <SiteFooter />
           </div>
+          <Toaster
+            position="top-center"
+            toastOptions={{
+              duration: 4000,
+              style: {
+                background: "#fff",
+                color: "#171717",
+                border: "1px solid #e5e5e5",
+                borderRadius: "0.75rem",
+                padding: "12px 16px",
+                fontSize: "14px",
+                boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+              },
+              success: {
+                iconTheme: {
+                  primary: "#16a34a",
+                  secondary: "#fff",
+                },
+              },
+              error: {
+                iconTheme: {
+                  primary: "#dc2626",
+                  secondary: "#fff",
+                },
+              },
+            }}
+          />
         </AuthProvider>
       </body>
     </html>

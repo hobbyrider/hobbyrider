@@ -7,6 +7,7 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
 import Link from "next/link"
+import toast from "react-hot-toast"
 
 type Category = {
   id: string
@@ -26,7 +27,12 @@ export default function SubmitPage() {
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
-    getAllCategories().then(setCategories).catch(console.error)
+    getAllCategories()
+      .then(setCategories)
+      .catch((error) => {
+        console.error("Failed to load categories:", error)
+        toast.error("Failed to load categories. Please refresh the page.")
+      })
   }, [])
 
   if (status === "loading") {
@@ -96,9 +102,10 @@ export default function SubmitPage() {
 
       const data = await response.json()
       setThumbnailUrl(data.url)
+      toast.success("Thumbnail uploaded successfully!")
     } catch (error) {
       console.error("Upload error:", error)
-      alert(error instanceof Error ? error.message : "Failed to upload thumbnail. Please try again.")
+      toast.error(error instanceof Error ? error.message : "Failed to upload thumbnail. Please try again.")
     } finally {
       setUploading(false)
     }
@@ -128,9 +135,10 @@ export default function SubmitPage() {
       const data = await response.json()
       const newUrls = data.urls || [data.url]
       setGalleryUrls([...galleryUrls, ...newUrls])
+      toast.success(`Successfully uploaded ${newUrls.length} image${newUrls.length !== 1 ? "s" : ""}!`)
     } catch (error) {
       console.error("Upload error:", error)
-      alert(error instanceof Error ? error.message : "Failed to upload images. Please try again.")
+      toast.error(error instanceof Error ? error.message : "Failed to upload images. Please try again.")
     } finally {
       setUploadingGallery(false)
       // Reset input
@@ -163,10 +171,11 @@ export default function SubmitPage() {
         await addProductImages(productId, galleryUrls)
       }
 
+      toast.success("Product submitted successfully!")
       router.push(`/product/${productId}`)
     } catch (error: any) {
       console.error("Submit error:", error)
-      alert(error.message || "Failed to submit product. Please try again.")
+      toast.error(error.message || "Failed to submit product. Please try again.")
       setSubmitting(false)
     }
   }

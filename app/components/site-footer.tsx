@@ -10,8 +10,16 @@ export function SiteFooter() {
               © {new Date().getFullYear()}{" "}
               <span className="font-semibold text-gray-900">hobbyrider</span>
             </p>
-            <p className="text-sm text-gray-500">
+            <p className="mb-2 text-sm text-gray-500">
               Built for learning. Products and votes are for demonstration purposes.
+            </p>
+            <p className="text-xs text-gray-400">
+              <Link
+                href="/admin/moderation"
+                className="transition-colors hover:text-gray-600 hover:underline underline-offset-2"
+              >
+                Admin-only
+              </Link>
             </p>
           </div>
 

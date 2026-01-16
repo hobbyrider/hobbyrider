@@ -1,6 +1,22 @@
 export const dynamic = "force-dynamic"
 
 import { prisma } from "@/lib/prisma"
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Discover and share software worth riding",
+  description: "hobbyrider - A community-driven platform to discover, share, and upvote the best software products. Find tools that are worth riding.",
+  openGraph: {
+    title: "hobbyrider - Discover and share software worth riding",
+    description: "A community-driven platform to discover, share, and upvote the best software products.",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "hobbyrider",
+    description: "Discover and share software worth riding",
+  },
+}
 import { ensureCategoriesExist } from "@/app/actions/categories"
 import { getDateFilter, calculateTrendingScore, type SortOption, type DateFilter } from "@/lib/filters"
 import { Pagination } from "@/app/components/pagination"

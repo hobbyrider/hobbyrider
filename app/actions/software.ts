@@ -5,6 +5,18 @@ import { redirect } from "next/navigation"
 import { revalidatePath } from "next/cache"
 import { sanitizeEmbedHtml, sanitizeInput } from "@/lib/utils"
 import { getSession } from "@/lib/get-session"
+import { checkRateLimit, RATE_LIMITS } from "@/lib/rate-limit"
+import { sendUpvoteNotification } from "@/lib/email"
+
+function getBaseUrl() {
+  if (process.env.NEXTAUTH_URL) {
+    return process.env.NEXTAUTH_URL
+  }
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`
+  }
+  return "https://hobbyrider.vercel.app"
+}
 
 // NOTE: We cast Prisma client to `any` to avoid occasional stale Prisma type issues
 // in editor tooling. Runtime schema is authoritative.
@@ -34,7 +46,7 @@ export async function createSoftware(
     where: { url },
   })
   if (existing) {
-    throw new Error("A product with this URL already exists")
+    throw new Error("A product with this URL already exists. Please submit a different product.")
   }
 
   // Validate categories exist
@@ -111,6 +123,7 @@ export async function upvoteSoftware(id: string) {
   }
 
   if (existingUpvote) {
+    // Removing upvote - no rate limit check needed
     await prismaAny.$transaction([
       prismaAny.upvote.delete({ where: { id: existingUpvote.id } }),
       // Decrement, but never below 0 (safety in case counts drift)
@@ -120,6 +133,31 @@ export async function upvoteSoftware(id: string) {
       }),
     ])
   } else {
+    // Creating new upvote - check rate limit
+    const rateLimit = await checkRateLimit(
+      session.user.id,
+      "upvote",
+      RATE_LIMITS.upvote
+    )
+    if (!rateLimit.allowed) {
+      throw new Error(rateLimit.error || "Rate limit exceeded for upvotes")
+    }
+
+    // Get product and owner info for email notification
+    const product = await prismaAny.software.findUnique({
+      where: { id },
+      include: {
+        makerUser: {
+          select: {
+            id: true,
+            email: true,
+            name: true,
+            username: true,
+          },
+        },
+      },
+    })
+
     await prismaAny.$transaction([
       prismaAny.upvote.create({
         data: {
@@ -132,6 +170,30 @@ export async function upvoteSoftware(id: string) {
         data: { upvotes: { increment: 1 } },
       }),
     ])
+
+    // Send email notification to product owner (if different from upvoter)
+    if (product?.makerUser?.email && product.makerUser.id !== session.user.id) {
+      const baseUrl = getBaseUrl()
+      const productUrl = `${baseUrl}/product/${id}`
+      const upvoter = await prismaAny.user.findUnique({
+        where: { id: session.user.id },
+        select: { name: true, username: true },
+      })
+      const upvoterName = upvoter?.name || upvoter?.username || "Someone"
+      
+      // Send email asynchronously (don't block the response)
+      sendUpvoteNotification({
+        productOwnerEmail: product.makerUser.email,
+        productOwnerName: product.makerUser.name || product.makerUser.username || "User",
+        productName: product.name,
+        productId: product.id,
+        upvoterName,
+        productUrl,
+      }).catch((error) => {
+        // Log error but don't fail the upvote
+        console.error("Failed to send upvote notification email:", error)
+      })
+    }
   }
 
   revalidatePath("/")

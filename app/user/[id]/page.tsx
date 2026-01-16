@@ -6,8 +6,70 @@ import { ProductList } from "./product-list"
 import { ProfileTabs } from "./profile-tabs"
 import { ReportButton } from "@/app/components/report-button"
 import { getRelativeTime } from "@/lib/utils"
+import type { Metadata } from "next"
 
 export const dynamic = "force-dynamic"
+
+function getBaseUrl() {
+  if (process.env.NEXTAUTH_URL) {
+    return process.env.NEXTAUTH_URL
+  }
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`
+  }
+  return "https://hobbyrider.vercel.app"
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}): Promise<Metadata> {
+  const { id } = await params
+  
+  const user = await prisma.user.findFirst({
+    where: {
+      OR: [{ username: id }, { id }],
+    },
+    select: {
+      id: true,
+      name: true,
+      username: true,
+      headline: true,
+      bio: true,
+      image: true,
+    },
+  })
+
+  if (!user) {
+    return {
+      title: "User Not Found",
+    }
+  }
+
+  const baseUrl = getBaseUrl()
+  const userUrl = `${baseUrl}/user/${user.username || user.id}`
+  const displayName = user.name || user.username || "User"
+  const description = user.bio || user.headline || `View ${displayName}'s profile on hobbyrider`
+
+  return {
+    title: `${displayName} · hobbyrider`,
+    description: description,
+    openGraph: {
+      title: `${displayName} · hobbyrider`,
+      description: description,
+      url: userUrl,
+      type: "profile",
+      images: user.image ? [user.image] : undefined,
+    },
+    twitter: {
+      card: "summary",
+      title: `${displayName} · hobbyrider`,
+      description: description,
+      images: user.image ? [user.image] : undefined,
+    },
+  }
+}
 
 export default async function UserPage({
   params,

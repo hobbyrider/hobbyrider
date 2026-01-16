@@ -7,6 +7,7 @@ import { useSession } from "next-auth/react"
 import Link from "next/link"
 import { ReportButton } from "@/app/components/report-button"
 import { getRelativeTime } from "@/lib/utils"
+import toast from "react-hot-toast"
 
 type CommentItemProps = {
   comment: {
@@ -57,9 +58,12 @@ export function CommentItem({ comment, productId }: CommentItemProps) {
       try {
         await updateComment(comment.id, editContent, productId)
         setIsEditing(false)
+        toast.success("Comment updated successfully!")
         router.refresh()
       } catch (err: any) {
-        setError(err.message || "Failed to update comment")
+        const errorMessage = err.message || "Failed to update comment"
+        setError(errorMessage)
+        toast.error(errorMessage)
       }
     })
   }
@@ -73,9 +77,12 @@ export function CommentItem({ comment, productId }: CommentItemProps) {
     startTransition(async () => {
       try {
         await deleteComment(comment.id, productId)
+        toast.success("Comment deleted successfully")
         router.refresh()
       } catch (err: any) {
-        setError(err.message || "Failed to delete comment")
+        const errorMessage = err.message || "Failed to delete comment"
+        setError(errorMessage)
+        toast.error(errorMessage)
       }
     })
   }

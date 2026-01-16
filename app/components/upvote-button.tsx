@@ -5,6 +5,7 @@ import { upvoteSoftware } from "@/app/actions/software"
 import { useRouter, usePathname } from "next/navigation"
 import Link from "next/link"
 import { UpvoteIcon } from "@/app/components/icons"
+import toast from "react-hot-toast"
 
 type UpvoteButtonProps = {
   id: string
@@ -32,8 +33,11 @@ export function UpvoteButton({ id, upvotes, hasUpvoted = false, isLoggedIn = fal
       try {
         await upvoteSoftware(id)
         router.refresh()
+        // Note: We don't show success toast here as the UI updates immediately
       } catch (err: any) {
-        setError(err.message || "Failed to upvote")
+        const errorMessage = err.message || "Failed to upvote"
+        setError(errorMessage)
+        toast.error(errorMessage)
       }
     })
   }

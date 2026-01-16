@@ -10,8 +10,94 @@ import { ProductGallery } from "@/app/components/product-gallery"
 import { SidebarBlock } from "@/app/components/sidebar-block"
 import { ReportButton } from "@/app/components/report-button"
 import { getSession } from "@/lib/get-session"
+import type { Metadata } from "next"
 
 export const dynamic = "force-dynamic"
+
+// Helper function to get base URL
+function getBaseUrl() {
+  if (process.env.NEXTAUTH_URL) {
+    return process.env.NEXTAUTH_URL
+  }
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`
+  }
+  return "https://hobbyrider.vercel.app"
+}
+
+// Generate metadata for product pages
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}): Promise<Metadata> {
+  const { id } = await params
+  const product = await prisma.software.findUnique({
+    where: { id },
+    include: {
+      categories: {
+        select: {
+          name: true,
+        },
+      },
+      makerUser: {
+        select: {
+          name: true,
+          username: true,
+        },
+      },
+    },
+  })
+
+  if (!product) {
+    return {
+      title: "Product Not Found",
+    }
+  }
+
+  const baseUrl = getBaseUrl()
+  const productUrl = `${baseUrl}/product/${id}`
+  const description = product.description || product.tagline
+  const image = product.thumbnail || `${baseUrl}/icon.svg`
+  const categoryNames = product.categories.map((c) => c.name).join(", ")
+  const makerName = product.makerUser?.name || product.makerUser?.username || product.maker || "Unknown"
+
+  return {
+    title: `${product.name} · hobbyrider`,
+    description: description,
+    openGraph: {
+      title: product.name,
+      description: description,
+      url: productUrl,
+      siteName: "hobbyrider",
+      images: [
+        {
+          url: image,
+          width: 1200,
+          height: 630,
+          alt: product.name,
+        },
+      ],
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: product.name,
+      description: description,
+      images: [image],
+    },
+    alternates: {
+      canonical: productUrl,
+    },
+    other: {
+      "product:price:amount": "0",
+      "product:price:currency": "USD",
+      "product:availability": "in stock",
+      "product:category": categoryNames,
+      "product:brand": makerName,
+    },
+  }
+}
 
 export default async function ProductPage({
   params,
@@ -115,8 +201,44 @@ export default async function ProductPage({
     }
   }
 
+  const baseUrl = getBaseUrl()
+  const productUrl = `${baseUrl}/product/${id}`
+  
+  // Structured data (JSON-LD) for SEO
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: product.name,
+    description: product.description || product.tagline,
+    url: product.url,
+    applicationCategory: "WebApplication",
+    operatingSystem: "Web",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+    },
+    aggregateRating: product.upvotes > 0 ? {
+      "@type": "AggregateRating",
+      ratingValue: "5",
+      ratingCount: product.upvotes.toString(),
+    } : undefined,
+    author: product.makerUser ? {
+      "@type": "Person",
+      name: product.makerUser.name || product.makerUser.username || "Unknown",
+    } : undefined,
+    image: product.thumbnail || undefined,
+    datePublished: product.createdAt.toISOString(),
+    category: product.categories.map((c) => c.name).join(", "),
+  }
+
   return (
-    <main className="px-6 py-10">
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <main className="px-6 py-10">
       <div className="mx-auto max-w-7xl">
         <Link
           href="/"
@@ -325,5 +447,6 @@ export default async function ProductPage({
         </div>
       </div>
     </main>
+    </>
   )
 }

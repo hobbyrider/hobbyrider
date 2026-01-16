@@ -6,6 +6,7 @@ import { getRelativeTime } from "@/lib/utils"
 import { deleteSoftwareByCreator } from "@/app/actions/software"
 import { DeleteConfirm } from "@/app/components/delete-confirm"
 import { useRouter } from "next/navigation"
+import toast from "react-hot-toast"
 
 type Product = {
   id: string
@@ -39,11 +40,12 @@ export function ProductList({ products, isOwnProfile }: ProductListProps) {
     setIsDeleting(true)
     try {
       await deleteSoftwareByCreator(deletingProductId)
+      toast.success("Product deleted successfully")
       router.refresh()
       setDeletingProductId(null)
     } catch (error: any) {
       console.error("Delete error:", error)
-      alert(error.message || "Failed to delete product. Please try again.")
+      toast.error(error.message || "Failed to delete product. Please try again.")
     } finally {
       setIsDeleting(false)
     }

@@ -5,6 +5,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
 import Link from "next/link"
+import toast from "react-hot-toast"
 
 export function CommentForm({ productId }: { productId: string }) {
   const { data: session } = useSession()
@@ -44,10 +45,11 @@ export function CommentForm({ productId }: { productId: string }) {
     try {
       await createComment(productId, content)
       setContent("")
+      toast.success("Comment posted successfully!")
       router.refresh()
     } catch (error: any) {
       console.error("Failed to create comment:", error)
-      alert(error.message || "Failed to post comment. Please try again.")
+      toast.error(error.message || "Failed to post comment. Please try again.")
     } finally {
       setSubmitting(false)
     }
