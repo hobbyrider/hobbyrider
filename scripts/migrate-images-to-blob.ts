@@ -17,19 +17,29 @@
  *   - DATABASE_URL must point to production database
  */
 
-// Load environment variables from .env.local
+// Load environment variables from .env.local BEFORE any other imports
+// This must happen before importing prisma, which reads DATABASE_URL at module load time
 import { config } from "dotenv"
 import { resolve } from "path"
-config({ path: resolve(process.cwd(), ".env.local") })
+import { existsSync } from "fs"
+
+const envLocalPath = resolve(process.cwd(), ".env.local")
+if (existsSync(envLocalPath)) {
+  config({ path: envLocalPath })
+  console.log("✅ Loaded .env.local")
+} else {
+  console.warn("⚠️  .env.local not found, using system environment variables")
+}
 config() // Also load .env if it exists
 
+// Now we can safely import modules that depend on environment variables
 import { put } from "@vercel/blob"
-import { prisma } from "../lib/prisma"
 import { readFile } from "node:fs/promises"
-import { existsSync } from "node:fs"
 import path from "node:path"
 
 async function migrateImages() {
+  // Dynamically import prisma AFTER env vars are loaded
+  const { prisma } = await import("../lib/prisma")
   const token = process.env.BLOB_READ_WRITE_TOKEN
   if (!token) {
     console.error("❌ BLOB_READ_WRITE_TOKEN is not set!")
