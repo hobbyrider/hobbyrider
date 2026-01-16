@@ -29,7 +29,7 @@ export default function PricingPage() {
           <div className="rounded-2xl border-2 border-gray-200 bg-white p-8 shadow-sm md:p-12">
             <div className="mb-6">
               <div className="mb-4 inline-block rounded-full bg-green-50 px-4 py-1.5 text-sm font-medium text-green-700">
-                Free Forever
+                Free to Start
               </div>
               <h2 className="text-3xl font-semibold text-gray-900">
                 List Your Software
@@ -43,7 +43,7 @@ export default function PricingPage() {
               <div className="mb-6">
                 <div className="flex items-baseline gap-2">
                   <span className="text-5xl font-semibold text-gray-900">$0</span>
-                  <span className="text-lg text-gray-600">forever</span>
+                  <span className="text-lg text-gray-600">to get started</span>
                 </div>
                 <p className="mt-2 text-sm text-gray-500">
                   No credit card required. No hidden fees.
@@ -213,11 +213,12 @@ export default function PricingPage() {
           <div className="space-y-8">
             <div>
               <h3 className="mb-2 text-lg font-medium text-gray-900">
-                Is it really free to list my software?
+                Is it free to list my software?
               </h3>
               <p className="text-base text-gray-700 leading-relaxed">
-                Yes! Listing your software on hobbyrider is completely free and always will be. 
-                You can create unlimited product listings at no cost.
+                Yes! Currently, listing your software on hobbyrider is completely free. 
+                You can create product listings at no cost. We may introduce different tiers 
+                with additional features in the future, but basic listings will always be available.
               </p>
             </div>
             <div>
@@ -236,8 +237,8 @@ export default function PricingPage() {
               </h3>
               <p className="text-base text-gray-700 leading-relaxed">
                 We're planning to introduce optional paid features like featured placements, promoted listings, 
-                and enhanced visibility options. These will be completely optional – the free listing will always 
-                remain free and fully functional.
+                and enhanced visibility options. We may also introduce different tiers with additional functionality. 
+                These will be clearly communicated when available.
               </p>
             </div>
             <div>
@@ -245,7 +246,7 @@ export default function PricingPage() {
                 Do you take any commission from sales?
               </h3>
               <p className="text-base text-gray-700 leading-relaxed">
-                No. hobbyrider is free to use and we don't take any commission from your sales or subscriptions. 
+                No. hobbyrider doesn't take any commission from your sales or subscriptions. 
                 We're here to help you get discovered, not to take a cut of your business.
               </p>
             </div>
