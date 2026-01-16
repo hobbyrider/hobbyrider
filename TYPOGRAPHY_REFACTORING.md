@@ -27,15 +27,17 @@
 - **File:** `lib/cn.ts`
 - **Purpose:** Merge className strings safely
 
-### 4. Key Pages Refactored
+### 4. Key Pages & Components Refactored
 - ✅ `app/(main)/page.tsx` - Homepage
 - ✅ `app/(main)/pricing/page.tsx` - Pricing page
 - ✅ `app/(main)/categories/page.tsx` - Categories page
 - ✅ `app/(main)/submit/page.tsx` - Submit page
 - ✅ `app/(main)/privacy/page.tsx` - Privacy Policy
 - ✅ `app/(main)/terms/page.tsx` - Terms of Service
+- ✅ `app/(main)/product/[id]/page.tsx` - Product detail page (partially)
 - ✅ `app/components/site-footer.tsx` - Footer
 - ✅ `app/components/site-header.tsx` - Header
+- ✅ `app/components/feed-item-card.tsx` - Feed item card
 
 ### 5. CSS Updates
 - **File:** `app/globals.css`
