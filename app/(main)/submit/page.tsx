@@ -185,7 +185,7 @@ export default function SubmitPage() {
               Submit Software
             </PageTitle>
             <Muted className="text-lg">
-              Share a tool you think is worth riding 🤖
+              Curated, community-ranked products directory. Built for builders, by builders.
             </Muted>
           </header>
           <div className="rounded-xl border border-gray-200 bg-white p-12 text-center">
