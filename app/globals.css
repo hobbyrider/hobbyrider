@@ -10,6 +10,10 @@
   display: none; /* Chrome, Safari, Opera */
 }
 
+/* Debug overflow: uncomment when needed */
+/* * { outline: 1px solid rgba(255,0,0,0.08); } */
+/* html, body { overflow-x: hidden; } */
+
 /* Design System Tokens */
 :root {
   /* shadcn/ui CSS Variables - Aligned with existing design system */
