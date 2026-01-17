@@ -37,16 +37,16 @@ export function UserMenu() {
 
   if (!session) {
     return (
-      <div className="flex gap-2">
+      <div className="flex items-center gap-1.5 sm:gap-2">
         <Link
           href="/login"
-          className="px-3 py-2 text-sm font-semibold text-gray-700 transition-colors hover:text-gray-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded"
+          className="px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-gray-700 transition-colors hover:text-gray-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded"
         >
           Login
         </Link>
         <Link
           href="/signup"
-          className="px-4 py-2 text-sm font-semibold rounded-lg border-2 border-gray-300 bg-white text-gray-900 transition-colors hover:bg-gray-50 hover:border-gray-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
+          className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold rounded-lg border-2 border-gray-300 bg-white text-gray-900 transition-colors hover:bg-gray-50 hover:border-gray-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
         >
           Sign up
         </Link>

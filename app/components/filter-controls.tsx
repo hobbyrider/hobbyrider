@@ -43,7 +43,7 @@ export function FilterControls() {
         <label className="text-xs sm:text-sm font-medium text-gray-700 mb-2 block" id="sort-label">
           Sort by
         </label>
-        <div className="flex flex-wrap gap-1.5 sm:gap-2" role="group" aria-labelledby="sort-label">
+        <div className="flex gap-1.5 sm:gap-2 overflow-x-auto sm:flex-wrap hide-scrollbar pb-1 sm:pb-0 -mx-1 sm:mx-0 px-1 sm:px-0" style={{ WebkitOverflowScrolling: 'touch' }} role="group" aria-labelledby="sort-label">
           {sortOptions.map((option) => {
             const isActive = currentSort === option.value
             const href = buildFilterUrl(option.value, currentDate)
@@ -51,7 +51,7 @@ export function FilterControls() {
               <Link
                 key={option.value}
                 href={href || "/"}
-                className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium border transition-colors duration-200 ${
+                className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium border transition-colors duration-200 whitespace-nowrap flex-shrink-0 ${
                   isActive
                     ? "bg-gray-900 text-white border-gray-900"
                     : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50 hover:border-gray-400"
@@ -67,10 +67,10 @@ export function FilterControls() {
 
       {/* Date Filter */}
       <div>
-        <label className="text-sm font-medium text-gray-700 mb-2 block" id="date-label">
+        <label className="text-xs sm:text-sm font-medium text-gray-700 mb-2 block" id="date-label">
           Time period
         </label>
-        <div className="flex flex-wrap gap-2" role="group" aria-labelledby="date-label">
+        <div className="flex gap-1.5 sm:gap-2 overflow-x-auto sm:flex-wrap hide-scrollbar pb-1 sm:pb-0 -mx-1 sm:mx-0 px-1 sm:px-0" style={{ WebkitOverflowScrolling: 'touch' }} role="group" aria-labelledby="date-label">
           {dateOptions.map((option) => {
             const isActive = currentDate === option.value
             const href = buildFilterUrl(currentSort, option.value)
@@ -78,7 +78,7 @@ export function FilterControls() {
               <Link
                 key={option.value}
                 href={href || "/"}
-                className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium border transition-colors duration-200 ${
+                className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium border transition-colors duration-200 whitespace-nowrap flex-shrink-0 ${
                   isActive
                     ? "bg-gray-900 text-white border-gray-900"
                     : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50 hover:border-gray-400"

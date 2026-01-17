@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
+/* Hide scrollbar for horizontally scrollable filter chips */
+.hide-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
 /* Design System Tokens */
 :root {
   /* shadcn/ui CSS Variables - Aligned with existing design system */

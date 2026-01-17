@@ -48,15 +48,15 @@ export function FeedItemCard({ item, hasUpvoted, isLoggedIn }: FeedItemCardProps
           
           {/* Content */}
           <div className="flex-1 min-w-0">
-            {/* Title and time */}
-            <div className="flex items-baseline gap-2 flex-wrap">
+            {/* Title and time - stack on mobile, inline on desktop */}
+            <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
               <Link
                 href={`/product/${item.id}`}
                 className="transition-colors hover:text-gray-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded"
               >
                 <CardTitle className="text-lg sm:text-xl text-gray-900">{item.name}</CardTitle>
               </Link>
-              <Caption className="whitespace-nowrap text-xs">
+              <Caption className="text-xs">
                 {getRelativeTime(item.createdAt)}
               </Caption>
             </div>
@@ -106,8 +106,8 @@ export function FeedItemCard({ item, hasUpvoted, isLoggedIn }: FeedItemCardProps
           </div>
         </div>
 
-        {/* Actions */}
-        <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0 sm:self-start">
+        {/* Actions - stick to one line */}
+        <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0 sm:self-start whitespace-nowrap">
           {/* Upvote button */}
           <UpvoteButton 
             id={item.id} 
