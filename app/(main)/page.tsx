@@ -179,7 +179,7 @@ export default async function Home({
         <FilterControls />
 
         {/* Feed Section */}
-        <section>
+        <section className="space-y-6">
           {paginatedProducts.length === 0 ? (
             <div className="rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 p-8 sm:p-12 text-center">
               <Text className="text-base text-gray-600">

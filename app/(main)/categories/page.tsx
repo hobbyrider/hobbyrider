@@ -27,8 +27,8 @@ export default async function CategoriesPage() {
           ← Back to home
         </Link>
 
-        <header className="mb-8 sm:mb-10">
-          <PageTitle className="mb-2 text-2xl sm:text-4xl text-gray-900">
+        <header className="mb-6 sm:mb-8">
+          <PageTitle className="text-2xl sm:text-4xl text-gray-900">
             Product Categories
           </PageTitle>
           <Muted className="text-base sm:text-lg">

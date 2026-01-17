@@ -189,12 +189,14 @@ export default function SubmitPage() {
     <main className="min-h-screen">
       <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
         <div className="mx-auto max-w-xl">
-        <PageTitle className="text-2xl sm:text-3xl text-gray-900">Submit your product</PageTitle>
-        <Muted className="mt-2 text-sm sm:text-base">
-          Get ranked by the community and discovered by your future users.
-        </Muted>
+        <header className="mb-6 sm:mb-8">
+          <PageTitle className="text-2xl sm:text-3xl text-gray-900">Submit your product</PageTitle>
+          <Muted className="mt-2 text-sm sm:text-base">
+            Get ranked by the community and discovered by your future users.
+          </Muted>
+        </header>
 
-        <form onSubmit={handleSubmit} className="mt-6 sm:mt-8 space-y-4 sm:space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <LabelText>Name</LabelText>
             <input

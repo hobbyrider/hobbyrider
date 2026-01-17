@@ -266,7 +266,7 @@ export default async function ProductPage({
 
         <div className="grid grid-cols-1 gap-6 lg:gap-8 lg:grid-cols-[1fr_320px]">
           {/* Main Content */}
-          <div className="space-y-10">
+          <div className="space-y-6">
             {/* Product Header */}
             <div>
               <div className="mb-4 sm:mb-6 flex items-start gap-3 sm:gap-5">
@@ -346,7 +346,7 @@ export default async function ProductPage({
 
             {/* Description & Video */}
             {(product.description || product.embedHtml) && (
-              <div className="space-y-6 sm:space-y-10">
+              <div className="space-y-6">
                 {product.description && (
                   <section>
                     <SectionTitle className="mb-4 text-gray-900">Overview</SectionTitle>

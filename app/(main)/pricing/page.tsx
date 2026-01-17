@@ -25,7 +25,7 @@ export default function PricingPage() {
       <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
         <div className="mx-auto max-w-4xl">
         {/* Header */}
-        <header className="mb-8 sm:mb-12 text-center">
+        <header className="mb-6 sm:mb-8 text-center">
           <PageTitle className="text-3xl sm:text-4xl md:text-5xl text-gray-900">
             Pricing
           </PageTitle>
