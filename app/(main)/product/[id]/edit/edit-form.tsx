@@ -5,6 +5,7 @@ import { addProductImages, deleteProductImage } from "@/app/actions/images"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import { MarkdownInfo } from "@/app/components/markdown-info"
 
 type Category = {
   id: string
@@ -276,14 +277,17 @@ export default function EditProductForm({
               value={tagline}
               onChange={(e) => setTagline(e.target.value)}
               className="mt-1 w-full rounded-lg border px-3 py-2"
-              placeholder="Manage tasks, docs, and projects in one place."
+              placeholder="Short, clear one-liner."
               required
             />
           </div>
 
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="text-sm font-medium">Description (optional)</label>
+              <div className="flex items-center gap-2">
+                <label className="text-sm font-medium">Description (optional)</label>
+                <MarkdownInfo />
+              </div>
               <span className={`text-xs ${description.replace(/<[^>]*>/g, "").length > 800 ? "text-red-600" : "text-gray-500"}`}>
                 {description.replace(/<[^>]*>/g, "").length}/800
               </span>
@@ -327,7 +331,7 @@ export default function EditProductForm({
               onChange={(e) => setEmbedHtml(e.target.value)}
               maxLength={800}
               className="mt-1 w-full rounded-lg border px-3 py-2 font-mono text-xs"
-              placeholder='<div style="position: relative; aspect-ratio: 1024/640;"><iframe src="https://..." title="..." frameborder="0" loading="lazy" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;"></iframe></div>'
+              placeholder='e.g. <div style="position: relative; aspect-ratio: 1024/640;"><iframe src="..." title="..." frameborder="0" loading="lazy" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; color-scheme: light;"></iframe></div>'
               rows={5}
             />
           </div>

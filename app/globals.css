@@ -102,6 +102,26 @@
   --transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Loading bar animation - fluid progress from left to right */
+@keyframes loading-progress {
+  0% {
+    width: 0%;
+    transform: translateX(0);
+  }
+  50% {
+    width: 70%;
+    transform: translateX(0);
+  }
+  100% {
+    width: 100%;
+    transform: translateX(0);
+  }
+}
+
+.animate-loading-progress {
+  animation: loading-progress 1.5s ease-out infinite;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

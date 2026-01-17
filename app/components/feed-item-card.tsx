@@ -48,17 +48,35 @@ export function FeedItemCard({ item, hasUpvoted, isLoggedIn }: FeedItemCardProps
           
           {/* Content */}
           <div className="flex-1 min-w-0">
-            {/* Title and time - stack on mobile, inline on desktop */}
-            <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
+            {/* Title */}
+            <div>
               <Link
                 href={`/product/${item.id}`}
                 className="transition-colors hover:text-gray-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded"
               >
                 <CardTitle className="text-lg sm:text-xl text-gray-900">{item.name}</CardTitle>
               </Link>
-              <Caption className="text-xs">
+            </div>
+            
+            {/* Time and builder - on same line */}
+            <div className="flex flex-wrap items-center gap-1.5 text-xs text-gray-500">
+              <Caption>
                 {getRelativeTime(item.createdAt)}
               </Caption>
+              {item.maker && (
+                <>
+                  <span className="text-gray-400">·</span>
+                  <span>
+                    by{" "}
+                    <Link
+                      href={`/user/${item.maker}`}
+                      className="transition-colors hover:text-gray-900 hover:underline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-gray-700 rounded"
+                    >
+                      @{item.maker}
+                    </Link>
+                  </span>
+                </>
+              )}
             </div>
             
             {/* Tagline */}
@@ -66,43 +84,22 @@ export function FeedItemCard({ item, hasUpvoted, isLoggedIn }: FeedItemCardProps
               {item.tagline}
             </Small>
             
-            {/* Categories and Builder */}
-            <div className="mt-2 sm:mt-3 flex flex-wrap items-center gap-1.5 sm:gap-2">
-              {/* Categories */}
-              {item.categories.length > 0 && (
-                <div className="flex flex-wrap gap-1.5">
-                  {item.categories.slice(0, 3).map((category) => (
-                    <Link
-                      key={category.id}
-                      href={`/?category=${category.slug}`}
-                      className="focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-gray-700 rounded"
-                    >
-                      <Badge variant="secondary" className="text-xs font-medium cursor-pointer">
-                        {category.name}
-                      </Badge>
-                    </Link>
-                  ))}
-                  {item.categories.length > 3 && (
-                    <Caption>
-                      +{item.categories.length - 3} more
-                    </Caption>
-                  )}
-                </div>
-              )}
-              
-              {/* Builder attribution */}
-              {item.maker && (
-                <span className="text-xs text-gray-500">
-                  by{" "}
+            {/* Categories */}
+            {item.categories.length > 0 && (
+              <div className="mt-2 sm:mt-3 flex flex-wrap items-center gap-1.5 sm:gap-2">
+                {item.categories.map((category) => (
                   <Link
-                    href={`/user/${item.maker}`}
-                    className="transition-colors hover:text-gray-900 hover:underline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-gray-700 rounded"
+                    key={category.id}
+                    href={`/?category=${category.slug}`}
+                    className="focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-gray-700 rounded"
                   >
-                    @{item.maker}
+                    <Badge variant="secondary" className="text-xs font-medium cursor-pointer">
+                      {category.name}
+                    </Badge>
                   </Link>
-                </span>
-              )}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 

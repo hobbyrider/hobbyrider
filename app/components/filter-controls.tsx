@@ -1,11 +1,17 @@
 "use client"
 
 import Link from "next/link"
-import { useSearchParams } from "next/navigation"
+import { useSearchParams, useRouter, usePathname } from "next/navigation"
+import { useTransition } from "react"
 import { buildQueryString, type SortOption, type DateFilter } from "@/lib/filters"
+import { TopLoadingBar } from "@/app/components/top-loading-bar"
 
 export function FilterControls() {
   const searchParams = useSearchParams()
+  const router = useRouter()
+  const pathname = usePathname()
+  const [isPending, startTransition] = useTransition()
+  
   const category = searchParams.get("category") || undefined
   const currentSort = (searchParams.get("sort") || "upvotes") as SortOption
   const currentDate = (searchParams.get("date") || "all") as DateFilter
@@ -36,8 +42,17 @@ export function FilterControls() {
     })
   }
 
+  const handleFilterClick = (href: string, e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault()
+    startTransition(() => {
+      router.push(href)
+    })
+  }
+
   return (
-    <div className="mb-6 sm:mb-8 space-y-4 sm:space-y-6">
+    <>
+      <TopLoadingBar isLoading={isPending} />
+      <div className="mb-6 sm:mb-8 space-y-4 sm:space-y-6">
       {/* Sort Options */}
       <div>
         <label className="text-xs sm:text-sm font-medium text-gray-700 mb-2 block" id="sort-label">
@@ -47,10 +62,12 @@ export function FilterControls() {
           {sortOptions.map((option) => {
             const isActive = currentSort === option.value
             const href = buildFilterUrl(option.value, currentDate)
+            const filterKey = `sort-${option.value}`
             return (
               <Link
                 key={option.value}
                 href={href || "/"}
+                onClick={(e) => handleFilterClick(href || "/", e)}
                 className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium border transition-colors duration-200 whitespace-nowrap flex-shrink-0 ${
                   isActive
                     ? "bg-gray-900 text-white border-gray-900"
@@ -74,10 +91,12 @@ export function FilterControls() {
           {dateOptions.map((option) => {
             const isActive = currentDate === option.value
             const href = buildFilterUrl(currentSort, option.value)
+            const filterKey = `date-${option.value}`
             return (
               <Link
                 key={option.value}
                 href={href || "/"}
+                onClick={(e) => handleFilterClick(href || "/", e)}
                 className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium border transition-colors duration-200 whitespace-nowrap flex-shrink-0 ${
                   isActive
                     ? "bg-gray-900 text-white border-gray-900"
@@ -116,6 +135,7 @@ export function FilterControls() {
           </Link>
         </div>
       )}
-    </div>
+      </div>
+    </>
   )
 }

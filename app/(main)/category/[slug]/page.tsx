@@ -98,6 +98,9 @@ export default async function CategoryPage({
               {category.description}
             </p>
           )}
+          <p className="mb-2 text-sm text-gray-600">
+            Curated, community-ranked products directory. Built for builders, by builders.
+          </p>
           <p className="text-sm text-gray-600">
             {category.products.length}{" "}
             {category.products.length === 1 ? "product" : "products"}

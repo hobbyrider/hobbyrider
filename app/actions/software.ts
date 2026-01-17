@@ -34,9 +34,9 @@ export async function createSoftware(
   const name = sanitizeInput(String(formData.get("name") ?? ""), 40)
   const tagline = sanitizeInput(String(formData.get("tagline") ?? ""), 70)
   
-  // Strip HTML from description (plain text only)
+  // Allow markdown in description, but strip HTML tags for security
   const descriptionRaw = String(formData.get("description") ?? "").trim()
-  const descriptionClean = descriptionRaw.replace(/<[^>]*>/g, "") // Strip HTML tags
+  const descriptionClean = descriptionRaw.replace(/<[^>]*>/g, "") // Strip HTML tags (markdown is preserved)
   const description = sanitizeInput(descriptionClean, 800) || null
   
   const url = String(formData.get("url") ?? "").trim()
@@ -264,9 +264,9 @@ export async function updateSoftware(
   const name = sanitizeInput(String(formData.get("name") ?? ""), 40)
   const tagline = sanitizeInput(String(formData.get("tagline") ?? ""), 70)
   
-  // Strip HTML from description (plain text only)
+  // Allow markdown in description, but strip HTML tags for security
   const descriptionRaw = String(formData.get("description") ?? "").trim()
-  const descriptionClean = descriptionRaw.replace(/<[^>]*>/g, "") // Strip HTML tags
+  const descriptionClean = descriptionRaw.replace(/<[^>]*>/g, "") // Strip HTML tags (markdown is preserved)
   const description = sanitizeInput(descriptionClean, 800) || null
   
   const url = String(formData.get("url") ?? "").trim()

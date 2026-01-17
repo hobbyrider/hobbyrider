@@ -9,12 +9,14 @@ import bcrypt from "bcryptjs"
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma) as any,
   secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET,
-  trustHost: true, // Required for NextAuth v5 in development
+  trustHost: true, // Required for NextAuth v5 - respects incoming request host
+  // Use custom domain (hobbyrider.io) if available, fallback to vercel.app
+  basePath: "/api/auth",
   providers: [
     // Google OAuth (only if configured)
     ...((process.env.GOOGLE_CLIENT_ID || process.env.AUTH_GOOGLE_ID) &&
     (process.env.GOOGLE_CLIENT_SECRET || process.env.AUTH_GOOGLE_SECRET)
-      ? [
+      ?         [
           Google({
             clientId: process.env.GOOGLE_CLIENT_ID || process.env.AUTH_GOOGLE_ID!,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET || process.env.AUTH_GOOGLE_SECRET!,
@@ -50,6 +52,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               if (process.env.RESEND_API_KEY) {
                 const { getEmailHtml, getEmailText } = await import("./email-template")
                 
+                // Replace hobbyrider.vercel.app with hobbyrider.io in the magic link URL
+                const transformedUrl = url.replace(/https?:\/\/hobbyrider\.vercel\.app/g, "https://hobbyrider.io")
+                
                 const result = await fetch("https://api.resend.com/emails", {
                   method: "POST",
                   headers: {
@@ -60,8 +65,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                     from: provider.from,
                     to: identifier,
                     subject: "Sign in to Hobbyrider",
-                    html: getEmailHtml({ url, host: new URL(url).host }),
-                    text: getEmailText({ url, host: new URL(url).host }),
+                    html: getEmailHtml({ url: transformedUrl, host: new URL(transformedUrl).host }),
+                    text: getEmailText({ url: transformedUrl, host: new URL(transformedUrl).host }),
                   }),
                 })
 

@@ -89,10 +89,10 @@ export function CommentItem({ comment, productId }: CommentItemProps) {
   }
 
   return (
-    <div className="border-b border-gray-200 pb-4 sm:pb-6 last:border-b-0 last:pb-0">
-      <div className="mb-3 space-y-2">
-        {/* Avatar, Username, Time, and Actions */}
-        <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
+    <div className="border-b border-gray-200 pb-4 sm:pb-6 last:border-b-0 last:pb-0 min-w-0">
+      <div className="mb-3 space-y-2 min-w-0">
+        {/* Avatar, Username, Time */}
+        <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap min-w-0">
           {comment.authorUser ? (
             <>
               {comment.authorUser.image ? (
@@ -130,13 +130,13 @@ export function CommentItem({ comment, productId }: CommentItemProps) {
               </Link>
             </>
           )}
-          <span className="text-sm text-gray-500">
+          <span className="text-sm text-gray-500 flex-shrink-0">
             {getRelativeTime(comment.createdAt)}
           </span>
         </div>
 
         {/* Actions - Between username and comment */}
-        <div className="flex items-center gap-3 sm:gap-4">
+        <div className="flex items-center gap-2 sm:gap-3 flex-wrap min-w-0">
           {isOwnComment && (
             <>
               <button
@@ -199,7 +199,7 @@ export function CommentItem({ comment, productId }: CommentItemProps) {
           </div>
         </div>
       ) : (
-        <p className="whitespace-pre-wrap leading-relaxed text-gray-700 break-words">
+        <p className="whitespace-pre-wrap leading-relaxed text-gray-700 break-words min-w-0">
           {comment.content}
         </p>
       )}

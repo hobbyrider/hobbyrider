@@ -15,6 +15,7 @@ import { getSession } from "@/lib/get-session"
 import type { Metadata } from "next"
 import { PageTitle, SectionTitle, Text, Muted, Small } from "@/app/components/typography"
 import { ProductActions } from "./product-actions"
+import { MarkdownContent } from "@/app/components/markdown-content"
 
 export const dynamic = "force-dynamic"
 export const revalidate = 60 // Revalidate product pages every 60 seconds
@@ -256,7 +257,7 @@ export default async function ProductPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       <main className="min-h-screen">
-      <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
+      <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8 min-w-0">
         <Link
           href="/"
           className="mb-4 sm:mb-6 inline-block text-sm font-medium text-gray-600 transition-colors hover:text-gray-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded"
@@ -264,9 +265,9 @@ export default async function ProductPage({
           ← Back to home
         </Link>
 
-        <div className="grid grid-cols-1 gap-6 lg:gap-8 lg:grid-cols-[1fr_320px]">
+        <div className="grid grid-cols-1 gap-6 lg:gap-8 lg:grid-cols-[1fr_320px] min-w-0">
           {/* Main Content */}
-          <div className="space-y-6">
+          <div className="space-y-6 min-w-0">
             {/* Product Header */}
             <div>
               <div className="mb-4 sm:mb-6 flex items-start gap-3 sm:gap-5">
@@ -350,11 +351,7 @@ export default async function ProductPage({
                 {product.description && (
                   <section>
                     <SectionTitle className="mb-4 text-gray-900">Overview</SectionTitle>
-                    <div className="prose prose-gray max-w-none">
-                      <Text className="whitespace-pre-wrap text-gray-700">
-                        {product.description}
-                      </Text>
-                    </div>
+                    <MarkdownContent content={product.description} />
                   </section>
                 )}
 
@@ -460,14 +457,14 @@ export default async function ProductPage({
             </div>
 
             {/* Comments Section */}
-            <section id="comments" className="border-t border-gray-200 pt-6 sm:pt-10">
+            <section id="comments" className="border-t border-gray-200 pt-6 sm:pt-10 min-w-0">
               <SectionTitle className="mb-4 sm:mb-6 text-xl sm:text-2xl text-gray-900">
                 Comments ({comments.length})
               </SectionTitle>
 
               <CommentForm productId={id} />
 
-              <div className="mt-8 space-y-6">
+              <div className="mt-8 space-y-6 min-w-0">
                 {comments.length === 0 ? (
                   <div className="rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 py-8 sm:py-12 text-center">
                     <Text className="text-sm sm:text-base text-gray-600">

@@ -1,7 +1,12 @@
+"use client"
+
 import Link from "next/link"
+import { useState } from "react"
 import { Text, Muted, Caption, SmallHeading } from "@/app/components/typography"
+import { SearchModal } from "@/app/components/search-modal"
 
 export function SiteFooter() {
+  const [searchOpen, setSearchOpen] = useState(false)
   return (
     <footer className="mt-12 sm:mt-20 border-t border-gray-200 bg-white">
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
@@ -21,12 +26,13 @@ export function SiteFooter() {
                   </Link>
                 </li>
                 <li>
-                  <Link
-                    href="/search"
+                  <button
+                    type="button"
+                    onClick={() => setSearchOpen(true)}
                     className="text-gray-600 transition-colors hover:text-gray-900 hover:underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded"
                   >
                     Search
-                  </Link>
+                  </button>
                 </li>
               </ul>
             </div>
@@ -162,12 +168,13 @@ export function SiteFooter() {
                   hobbyrider
                 </Link>
                 <span className="mx-1 sm:mx-2">·</span>
-                Built by builders, for builders.
+                Built for builders, by builders.
               </p>
             </div>
           </div>
         </div>
       </div>
+      <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
     </footer>
   )
 }

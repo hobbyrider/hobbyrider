@@ -65,7 +65,7 @@ export function ReportButton({ type, contentId, contentName, variant = "default"
   const isInline = variant === "inline"
 
   return (
-    <div className="relative">
+    <div className="relative min-w-0">
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
@@ -92,20 +92,20 @@ export function ReportButton({ type, contentId, contentName, variant = "default"
           />
 
           {/* Modal */}
-          <div className="absolute right-0 top-full mt-2 z-50 w-80 rounded-lg border border-gray-200 bg-white p-4 shadow-lg">
+          <div className={`absolute ${isInline ? 'left-0' : 'right-0'} top-full mt-2 z-50 w-[calc(100vw-4rem)] max-w-[280px] sm:max-w-[320px] rounded-lg border border-gray-200 bg-white p-3 sm:p-4 shadow-lg`}>
             <h3 className="mb-3 text-sm font-semibold text-gray-900">
               Report {type === "product" ? "Product" : type === "comment" ? "Comment" : "User"}
             </h3>
 
             <form onSubmit={handleSubmit} className="space-y-3">
               <div>
-                <label className="mb-2 block text-xs font-medium text-gray-700">
+                <label className="mb-1.5 block text-xs font-medium text-gray-700">
                   Reason
                 </label>
                 <select
                   value={selectedReason}
                   onChange={(e) => setSelectedReason(e.target.value as ReportReason)}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-gray-900 focus:outline-none"
+                  className="w-full rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-gray-900 focus:outline-none"
                   required
                 >
                   <option value="">Select a reason</option>
@@ -119,7 +119,7 @@ export function ReportButton({ type, contentId, contentName, variant = "default"
 
               {selectedReason === "other" && (
                 <div>
-                  <label className="mb-2 block text-xs font-medium text-gray-700">
+                  <label className="mb-1.5 block text-xs font-medium text-gray-700">
                     Additional details
                   </label>
                   <textarea
@@ -127,7 +127,7 @@ export function ReportButton({ type, contentId, contentName, variant = "default"
                     onChange={(e) => setDetails(e.target.value)}
                     placeholder="Please provide more information..."
                     rows={3}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm resize-none focus:border-gray-900 focus:outline-none"
+                    className="w-full rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm resize-none focus:border-gray-900 focus:outline-none"
                     maxLength={500}
                   />
                 </div>
@@ -148,14 +148,14 @@ export function ReportButton({ type, contentId, contentName, variant = "default"
                     setSelectedReason("")
                     setDetails("")
                   }}
-                  className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                  className="flex-1 rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 whitespace-nowrap"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting || !selectedReason}
-                  className="flex-1 rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 rounded-lg bg-gray-900 px-2.5 py-1.5 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
                 >
                   {submitting ? "Submitting..." : "Submit"}
                 </button>

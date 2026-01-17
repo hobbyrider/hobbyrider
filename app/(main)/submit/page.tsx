@@ -9,6 +9,7 @@ import { useSession } from "next-auth/react"
 import Link from "next/link"
 import toast from "react-hot-toast"
 import { PageTitle, Muted, Text, SmallHeading, LabelText, Small as SmallText, Caption } from "@/app/components/typography"
+import { MarkdownInfo } from "@/app/components/markdown-info"
 
 type Category = {
   id: string
@@ -73,13 +74,15 @@ function validateTagline(value: string): string | null {
 function validateDescription(value: string): string | null {
   if (!value.trim()) return null // Optional field
   
-  // Strip HTML tags for character count
+  // Strip HTML tags for character count (markdown is allowed, but HTML tags are stripped)
   const plainText = value.replace(/<[^>]*>/g, "")
   if (plainText.length > MAX_DESCRIPTION) return `Description must be ${MAX_DESCRIPTION} characters or less`
   
-  // Check for external links (basic URL detection)
-  const urlRegex = /(https?:\/\/|www\.)/i
-  if (urlRegex.test(value)) return "Description cannot contain external links"
+  // Allow markdown formatting (no need to check for links as markdown links are allowed)
+  // Only block raw HTML tags for security
+  const htmlTagRegex = /<[^>]+>/g
+  const hasHtmlTags = htmlTagRegex.test(value)
+  if (hasHtmlTags) return "HTML tags are not allowed. Use Markdown formatting instead (e.g., **bold**, *italic*, # heading)"
   
   return null
 }
@@ -459,7 +462,7 @@ export default function SubmitPage() {
                   ? "border-red-500 focus:border-red-500 focus:ring-red-500"
                   : "border-gray-300 focus:border-gray-900 focus:ring-gray-900"
               }`}
-              placeholder="Guideless"
+              placeholder="e.g. Guideless"
               required
             />
             {errors.name && (
@@ -484,20 +487,23 @@ export default function SubmitPage() {
                   ? "border-red-500 focus:border-red-500 focus:ring-red-500"
                   : "border-gray-300 focus:border-gray-900 focus:ring-gray-900"
               }`}
-              placeholder="The easiest way to make software video guides."
+              placeholder="Short, clear one-liner."
               required
             />
             {errors.tagline && (
               <p className="mt-1.5 text-sm text-red-600">{errors.tagline}</p>
             )}
             <Caption className="mt-1.5">
-              A short one-liner explaining what it is and why it matters.
+              One clear sentence describing the product's value.
             </Caption>
           </div>
 
           <div>
             <div className="flex items-center justify-between mb-1">
-              <LabelText>Description (optional)</LabelText>
+              <div className="flex items-center gap-2">
+                <LabelText>Description (optional)</LabelText>
+                <MarkdownInfo />
+              </div>
               <Caption className={getDescriptionCharCount(formValues.description) > MAX_DESCRIPTION ? "text-red-600" : "text-gray-500"}>
                 {getDescriptionCharCount(formValues.description)}/{MAX_DESCRIPTION}
               </Caption>
@@ -540,7 +546,7 @@ export default function SubmitPage() {
                   ? "border-red-500 focus:border-red-500 focus:ring-red-500"
                   : "border-gray-300 focus:border-gray-900 focus:ring-gray-900"
               }`}
-              placeholder="https://guideless.ai/"
+              placeholder="e.g. https://guideless.ai"
               required
             />
             {errors.url && (
@@ -567,7 +573,7 @@ export default function SubmitPage() {
                   ? "border-red-500 focus:border-red-500 focus:ring-red-500"
                   : "border-gray-300 focus:border-gray-900 focus:ring-gray-900"
               }`}
-              placeholder='<div style="position: relative; aspect-ratio: 1024/640;"><iframe src="https://..." title="..." frameborder="0" loading="lazy" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;"></iframe></div>'
+              placeholder='e.g. <div style="position: relative; aspect-ratio: 1024/640;"><iframe src="..." title="..." frameborder="0" loading="lazy" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; color-scheme: light;"></iframe></div>'
               rows={5}
             />
             {errors.embedHtml && (

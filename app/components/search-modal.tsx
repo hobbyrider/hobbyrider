@@ -5,7 +5,6 @@ import Link from "next/link"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { searchSoftware, getDiscoverData } from "@/app/actions/search"
-import { FilterControls } from "@/app/components/filter-controls"
 import { getRelativeTime } from "@/lib/utils"
 
 type CategoryItem = {
@@ -206,9 +205,9 @@ export function SearchModal({
           </div>
         </div>
 
-        <div className="grid gap-0 md:grid-cols-[1fr_320px]">
-          {/* Left - Main Content */}
-          <div className="max-h-[70vh] overflow-auto px-4 sm:px-6 py-4 sm:py-6">
+        <div className="max-h-[calc(100vh-8rem)] sm:max-h-[70vh] overflow-y-auto">
+          {/* Main Content */}
+          <div className="px-4 sm:px-6 py-4 sm:py-6 min-w-0">
             {showSearchResults ? (
               <>
                 {results.length === 0 && !searching ? (
@@ -218,7 +217,7 @@ export function SearchModal({
                   </div>
                 ) : (
                   <ul className="space-y-2">
-                    {results.map((item) => (
+                    {results.slice(0, 3).map((item) => (
                       <li key={item.id} className="group rounded-lg border border-gray-200 bg-white p-4 transition-all hover:border-gray-300 hover:bg-gray-50">
                         <button
                           type="button"
@@ -274,6 +273,17 @@ export function SearchModal({
                     ))}
                   </ul>
                 )}
+                {results.length > 3 && (
+                  <div className="mt-4 pt-4 border-t border-gray-200 text-center">
+                    <Link
+                      href={`/search?q=${encodeURIComponent(trimmed)}`}
+                      onClick={onClose}
+                      className="text-sm font-medium text-gray-700 hover:text-gray-900 underline underline-offset-4"
+                    >
+                      View all {results.length} results →
+                    </Link>
+                  </div>
+                )}
               </>
             ) : (
               <>
@@ -319,7 +329,7 @@ export function SearchModal({
                     <p className="text-sm text-gray-600">Loading…</p>
                   ) : (
                     <ul className="space-y-2">
-                      {topProducts.map((p) => (
+                      {topProducts.slice(0, 3).map((p) => (
                         <li key={p.id} className="group rounded-lg border border-gray-200 bg-white p-3 transition-all hover:border-gray-300 hover:bg-gray-50">
                           <button
                             type="button"
@@ -360,14 +370,6 @@ export function SearchModal({
               </>
             )}
           </div>
-
-          {/* Right - Sidebar */}
-          <aside className="border-t border-gray-200 bg-gray-50 px-6 py-6 md:border-l md:border-t-0">
-            <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
-              Discovery
-            </p>
-            <FilterControls />
-          </aside>
         </div>
       </div>
     </div>
