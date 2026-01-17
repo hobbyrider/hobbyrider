@@ -57,6 +57,9 @@ export function MarkdownInfo() {
             <div>
               <strong>Line break:</strong> Use two spaces at end of line or empty line
             </div>
+            <div>
+              <strong>Links:</strong> <code className="px-1 py-0.5 bg-gray-100 rounded text-xs">[text](https://example.com)</code>
+            </div>
           </div>
         </div>
       )}

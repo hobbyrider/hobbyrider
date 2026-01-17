@@ -123,7 +123,7 @@ export function CommentItem({ comment, productId }: CommentItemProps) {
                 {comment.author?.[0].toUpperCase() || "?"}
               </div>
               <Link
-                href={`/builder/${comment.author}`}
+                href={`/user/${comment.author}`}
                 className="font-semibold text-gray-900 transition-colors hover:text-gray-700 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded"
               >
                 @{comment.author}

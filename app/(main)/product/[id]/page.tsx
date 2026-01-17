@@ -440,7 +440,7 @@ export default async function ProductPage({
                         </div>
                         <div>
                           <Link
-                            href={`/builder/${product.maker}`}
+                            href={`/user/${product.maker}`}
                             className="block font-semibold text-gray-900 transition-colors hover:text-gray-700 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded"
                           >
                             @{product.maker}
@@ -557,7 +557,7 @@ export default async function ProductPage({
                         </div>
                         <div>
                           <Link
-                            href={`/builder/${product.maker}`}
+                            href={`/user/${product.maker}`}
                             className="block font-semibold text-gray-900 transition-colors hover:text-gray-700 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded"
                           >
                             @{product.maker}

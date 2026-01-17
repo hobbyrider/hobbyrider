@@ -78,11 +78,18 @@ function validateDescription(value: string): string | null {
   const plainText = value.replace(/<[^>]*>/g, "")
   if (plainText.length > MAX_DESCRIPTION) return `Description must be ${MAX_DESCRIPTION} characters or less`
   
-  // Allow markdown formatting (no need to check for links as markdown links are allowed)
-  // Only block raw HTML tags for security
+  // Block raw HTML tags for security
   const htmlTagRegex = /<[^>]+>/g
   const hasHtmlTags = htmlTagRegex.test(value)
   if (hasHtmlTags) return "HTML tags are not allowed. Use Markdown formatting instead (e.g., **bold**, *italic*, # heading)"
+  
+  // Allow markdown links [text](url), but block raw URLs (security/spam prevention)
+  // Remove all markdown links first, then check if any raw URLs remain
+  const withoutMarkdownLinks = value.replace(/\[([^\]]*)\]\([^\)]+\)/g, "")
+  const rawUrlRegex = /(https?:\/\/|www\.)/i
+  if (rawUrlRegex.test(withoutMarkdownLinks)) {
+    return "Raw URLs are not allowed. Use Markdown links instead: [text](https://example.com)"
+  }
   
   return null
 }

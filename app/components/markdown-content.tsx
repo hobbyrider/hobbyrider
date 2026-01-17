@@ -32,8 +32,16 @@ export function MarkdownContent({ content, className = "" }: MarkdownContentProp
           blockquote: ({ node, ...props }) => (
             <blockquote className="border-l-4 border-gray-300 pl-4 italic text-gray-600 my-3" {...props} />
           ),
-          // Links (disabled for security, but keeping structure)
-          a: ({ node, ...props }) => <span className="text-gray-700" {...props} />,
+          // Links - allow markdown links with proper security attributes
+          a: ({ node, href, ...props }) => (
+            <a
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-900 underline underline-offset-2 hover:text-gray-700 transition-colors"
+              {...props}
+            />
+          ),
         }}
       >
         {content}

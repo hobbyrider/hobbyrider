@@ -159,7 +159,7 @@ export default function SearchPage() {
                           <p className="mt-1 text-xs text-gray-500">
                             Submitted by{" "}
                             <Link
-                              href={`/builder/${item.maker}`}
+                              href={`/user/${item.maker}`}
                               className="font-semibold hover:underline"
                             >
                               @{item.maker}
