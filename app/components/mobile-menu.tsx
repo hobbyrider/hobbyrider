@@ -4,7 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
-import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetTitle } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { NavLinkText } from "@/app/components/typography"
 
@@ -41,6 +41,7 @@ export function MobileMenu() {
         </button>
       </SheetTrigger>
       <SheetContent side="right" className="w-[280px] sm:w-[320px]">
+        <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
         <nav className="flex flex-col gap-1 mt-6">
           {/* Primary CTA - Full width Button */}
           <SheetClose asChild>
