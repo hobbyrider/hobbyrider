@@ -85,6 +85,12 @@ export default async function Home({
       tagline: true,
       url: true,
       maker: true,
+      makerUser: {
+        select: {
+          username: true,
+          id: true,
+        },
+      },
       thumbnail: true,
       upvotes: true,
       viewCount: true,
@@ -106,10 +112,12 @@ export default async function Home({
     take: 1000, // Reasonable limit for homepage
   })
 
-  // Map to include comment counts
+  // Map to include comment counts and prefer makerUser over maker field
   let softwareWithCounts: SoftwareItem[] = allProducts.map((item: any) => ({
     ...item,
     commentCount: item._count.comments,
+    // Prefer makerUser.username over maker field (maker field can be stale)
+    maker: item.makerUser?.username || item.maker,
   }))
 
   // Apply sorting

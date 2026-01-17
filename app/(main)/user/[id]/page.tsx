@@ -6,6 +6,8 @@ import { getSession } from "@/lib/get-session"
 import { ProductList } from "./product-list"
 import { ProfileTabs } from "./profile-tabs"
 import { ReportButton } from "@/app/components/report-button"
+import { FollowButton } from "@/app/components/follow-button"
+import { getFollowCounts, getFollowStatus } from "@/app/actions/follow"
 import { getRelativeTime } from "@/lib/utils"
 import type { Metadata } from "next"
 
@@ -146,6 +148,12 @@ export default async function UserPage({
   // Check if viewing own profile
   const isOwnProfile = session?.user?.id === user.id
 
+  // Get follow counts and status
+  const followCounts = await getFollowCounts(user.id)
+  const isFollowing = session?.user?.id
+    ? await getFollowStatus(session.user.id, user.id)
+    : false
+
   return (
     <main className="min-h-screen">
       <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
@@ -189,15 +197,15 @@ export default async function UserPage({
                       <div className="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600 mb-3 flex-wrap">
                         <span>@{user.username}</span>
                         <span>•</span>
-                        <span>0 followers</span>
+                        <span>{followCounts.followers} {followCounts.followers === 1 ? "follower" : "followers"}</span>
                         <span>•</span>
-                        <span>0 following</span>
+                        <span>{followCounts.following} following</span>
                       </div>
                     )}
                   </div>
 
-                  {/* Edit Button / Report Button */}
-                  <div className="flex-shrink-0 w-full sm:w-auto">
+                  {/* Edit Button / Follow Button / Report Button */}
+                  <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 flex-shrink-0 w-full sm:w-auto">
                     {isOwnProfile ? (
                       <Link
                         href={`/user/${user.id}/edit`}
@@ -206,16 +214,35 @@ export default async function UserPage({
                         Edit my profile
                       </Link>
                     ) : (
-                      <ReportButton 
-                        type="user" 
-                        contentId={user.id} 
-                        contentName={user.username || user.name || user.email} 
-                      />
+                      <>
+                        <FollowButton 
+                          userId={user.id} 
+                          isFollowing={isFollowing}
+                          isOwnProfile={false}
+                        />
+                        <ReportButton 
+                          type="user" 
+                          contentId={user.id} 
+                          contentName={user.username || user.name || user.email} 
+                        />
+                      </>
                     )}
                   </div>
                 </div>
               </div>
             </div>
+
+            {/* Admin Link - Only show if user is admin */}
+            {user.isAdmin && (
+              <div className="mb-4 pt-2 border-t border-gray-200">
+                <Link
+                  href="/admin/moderation"
+                  className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                >
+                  Admin-only
+                </Link>
+              </div>
+            )}
 
             {/* Stats */}
             <div className="flex flex-wrap gap-4 sm:gap-6 text-xs sm:text-sm text-gray-600 border-t border-gray-200 pt-4">

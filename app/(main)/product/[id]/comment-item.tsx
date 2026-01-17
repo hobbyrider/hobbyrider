@@ -90,47 +90,78 @@ export function CommentItem({ comment, productId }: CommentItemProps) {
 
   return (
     <div className="border-b border-gray-200 pb-4 sm:pb-6 last:border-b-0 last:pb-0">
-      <div className="mb-3 flex items-center gap-2 sm:gap-2.5 flex-wrap">
-        {comment.authorUser ? (
-          <>
-            {comment.authorUser.image ? (
-              <div className="h-8 w-8 rounded-full overflow-hidden border border-gray-200 flex-shrink-0 relative">
-                <Image
-                  src={comment.authorUser.image}
-                  alt={comment.authorUser.username || comment.authorUser.name || "User"}
-                  fill
-                  className="object-cover"
-                  sizes="32px"
-                />
-              </div>
-            ) : (
+      <div className="mb-3 space-y-2">
+        {/* Avatar, Username, Time, and Actions */}
+        <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
+          {comment.authorUser ? (
+            <>
+              {comment.authorUser.image ? (
+                <div className="h-8 w-8 rounded-full overflow-hidden border border-gray-200 flex-shrink-0 relative">
+                  <Image
+                    src={comment.authorUser.image}
+                    alt={comment.authorUser.username || comment.authorUser.name || "User"}
+                    fill
+                    className="object-cover"
+                    sizes="32px"
+                  />
+                </div>
+              ) : (
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-xs font-semibold text-gray-700 border border-gray-300 flex-shrink-0">
+                  {(comment.authorUser.username || comment.authorUser.name || "?")[0].toUpperCase()}
+                </div>
+              )}
+              <Link
+                href={`/user/${comment.authorUser.username || comment.authorUser.id}`}
+                className="font-semibold text-gray-900 transition-colors hover:text-gray-700 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded"
+              >
+                @{comment.authorUser.username || comment.authorUser.name}
+              </Link>
+            </>
+          ) : (
+            <>
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-xs font-semibold text-gray-700 border border-gray-300 flex-shrink-0">
-                {(comment.authorUser.username || comment.authorUser.name || "?")[0].toUpperCase()}
+                {comment.author?.[0].toUpperCase() || "?"}
               </div>
-            )}
-            <Link
-              href={`/user/${comment.authorUser.username || comment.authorUser.id}`}
-              className="font-semibold text-gray-900 transition-colors hover:text-gray-700 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded"
-            >
-              @{comment.authorUser.username || comment.authorUser.name}
-            </Link>
-          </>
-        ) : (
-          <>
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-xs font-semibold text-gray-700 border border-gray-300 flex-shrink-0">
-              {comment.author?.[0].toUpperCase() || "?"}
-            </div>
-            <Link
-              href={`/builder/${comment.author}`}
-              className="font-semibold text-gray-900 transition-colors hover:text-gray-700 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded"
-            >
-              @{comment.author}
-            </Link>
-          </>
-        )}
-        <span className="text-sm text-gray-500">
-          {getRelativeTime(comment.createdAt)}
-        </span>
+              <Link
+                href={`/builder/${comment.author}`}
+                className="font-semibold text-gray-900 transition-colors hover:text-gray-700 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded"
+              >
+                @{comment.author}
+              </Link>
+            </>
+          )}
+          <span className="text-sm text-gray-500">
+            {getRelativeTime(comment.createdAt)}
+          </span>
+        </div>
+
+        {/* Actions - Between username and comment */}
+        <div className="flex items-center gap-3 sm:gap-4">
+          {isOwnComment && (
+            <>
+              <button
+                type="button"
+                onClick={handleEdit}
+                className="text-sm text-gray-500 hover:text-gray-700 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600 rounded"
+                title="Edit comment"
+                aria-label="Edit comment"
+              >
+                Edit
+              </button>
+              <button
+                type="button"
+                onClick={handleDelete}
+                disabled={isPending}
+                className="text-sm text-red-500 hover:text-red-700 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Delete comment"
+                aria-label="Delete comment"
+              >
+                Delete
+              </button>
+            </>
+          )}
+          <ReportButton type="comment" contentId={comment.id} variant="inline" />
+        </div>
       </div>
 
       {isEditing ? (
@@ -168,37 +199,9 @@ export function CommentItem({ comment, productId }: CommentItemProps) {
           </div>
         </div>
       ) : (
-        <div className="flex items-start justify-between gap-4">
-          <p className="flex-1 whitespace-pre-wrap leading-relaxed text-gray-700">
-            {comment.content}
-          </p>
-          <div className="flex items-center gap-2 flex-shrink-0">
-            {isOwnComment && (
-              <>
-                <button
-                  type="button"
-                  onClick={handleEdit}
-                  className="text-sm text-gray-500 hover:text-gray-700 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600 rounded"
-                  title="Edit comment"
-                  aria-label="Edit comment"
-                >
-                  Edit
-                </button>
-                <button
-                  type="button"
-                  onClick={handleDelete}
-                  disabled={isPending}
-                  className="text-sm text-red-500 hover:text-red-700 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 rounded disabled:opacity-50 disabled:cursor-not-allowed"
-                  title="Delete comment"
-                  aria-label="Delete comment"
-                >
-                  Delete
-                </button>
-              </>
-            )}
-            <ReportButton type="comment" contentId={comment.id} />
-          </div>
-        </div>
+        <p className="whitespace-pre-wrap leading-relaxed text-gray-700 break-words">
+          {comment.content}
+        </p>
       )}
     </div>
   )

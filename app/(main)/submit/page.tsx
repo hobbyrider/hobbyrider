@@ -16,6 +16,118 @@ type Category = {
   slug: string
 }
 
+type ValidationError = {
+  field: string
+  message: string
+}
+
+// Field limits
+const MAX_NAME = 40
+const MAX_TAGLINE = 70
+const MAX_DESCRIPTION = 800
+const MAX_URL = 40
+const MAX_EMBED = 800
+
+// Validation functions
+function validateName(value: string): string | null {
+  if (!value.trim()) return "Name is required"
+  if (value.length > MAX_NAME) return `Name must be ${MAX_NAME} characters or less`
+  
+  // Check for emojis
+  const emojiRegex = /[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu
+  if (emojiRegex.test(value)) return "Name cannot contain emojis"
+  
+  // Check for URLs (basic pattern)
+  const urlRegex = /(https?:\/\/|www\.)/i
+  if (urlRegex.test(value)) return "Name cannot contain URLs"
+  
+  // Check for ALL CAPS (more than 3 consecutive uppercase letters suggests shouting)
+  if (value === value.toUpperCase() && value.length > 3) return "Name cannot be all uppercase"
+  
+  // Check for separators (taglines)
+  const separatorRegex = /[–|:]/
+  if (separatorRegex.test(value)) return "Name cannot contain separators (–, |, :)"
+  
+  return null
+}
+
+function validateTagline(value: string): string | null {
+  if (!value.trim()) return "Tagline is required"
+  if (value.length > MAX_TAGLINE) return `Tagline must be ${MAX_TAGLINE} characters or less`
+  
+  // Check for emojis
+  const emojiRegex = /[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu
+  if (emojiRegex.test(value)) return "Tagline cannot contain emojis"
+  
+  // Check for multiple exclamation marks
+  const exclamationCount = (value.match(/!/g) || []).length
+  if (exclamationCount > 1) return "Tagline can have at most 1 exclamation mark"
+  
+  // Check for pricing/promos/CTAs
+  const promoPatterns = /\b(free|50%|off|try now|sign up|get started|download|buy|purchase|discount|promo|sale)\b/i
+  if (promoPatterns.test(value)) return "Tagline cannot contain pricing, promotions, or CTAs"
+  
+  return null
+}
+
+function validateDescription(value: string): string | null {
+  if (!value.trim()) return null // Optional field
+  
+  // Strip HTML tags for character count
+  const plainText = value.replace(/<[^>]*>/g, "")
+  if (plainText.length > MAX_DESCRIPTION) return `Description must be ${MAX_DESCRIPTION} characters or less`
+  
+  // Check for external links (basic URL detection)
+  const urlRegex = /(https?:\/\/|www\.)/i
+  if (urlRegex.test(value)) return "Description cannot contain external links"
+  
+  return null
+}
+
+function validateUrl(value: string): string | null {
+  if (!value.trim()) return "URL is required"
+  if (value.length > MAX_URL) return `URL must be ${MAX_URL} characters or less`
+  
+  // Must start with https://
+  if (!value.startsWith("https://")) {
+    return "URL must start with https://"
+  }
+  
+  // Reject URL shorteners (common patterns)
+  const shortenerDomains = [
+    "bit.ly", "tinyurl.com", "goo.gl", "t.co", "ow.ly", 
+    "is.gd", "buff.ly", "short.link", "rebrand.ly", "cutt.ly"
+  ]
+  const hostname = new URL(value).hostname.toLowerCase()
+  if (shortenerDomains.some(domain => hostname === domain || hostname.endsWith(`.${domain}`))) {
+    return "URL shorteners are not allowed. Please use the full URL."
+  }
+  
+  return null
+}
+
+function validateEmbed(value: string): string | null {
+  if (!value.trim()) return null // Optional field
+  if (value.length > MAX_EMBED) return `Embed code must be ${MAX_EMBED} characters or less`
+  
+  // Must contain iframe
+  if (!/<iframe[\s>]/i.test(value)) {
+    return "Embed code must be an iframe"
+  }
+  
+  // Check for script tags (should be stripped server-side, but warn client-side)
+  if (/<script[\s>]/i.test(value)) {
+    return "Embed code cannot contain script tags"
+  }
+  
+  // Check for autoplay with sound
+  if (/autoplay[\s=]/i.test(value) && /muted[\s=]/i.test(value) === false) {
+    return "Autoplay videos must be muted"
+  }
+  
+  return null
+}
+
 export default function SubmitPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
@@ -26,6 +138,18 @@ export default function SubmitPage() {
   const [categories, setCategories] = useState<Category[]>([])
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [submitting, setSubmitting] = useState(false)
+  
+  // Form values
+  const [formValues, setFormValues] = useState({
+    name: "",
+    tagline: "",
+    description: "",
+    url: "",
+    embedHtml: "",
+  })
+  
+  // Validation errors
+  const [errors, setErrors] = useState<Record<string, string>>({})
 
   useEffect(() => {
     getAllCategories()
@@ -202,8 +326,78 @@ export default function SubmitPage() {
     }
   }
 
+  // Validate all fields
+  const validateForm = (): boolean => {
+    const newErrors: Record<string, string> = {}
+    
+    const nameError = validateName(formValues.name)
+    if (nameError) newErrors.name = nameError
+    
+    const taglineError = validateTagline(formValues.tagline)
+    if (taglineError) newErrors.tagline = taglineError
+    
+    const descriptionError = validateDescription(formValues.description)
+    if (descriptionError) newErrors.description = descriptionError
+    
+    const urlError = validateUrl(formValues.url)
+    if (urlError) newErrors.url = urlError
+    
+    const embedError = validateEmbed(formValues.embedHtml)
+    if (embedError) newErrors.embedHtml = embedError
+    
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
+  // Handle field change with validation
+  const handleFieldChange = (field: keyof typeof formValues, value: string) => {
+    setFormValues(prev => ({ ...prev, [field]: value }))
+    
+    // Real-time validation
+    let error: string | null = null
+    switch (field) {
+      case "name":
+        error = validateName(value)
+        break
+      case "tagline":
+        error = validateTagline(value)
+        break
+      case "description":
+        error = validateDescription(value)
+        break
+      case "url":
+        error = validateUrl(value)
+        break
+      case "embedHtml":
+        error = validateEmbed(value)
+        break
+    }
+    
+    if (error) {
+      setErrors(prev => ({ ...prev, [field]: error! }))
+    } else {
+      setErrors(prev => {
+        const next = { ...prev }
+        delete next[field]
+        return next
+      })
+    }
+  }
+
+  // Get character count for description (plain text, no HTML)
+  const getDescriptionCharCount = (value: string): number => {
+    return value.replace(/<[^>]*>/g, "").length
+  }
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    
+    // Validate before submission
+    if (!validateForm()) {
+      toast.error("Please fix the errors in the form before submitting.")
+      return
+    }
+    
     setSubmitting(true)
 
     try {
@@ -249,59 +443,136 @@ export default function SubmitPage() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <LabelText>Name</LabelText>
+            <div className="flex items-center justify-between mb-1">
+              <LabelText>Name</LabelText>
+              <Caption className={formValues.name.length > MAX_NAME ? "text-red-600" : "text-gray-500"}>
+                {formValues.name.length}/{MAX_NAME}
+              </Caption>
+            </div>
             <input
               name="name"
-              className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5 text-base focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-0"
+              value={formValues.name}
+              onChange={(e) => handleFieldChange("name", e.target.value)}
+              maxLength={MAX_NAME}
+              className={`mt-1 w-full rounded-lg border px-3 py-2.5 text-base focus:outline-none focus:ring-2 focus:ring-offset-0 ${
+                errors.name
+                  ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+                  : "border-gray-300 focus:border-gray-900 focus:ring-gray-900"
+              }`}
               placeholder="Guideless"
               required
             />
+            {errors.name && (
+              <p className="mt-1.5 text-sm text-red-600">{errors.name}</p>
+            )}
           </div>
 
           <div>
-            <LabelText>Tagline</LabelText>
+            <div className="flex items-center justify-between mb-1">
+              <LabelText>Tagline</LabelText>
+              <Caption className={formValues.tagline.length > MAX_TAGLINE ? "text-red-600" : "text-gray-500"}>
+                {formValues.tagline.length}/{MAX_TAGLINE}
+              </Caption>
+            </div>
             <input
               name="tagline"
-              className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5 text-base focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-0"
+              value={formValues.tagline}
+              onChange={(e) => handleFieldChange("tagline", e.target.value)}
+              maxLength={MAX_TAGLINE}
+              className={`mt-1 w-full rounded-lg border px-3 py-2.5 text-base focus:outline-none focus:ring-2 focus:ring-offset-0 ${
+                errors.tagline
+                  ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+                  : "border-gray-300 focus:border-gray-900 focus:ring-gray-900"
+              }`}
               placeholder="The easiest way to make software video guides."
               required
             />
-          </div>
-
-          <div>
-            <LabelText>Description (optional)</LabelText>
-            <textarea
-              name="description"
-              className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5 text-base resize-y focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-0"
-              placeholder="Write a detailed description of what it does, who it’s for, and why it’s different…"
-              rows={5}
-            />
-            <Caption className="mt-1">
-              This will be shown on the product page.
+            {errors.tagline && (
+              <p className="mt-1.5 text-sm text-red-600">{errors.tagline}</p>
+            )}
+            <Caption className="mt-1.5">
+              A short one-liner explaining what it is and why it matters.
             </Caption>
           </div>
 
           <div>
-            <LabelText>URL</LabelText>
-            <input
-              name="url"
-              type="url"
-              className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5 text-base focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-0"
-              placeholder="https://guideless.ai/"
-              required
+            <div className="flex items-center justify-between mb-1">
+              <LabelText>Description (optional)</LabelText>
+              <Caption className={getDescriptionCharCount(formValues.description) > MAX_DESCRIPTION ? "text-red-600" : "text-gray-500"}>
+                {getDescriptionCharCount(formValues.description)}/{MAX_DESCRIPTION}
+              </Caption>
+            </div>
+            <textarea
+              name="description"
+              value={formValues.description}
+              onChange={(e) => handleFieldChange("description", e.target.value)}
+              className={`mt-1 w-full rounded-lg border px-3 py-2.5 text-base resize-y focus:outline-none focus:ring-2 focus:ring-offset-0 ${
+                errors.description
+                  ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+                  : "border-gray-300 focus:border-gray-900 focus:ring-gray-900"
+              }`}
+              placeholder="Write a detailed description of what it does, who it’s for, and why it’s different…"
+              rows={5}
             />
+            {errors.description && (
+              <p className="mt-1.5 text-sm text-red-600">{errors.description}</p>
+            )}
+            <Caption className="mt-1.5">
+              Describe what your product does, who it's for, and the main benefit.
+            </Caption>
           </div>
 
           <div>
-            <LabelText className="mb-2 block text-gray-900">
-              Video <span className="text-xs font-normal text-gray-500">(optional)</span>
-            </LabelText>
+            <div className="flex items-center justify-between mb-1">
+              <LabelText>URL</LabelText>
+              <Caption className={formValues.url.length > MAX_URL ? "text-red-600" : "text-gray-500"}>
+                {formValues.url.length}/{MAX_URL}
+              </Caption>
+            </div>
+            <input
+              name="url"
+              type="url"
+              value={formValues.url}
+              onChange={(e) => handleFieldChange("url", e.target.value)}
+              maxLength={MAX_URL}
+              className={`mt-1 w-full rounded-lg border px-3 py-2.5 text-base focus:outline-none focus:ring-2 focus:ring-offset-0 ${
+                errors.url
+                  ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+                  : "border-gray-300 focus:border-gray-900 focus:ring-gray-900"
+              }`}
+              placeholder="https://guideless.ai/"
+              required
+            />
+            {errors.url && (
+              <p className="mt-1.5 text-sm text-red-600">{errors.url}</p>
+            )}
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <LabelText className="text-gray-900">
+                Video <span className="text-xs font-normal text-gray-500">(optional)</span>
+              </LabelText>
+              <Caption className={formValues.embedHtml.length > MAX_EMBED ? "text-red-600" : "text-gray-500"}>
+                {formValues.embedHtml.length}/{MAX_EMBED}
+              </Caption>
+            </div>
             <textarea
               name="embedHtml"
-              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 font-mono text-xs text-gray-900 placeholder:text-gray-400 focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-0 transition-colors resize-y"
+              value={formValues.embedHtml}
+              onChange={(e) => handleFieldChange("embedHtml", e.target.value)}
+              maxLength={MAX_EMBED}
+              className={`w-full rounded-lg border bg-white px-4 py-2.5 font-mono text-xs text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-0 transition-colors resize-y ${
+                errors.embedHtml
+                  ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+                  : "border-gray-300 focus:border-gray-900 focus:ring-gray-900"
+              }`}
               placeholder='<div style="position: relative; aspect-ratio: 1024/640;"><iframe src="https://..." title="..." frameborder="0" loading="lazy" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;"></iframe></div>'
               rows={5}
             />
+            {errors.embedHtml && (
+              <p className="mt-1.5 text-sm text-red-600">{errors.embedHtml}</p>
+            )}
             <Caption className="mt-1.5">
               Paste an iframe embed snippet (YouTube, Guideless, etc.).
             </Caption>

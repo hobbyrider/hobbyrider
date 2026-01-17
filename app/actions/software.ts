@@ -31,15 +31,45 @@ export async function createSoftware(
     throw new Error("You must be logged in to submit a product")
   }
 
-  const name = sanitizeInput(String(formData.get("name") ?? ""), 200)
-  const tagline = sanitizeInput(String(formData.get("tagline") ?? ""), 500)
-  const description = sanitizeInput(String(formData.get("description") ?? ""), 10000) || null
+  const name = sanitizeInput(String(formData.get("name") ?? ""), 40)
+  const tagline = sanitizeInput(String(formData.get("tagline") ?? ""), 70)
+  
+  // Strip HTML from description (plain text only)
+  const descriptionRaw = String(formData.get("description") ?? "").trim()
+  const descriptionClean = descriptionRaw.replace(/<[^>]*>/g, "") // Strip HTML tags
+  const description = sanitizeInput(descriptionClean, 800) || null
+  
   const url = String(formData.get("url") ?? "").trim()
   const thumbnail = String(formData.get("thumbnail") ?? "").trim() || null
-  const embedHtml = sanitizeEmbedHtml(String(formData.get("embedHtml") ?? ""), 15000) || null
+  const embedHtml = sanitizeEmbedHtml(String(formData.get("embedHtml") ?? ""), 800) || null
   const categoryIds = formData.getAll("categories") as string[]
 
   if (!name || !tagline || !url) throw new Error("Missing fields")
+  
+  // Validate URL length
+  if (url.length > 40) {
+    throw new Error("URL must be 40 characters or less")
+  }
+  
+  // Validate URL starts with https://
+  if (!url.startsWith("https://")) {
+    throw new Error("URL must start with https://")
+  }
+  
+  // Reject URL shorteners
+  const shortenerDomains = [
+    "bit.ly", "tinyurl.com", "goo.gl", "t.co", "ow.ly", 
+    "is.gd", "buff.ly", "short.link", "rebrand.ly", "cutt.ly"
+  ]
+  try {
+    const hostname = new URL(url).hostname.toLowerCase()
+    if (shortenerDomains.some(domain => hostname === domain || hostname.endsWith(`.${domain}`))) {
+      throw new Error("URL shorteners are not allowed. Please use the full URL.")
+    }
+  } catch (error: any) {
+    if (error.message.includes("URL shorteners")) throw error
+    throw new Error("Invalid URL format")
+  }
 
   // Check for duplicate URL
   const existing = await prismaAny.software.findFirst({
@@ -231,15 +261,45 @@ export async function updateSoftware(
     throw new Error("You can only edit your own products")
   }
 
-  const name = sanitizeInput(String(formData.get("name") ?? ""), 200)
-  const tagline = sanitizeInput(String(formData.get("tagline") ?? ""), 500)
-  const description = sanitizeInput(String(formData.get("description") ?? ""), 10000) || null
+  const name = sanitizeInput(String(formData.get("name") ?? ""), 40)
+  const tagline = sanitizeInput(String(formData.get("tagline") ?? ""), 70)
+  
+  // Strip HTML from description (plain text only)
+  const descriptionRaw = String(formData.get("description") ?? "").trim()
+  const descriptionClean = descriptionRaw.replace(/<[^>]*>/g, "") // Strip HTML tags
+  const description = sanitizeInput(descriptionClean, 800) || null
+  
   const url = String(formData.get("url") ?? "").trim()
   const thumbnail = String(formData.get("thumbnail") ?? "").trim() || null
-  const embedHtml = sanitizeEmbedHtml(String(formData.get("embedHtml") ?? ""), 15000) || null
+  const embedHtml = sanitizeEmbedHtml(String(formData.get("embedHtml") ?? ""), 800) || null
   const categoryIds = formData.getAll("categories") as string[]
 
   if (!name || !tagline || !url) throw new Error("Missing fields")
+  
+  // Validate URL length
+  if (url.length > 40) {
+    throw new Error("URL must be 40 characters or less")
+  }
+  
+  // Validate URL starts with https://
+  if (!url.startsWith("https://")) {
+    throw new Error("URL must start with https://")
+  }
+  
+  // Reject URL shorteners
+  const shortenerDomains = [
+    "bit.ly", "tinyurl.com", "goo.gl", "t.co", "ow.ly", 
+    "is.gd", "buff.ly", "short.link", "rebrand.ly", "cutt.ly"
+  ]
+  try {
+    const hostname = new URL(url).hostname.toLowerCase()
+    if (shortenerDomains.some(domain => hostname === domain || hostname.endsWith(`.${domain}`))) {
+      throw new Error("URL shorteners are not allowed. Please use the full URL.")
+    }
+  } catch (error: any) {
+    if (error.message.includes("URL shorteners")) throw error
+    throw new Error("Invalid URL format")
+  }
 
   // Check for duplicate URL (excluding current product)
   const existing = await prismaAny.software.findFirst({

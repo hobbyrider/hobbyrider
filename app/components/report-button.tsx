@@ -9,6 +9,7 @@ type ReportButtonProps = {
   type: "product" | "comment" | "user"
   contentId: string
   contentName?: string
+  variant?: "default" | "inline"
 }
 
 const REPORT_REASONS: { value: ReportReason; label: string }[] = [
@@ -20,7 +21,7 @@ const REPORT_REASONS: { value: ReportReason; label: string }[] = [
   { value: "other", label: "Other" },
 ]
 
-export function ReportButton({ type, contentId, contentName }: ReportButtonProps) {
+export function ReportButton({ type, contentId, contentName, variant = "default" }: ReportButtonProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [selectedReason, setSelectedReason] = useState<ReportReason | "">("")
   const [details, setDetails] = useState("")
@@ -61,16 +62,22 @@ export function ReportButton({ type, contentId, contentName }: ReportButtonProps
     )
   }
 
+  const isInline = variant === "inline"
+
   return (
     <div className="relative">
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex flex-col items-center justify-center gap-1 h-12 w-12 rounded-lg border-2 border-gray-300 bg-white text-gray-900 hover:border-gray-900 hover:bg-gray-50 transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
+        className={`${
+          isInline
+            ? "inline-flex items-center p-1.5 rounded border border-gray-200 bg-white text-gray-900 hover:border-gray-300 hover:bg-gray-50"
+            : "flex flex-col items-center justify-center gap-1 h-12 w-12 rounded-lg border-2 border-gray-200 bg-white text-gray-900 hover:border-gray-300 hover:bg-gray-50"
+        } transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900`}
         title="Report content"
         aria-label={`Report ${type}`}
       >
-        <ReportIcon className="w-5 h-5" />
+        <ReportIcon className={isInline ? "w-3.5 h-3.5" : "w-5 h-5"} />
       </button>
 
       {isOpen && (

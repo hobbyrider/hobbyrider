@@ -282,7 +282,12 @@ export default function EditProductForm({
           </div>
 
           <div>
-            <label className="text-sm font-medium">Description (optional)</label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-sm font-medium">Description (optional)</label>
+              <span className={`text-xs ${description.replace(/<[^>]*>/g, "").length > 800 ? "text-red-600" : "text-gray-500"}`}>
+                {description.replace(/<[^>]*>/g, "").length}/800
+              </span>
+            </div>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -293,11 +298,17 @@ export default function EditProductForm({
           </div>
 
           <div>
-            <label className="text-sm font-medium">URL</label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-sm font-medium">URL</label>
+              <span className={`text-xs ${url.length > 40 ? "text-red-600" : "text-gray-500"}`}>
+                {url.length}/40
+              </span>
+            </div>
             <input
               type="url"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
+              maxLength={40}
               className="mt-1 w-full rounded-lg border px-3 py-2"
               placeholder="https://clickup.com"
               required
@@ -305,10 +316,16 @@ export default function EditProductForm({
           </div>
 
           <div>
-            <label className="text-sm font-medium">Embed (optional)</label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-sm font-medium">Embed (optional)</label>
+              <span className={`text-xs ${embedHtml.length > 800 ? "text-red-600" : "text-gray-500"}`}>
+                {embedHtml.length}/800
+              </span>
+            </div>
             <textarea
               value={embedHtml}
               onChange={(e) => setEmbedHtml(e.target.value)}
+              maxLength={800}
               className="mt-1 w-full rounded-lg border px-3 py-2 font-mono text-xs"
               placeholder='<div style="position: relative; aspect-ratio: 1024/640;"><iframe src="https://..." title="..." frameborder="0" loading="lazy" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;"></iframe></div>'
               rows={5}

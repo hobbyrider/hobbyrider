@@ -131,7 +131,7 @@ export function ProductGallery({ images }: { images: ProductImage[] }) {
 
       {/* Thumbnail strip */}
       {sortedImages.length > 1 && (
-        <div className="px-2 sm:px-4 py-3 sm:py-4 bg-white border-t">
+        <div className="px-2 sm:px-4 py-3 sm:py-4 bg-white border-t border-gray-200">
           <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 scrollbar-hide">
             {sortedImages.map((image, index) => (
               <button

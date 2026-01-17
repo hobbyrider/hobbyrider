@@ -1,5 +1,7 @@
-import type { Metadata } from "next"
+"use client"
+
 import Link from "next/link"
+import { useState } from "react"
 import {
   PageTitle,
   SectionTitle,
@@ -10,16 +12,32 @@ import {
   SmallHeading,
 } from "@/app/components/typography"
 
-export const metadata: Metadata = {
-  title: "Pricing",
-  description: "hobbyrider pricing - Free to list your software. More advertising options coming soon.",
-  openGraph: {
-    title: "Pricing · hobbyrider",
-    description: "Free to list your software on hobbyrider. More advertising options coming soon.",
-  },
+type FAQItem = {
+  question: string
+  answer: string
 }
 
+const faqItems: FAQItem[] = [
+  {
+    question: "Is it free to list my software?",
+    answer: "Yes! Currently, listing your software on hobbyrider is completely free. You can create product listings at no cost. We may introduce different tiers with additional features in the future, but basic listings will always be available.",
+  },
+  {
+    question: "What do I get with a free listing?",
+    answer: "You get a full product page with all the details about your software, community engagement features (upvotes, comments), analytics to track views and engagement, and SEO optimization to help people discover your product.",
+  },
+  {
+    question: "What advertising options are coming?",
+    answer: "We're planning to introduce optional paid features like featured placements, promoted listings, and enhanced visibility options. We may also introduce different tiers with additional functionality. These will be clearly communicated when available.",
+  },
+  {
+    question: "Do you take any commission from sales?",
+    answer: "No. hobbyrider doesn't take any commission from your sales or subscriptions. We're here to help you get discovered, not to take a cut of your business.",
+  },
+]
+
 export default function PricingPage() {
+  const [openIndex, setOpenIndex] = useState<number | null>(0)
   return (
     <main className="min-h-screen">
       <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
@@ -35,8 +53,8 @@ export default function PricingPage() {
         </header>
 
         {/* Main Pricing Card */}
-        <div className="mb-12 sm:mb-16">
-          <div className="rounded-2xl border-2 border-gray-200 bg-white p-6 sm:p-8 md:p-12 shadow-sm">
+        <div className="mb-8 sm:mb-12 md:mb-16">
+          <div className="rounded-xl sm:rounded-2xl border-2 border-gray-200 bg-white p-4 sm:p-6 md:p-8 lg:p-12 shadow-sm">
             <div className="mb-6">
               <div className="mb-4 inline-block rounded-full bg-green-50 px-4 py-1.5 text-sm font-medium text-green-700">
                 Free to Start
@@ -60,10 +78,10 @@ export default function PricingPage() {
                 </Small>
               </div>
 
-              <ul className="space-y-4">
-                <li className="flex items-start gap-3">
+              <ul className="space-y-3 sm:space-y-4">
+                <li className="flex items-start gap-2 sm:gap-3">
                   <svg
-                    className="h-6 w-6 flex-shrink-0 text-green-600"
+                    className="h-5 w-5 sm:h-6 sm:w-6 flex-shrink-0 text-green-600 mt-0.5"
                     fill="none"
                     viewBox="0 0 24 24"
                     strokeWidth="2"
@@ -75,13 +93,13 @@ export default function PricingPage() {
                       d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  <Text className="text-gray-700">
+                  <Text className="text-sm sm:text-base text-gray-700 break-words">
                     <strong className="font-medium text-gray-900">Unlimited listings</strong> – Post as many products as you want
                   </Text>
                 </li>
-                <li className="flex items-start gap-3">
+                <li className="flex items-start gap-2 sm:gap-3">
                   <svg
-                    className="h-6 w-6 flex-shrink-0 text-green-600"
+                    className="h-5 w-5 sm:h-6 sm:w-6 flex-shrink-0 text-green-600 mt-0.5"
                     fill="none"
                     viewBox="0 0 24 24"
                     strokeWidth="2"
@@ -93,13 +111,13 @@ export default function PricingPage() {
                       d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  <Text className="text-gray-700">
+                  <Text className="text-sm sm:text-base text-gray-700 break-words">
                     <strong className="font-medium text-gray-900">Full product page</strong> – Complete control over your listing
                   </Text>
                 </li>
-                <li className="flex items-start gap-3">
+                <li className="flex items-start gap-2 sm:gap-3">
                   <svg
-                    className="h-6 w-6 flex-shrink-0 text-green-600"
+                    className="h-5 w-5 sm:h-6 sm:w-6 flex-shrink-0 text-green-600 mt-0.5"
                     fill="none"
                     viewBox="0 0 24 24"
                     strokeWidth="2"
@@ -111,13 +129,13 @@ export default function PricingPage() {
                       d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  <Text className="text-gray-700">
+                  <Text className="text-sm sm:text-base text-gray-700 break-words">
                     <strong className="font-medium text-gray-900">Community engagement</strong> – Get upvotes, comments, and feedback
                   </Text>
                 </li>
-                <li className="flex items-start gap-3">
+                <li className="flex items-start gap-2 sm:gap-3">
                   <svg
-                    className="h-6 w-6 flex-shrink-0 text-green-600"
+                    className="h-5 w-5 sm:h-6 sm:w-6 flex-shrink-0 text-green-600 mt-0.5"
                     fill="none"
                     viewBox="0 0 24 24"
                     strokeWidth="2"
@@ -129,13 +147,13 @@ export default function PricingPage() {
                       d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  <Text className="text-gray-700">
+                  <Text className="text-sm sm:text-base text-gray-700 break-words">
                     <strong className="font-medium text-gray-900">Analytics included</strong> – Track views, engagement, and more
                   </Text>
                 </li>
-                <li className="flex items-start gap-3">
+                <li className="flex items-start gap-2 sm:gap-3">
                   <svg
-                    className="h-6 w-6 flex-shrink-0 text-green-600"
+                    className="h-5 w-5 sm:h-6 sm:w-6 flex-shrink-0 text-green-600 mt-0.5"
                     fill="none"
                     viewBox="0 0 24 24"
                     strokeWidth="2"
@@ -147,16 +165,16 @@ export default function PricingPage() {
                       d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  <Text className="text-gray-700">
+                  <Text className="text-sm sm:text-base text-gray-700 break-words">
                     <strong className="font-medium text-gray-900">SEO optimized</strong> – Built-in search engine optimization
                   </Text>
                 </li>
               </ul>
 
-              <div className="mt-8">
+              <div className="mt-6 sm:mt-8">
                 <Link
                   href="/submit"
-                  className="inline-flex items-center justify-center rounded-lg bg-gray-900 px-6 py-3 text-base font-medium text-white transition-colors hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2"
+                  className="inline-flex items-center justify-center w-full sm:w-auto rounded-lg bg-gray-900 px-6 py-2.5 sm:py-3 text-sm sm:text-base font-medium text-white transition-colors hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2"
                 >
                   List Your Software
                   <svg
@@ -179,8 +197,8 @@ export default function PricingPage() {
         </div>
 
         {/* Coming Soon Section */}
-        <div className="rounded-xl border border-gray-200 bg-gray-50 p-8 md:p-10">
-          <div className="mb-4 flex items-center gap-3">
+        <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 sm:p-6 md:p-8 lg:p-10">
+          <div className="mb-3 sm:mb-4 flex items-center gap-2 sm:gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200">
               <svg
                 className="h-6 w-6 text-gray-600"
@@ -196,15 +214,15 @@ export default function PricingPage() {
                 />
               </svg>
             </div>
-            <CardTitle className="text-xl text-gray-900">Coming Soon</CardTitle>
+            <CardTitle className="text-lg sm:text-xl text-gray-900">Coming Soon</CardTitle>
           </div>
-          <Text className="text-gray-700">
+          <Text className="text-sm sm:text-base text-gray-700 break-words">
             We're working on additional advertising and promotion options to help you reach even more potential users. 
             These will include featured placements, promoted listings, and other tools to boost your visibility. 
             Stay tuned for updates!
           </Text>
-          <div className="mt-6">
-            <Small className="text-gray-600">
+          <div className="mt-4 sm:mt-6">
+            <Small className="text-xs sm:text-sm text-gray-600 break-words">
               Want to be notified when new options are available?{" "}
               <Link
                 href="/submit"
@@ -220,46 +238,66 @@ export default function PricingPage() {
         {/* FAQ Section */}
         <div className="mt-12 sm:mt-16">
           <SectionTitle className="mb-6 sm:mb-8 text-xl sm:text-2xl text-gray-900">Frequently Asked Questions</SectionTitle>
-          <div className="space-y-8">
-            <div>
-              <CardTitle className="mb-2 text-gray-900">
-                Is it free to list my software?
-              </CardTitle>
-              <Text className="text-gray-700">
-                Yes! Currently, listing your software on hobbyrider is completely free. 
-                You can create product listings at no cost. We may introduce different tiers 
-                with additional features in the future, but basic listings will always be available.
-              </Text>
-            </div>
-            <div>
-              <CardTitle className="mb-2 text-gray-900">
-                What do I get with a free listing?
-              </CardTitle>
-              <Text className="text-gray-700">
-                You get a full product page with all the details about your software, community engagement 
-                features (upvotes, comments), analytics to track views and engagement, and SEO optimization 
-                to help people discover your product.
-              </Text>
-            </div>
-            <div>
-              <CardTitle className="mb-2 text-gray-900">
-                What advertising options are coming?
-              </CardTitle>
-              <Text className="text-gray-700">
-                We're planning to introduce optional paid features like featured placements, promoted listings, 
-                and enhanced visibility options. We may also introduce different tiers with additional functionality. 
-                These will be clearly communicated when available.
-              </Text>
-            </div>
-            <div>
-              <CardTitle className="mb-2 text-gray-900">
-                Do you take any commission from sales?
-              </CardTitle>
-              <Text className="text-gray-700">
-                No. hobbyrider doesn't take any commission from your sales or subscriptions. 
-                We're here to help you get discovered, not to take a cut of your business.
-              </Text>
-            </div>
+          <div className="space-y-0">
+            {faqItems.map((item, index) => {
+              const isOpen = openIndex === index
+              return (
+                <div key={index} className="border-b border-dashed border-gray-300 last:border-b-0">
+                  <button
+                    type="button"
+                    onClick={() => setOpenIndex(isOpen ? null : index)}
+                    className="w-full flex items-center justify-between py-4 sm:py-5 text-left focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded"
+                    aria-expanded={isOpen}
+                    aria-controls={`faq-answer-${index}`}
+                  >
+                    <CardTitle className="text-base sm:text-lg text-gray-900 pr-4">
+                      {item.question}
+                    </CardTitle>
+                    <div className="flex-shrink-0">
+                      {isOpen ? (
+                        <svg
+                          className="h-5 w-5 sm:h-6 sm:w-6 text-gray-600"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth="2"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M6 18L18 6M6 6l12 12"
+                          />
+                        </svg>
+                      ) : (
+                        <svg
+                          className="h-5 w-5 sm:h-6 sm:w-6 text-gray-600"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth="2"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M12 4v16m8-8H4"
+                          />
+                        </svg>
+                      )}
+                    </div>
+                  </button>
+                  {isOpen && (
+                    <div
+                      id={`faq-answer-${index}`}
+                      className="pb-4 sm:pb-5 pr-8 sm:pr-10"
+                    >
+                      <Text className="text-sm sm:text-base text-gray-700 leading-relaxed">
+                        {item.answer}
+                      </Text>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
           </div>
         </div>
         </div>

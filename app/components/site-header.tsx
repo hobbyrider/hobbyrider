@@ -26,6 +26,18 @@ export function SiteHeader() {
           <nav className="hidden items-center gap-1 text-base sm:flex" aria-label="Main navigation">
             <SearchTrigger />
             <Link
+              href="/pricing"
+              className="rounded-lg px-3 py-1.5 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-700"
+            >
+              <NavLinkText className="text-base text-gray-700">Pricing</NavLinkText>
+            </Link>
+            <Link
+              href="/categories"
+              className="rounded-lg px-3 py-1.5 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-700"
+            >
+              <NavLinkText className="text-base text-gray-700">Categories</NavLinkText>
+            </Link>
+            <Link
               href="/submit"
               className="rounded-lg px-3 py-1.5 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-700"
             >

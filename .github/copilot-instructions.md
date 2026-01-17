@@ -25,7 +25,14 @@ This file contains concise, actionable guidance for AI coding agents to be immed
 - The submit flow is intentionally client-only: submissions are encoded into query parameters and the home page reads them via `useSearchParams`. There are currently no server endpoints or persistence for submissions.
 - Upvotes are stored in local React state only (no backend). If you add server persistence, update both the UI and the submission/upvote flow accordingly.
 - CSS/Tailwind classes are used widely—prefer utility classes for small components.
-- **Mobile Responsiveness**: All new features must be mobile-responsive from the start. Use Tailwind responsive breakpoints (`sm:`, `lg:`) following the patterns established in the codebase. Test on mobile viewport (320px-640px).
+- **Mobile Responsiveness (CRITICAL)**: 
+  - **ALL UI changes must be mobile-responsive from the start**. This is mandatory for every change.
+  - Use Tailwind responsive breakpoints (`sm:`, `md:`, `lg:`) following the patterns established in the codebase.
+  - Test on mobile viewport (320px-640px) before completing any UI work.
+  - Always check for: horizontal overflow, text wrapping, touch targets (min 44x44px), readable font sizes (min 11-12px on mobile).
+  - When fixing or adding UI components, always verify mobile responsiveness and fix any issues immediately.
+  - Use `flex-wrap`, `overflow-x-auto`, `whitespace-nowrap` carefully - ensure they work on mobile.
+  - Text should never overflow containers - use `break-words`, `truncate`, or responsive font sizes.
 
 ## Responsiveness Regression Checklist ✅
 

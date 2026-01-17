@@ -78,8 +78,8 @@ export function ProductActions({
         disabled={isUpvoting}
         className={`flex flex-col items-center justify-center gap-1 h-12 w-12 rounded-lg border-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
           hasUpvoted
-            ? "bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100"
-            : "bg-white border-gray-300 text-gray-900 hover:border-gray-900 hover:bg-gray-50"
+            ? "bg-green-50 border-green-300 text-green-700 hover:bg-green-100 hover:border-green-400"
+            : "bg-white border-gray-200 text-gray-900 hover:border-gray-300 hover:bg-gray-50"
         } focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900`}
         aria-label={hasUpvoted ? "Remove upvote" : "Upvote"}
         title={hasUpvoted ? "Remove upvote" : "Upvote"}
@@ -98,7 +98,7 @@ export function ProductActions({
             commentsSection.scrollIntoView({ behavior: "smooth", block: "start" })
           }
         }}
-        className="flex flex-col items-center justify-center gap-1 h-12 w-12 rounded-lg border-2 border-gray-300 bg-white text-gray-900 hover:border-gray-900 hover:bg-gray-50 transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
+        className="flex flex-col items-center justify-center gap-1 h-12 w-12 rounded-lg border-2 border-gray-200 bg-white text-gray-900 hover:border-gray-300 hover:bg-gray-50 transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
         title="View comments"
         aria-label={`${commentCount} comments`}
       >
@@ -110,7 +110,7 @@ export function ProductActions({
       <button
         type="button"
         onClick={handleCopyUrl}
-        className="flex flex-col items-center justify-center gap-1 h-12 w-12 rounded-lg border-2 border-gray-300 bg-white text-gray-900 hover:border-gray-900 hover:bg-gray-50 transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
+        className="flex flex-col items-center justify-center gap-1 h-12 w-12 rounded-lg border-2 border-gray-200 bg-white text-gray-900 hover:border-gray-300 hover:bg-gray-50 transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
         aria-label="Copy URL"
         title="Copy URL"
       >

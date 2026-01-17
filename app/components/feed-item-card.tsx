@@ -95,7 +95,7 @@ export function FeedItemCard({ item, hasUpvoted, isLoggedIn }: FeedItemCardProps
                 <span className="text-xs text-gray-500">
                   by{" "}
                   <Link
-                    href={`/builder/${item.maker}`}
+                    href={`/user/${item.maker}`}
                     className="transition-colors hover:text-gray-900 hover:underline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-gray-700 rounded"
                   >
                     @{item.maker}

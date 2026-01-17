@@ -101,6 +101,8 @@ model User {
   upvotes        Upvote[]
   reportsMade    Report[]   @relation("ReportsMade")
   reportsReceived Report[]  @relation("ReportsReceived")
+  followers      Follow[]   @relation("Followers")
+  following      Follow[]   @relation("Following")
 
   @@index([email])
   @@index([username])
@@ -156,6 +158,19 @@ model Upvote {
   @@unique([userId, productId])
   @@index([productId])
   @@index([userId])
+}
+
+model Follow {
+  id          String   @id @default(cuid())
+  followerId  String
+  followingId String
+  follower    User     @relation("Following", fields: [followerId], references: [id], onDelete: Cascade)
+  following   User     @relation("Followers", fields: [followingId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@unique([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
 }
 
 model Report {

@@ -3,6 +3,14 @@
 import { prisma } from "@/lib/prisma"
 import { getSession } from "@/lib/get-session"
 import { revalidatePath } from "next/cache"
+import { sanitizeInput } from "@/lib/utils"
+
+// Field limits
+const MAX_NAME = 50
+const MAX_USERNAME = 30
+const MAX_HEADLINE = 100
+const MAX_BIO = 1000
+const MAX_URL = 200
 
 // NOTE: We cast Prisma client to `any` to avoid occasional stale Prisma type issues
 // in editor tooling. Runtime schema is authoritative.
@@ -67,29 +75,74 @@ export async function updateUserProfile(data: UpdateProfileData) {
     }
   }
 
-  // Prepare update data, converting empty strings to null
+  // Prepare update data with validation and sanitization
   const updateData: any = {}
   
   if (data.name !== undefined) {
-    updateData.name = data.name?.trim() || null
+    const nameValue = data.name?.trim() || null
+    if (nameValue && nameValue.length > MAX_NAME) {
+      throw new Error(`Name must be ${MAX_NAME} characters or less`)
+    }
+    // Strip HTML tags from name
+    const nameClean = nameValue ? nameValue.replace(/<[^>]*>/g, "") : null
+    updateData.name = sanitizeInput(nameClean || "", MAX_NAME) || null
   }
+  
   if (data.username !== undefined) {
-    updateData.username = data.username?.trim() || null
+    const usernameValue = data.username?.trim() || null
+    if (usernameValue && usernameValue.length > MAX_USERNAME) {
+      throw new Error(`Username must be ${MAX_USERNAME} characters or less`)
+    }
+    updateData.username = usernameValue || null
   }
+  
   if (data.headline !== undefined) {
-    updateData.headline = data.headline?.trim() || null
+    const headlineValue = data.headline?.trim() || null
+    if (headlineValue && headlineValue.length > MAX_HEADLINE) {
+      throw new Error(`Headline must be ${MAX_HEADLINE} characters or less`)
+    }
+    // Strip HTML tags from headline
+    const headlineClean = headlineValue ? headlineValue.replace(/<[^>]*>/g, "") : null
+    updateData.headline = sanitizeInput(headlineClean || "", MAX_HEADLINE) || null
   }
+  
   if (data.bio !== undefined) {
-    updateData.bio = data.bio?.trim() || null
+    const bioValue = data.bio?.trim() || null
+    if (bioValue) {
+      // Strip HTML tags for character count
+      const bioClean = bioValue.replace(/<[^>]*>/g, "")
+      if (bioClean.length > MAX_BIO) {
+        throw new Error(`Bio must be ${MAX_BIO} characters or less`)
+      }
+      // Strip HTML tags from bio (plain text only)
+      updateData.bio = sanitizeInput(bioClean, MAX_BIO) || null
+    } else {
+      updateData.bio = null
+    }
   }
+  
   if (data.website !== undefined) {
-    updateData.website = data.website?.trim() || null
+    const websiteValue = data.website?.trim() || null
+    if (websiteValue && websiteValue.length > MAX_URL) {
+      throw new Error(`Website URL must be ${MAX_URL} characters or less`)
+    }
+    updateData.website = websiteValue || null
   }
+  
   if (data.linkedin !== undefined) {
-    updateData.linkedin = data.linkedin?.trim() || null
+    const linkedinValue = data.linkedin?.trim() || null
+    if (linkedinValue && linkedinValue.length > MAX_URL) {
+      throw new Error(`LinkedIn URL must be ${MAX_URL} characters or less`)
+    }
+    updateData.linkedin = linkedinValue || null
   }
+  
   if (data.twitter !== undefined) {
-    updateData.twitter = data.twitter?.trim() || null
+    const twitterValue = data.twitter?.trim() || null
+    if (twitterValue && twitterValue.length > MAX_URL) {
+      throw new Error(`X (Twitter) URL must be ${MAX_URL} characters or less`)
+    }
+    updateData.twitter = twitterValue || null
   }
   if (data.image !== undefined) {
     updateData.image = data.image || null

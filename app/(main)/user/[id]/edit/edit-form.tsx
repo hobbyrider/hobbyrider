@@ -22,11 +22,75 @@ type EditProfileFormProps = {
   user: User
 }
 
+// Field limits
+const MAX_NAME = 50
+const MAX_USERNAME = 30
+const MAX_HEADLINE = 100
+const MAX_BIO = 1000
+const MAX_URL = 200
+
+// Validation functions
+function validateName(value: string): string | null {
+  if (!value.trim()) return null // Optional field
+  if (value.length > MAX_NAME) return `Name must be ${MAX_NAME} characters or less`
+  
+  // Check for emojis
+  const emojiRegex = /[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu
+  if (emojiRegex.test(value)) return "Name cannot contain emojis"
+  
+  return null
+}
+
+function validateUsername(value: string): string | null {
+  if (!value.trim()) return null // Optional field
+  if (value.length > MAX_USERNAME) return `Username must be ${MAX_USERNAME} characters or less`
+  if (!/^[a-z0-9_-]+$/.test(value)) return "Username can only contain lowercase letters, numbers, hyphens, and underscores"
+  return null
+}
+
+function validateHeadline(value: string): string | null {
+  if (!value.trim()) return null // Optional field
+  if (value.length > MAX_HEADLINE) return `Headline must be ${MAX_HEADLINE} characters or less`
+  
+  // Check for emojis
+  const emojiRegex = /[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu
+  if (emojiRegex.test(value)) return "Headline cannot contain emojis"
+  
+  return null
+}
+
+function validateBio(value: string): string | null {
+  if (!value.trim()) return null // Optional field
+  
+  // Strip HTML tags for character count
+  const plainText = value.replace(/<[^>]*>/g, "")
+  if (plainText.length > MAX_BIO) return `Bio must be ${MAX_BIO} characters or less`
+  
+  return null
+}
+
+function validateUrl(value: string): string | null {
+  if (!value.trim()) return null // Optional field
+  if (value.length > MAX_URL) return `URL must be ${MAX_URL} characters or less`
+  
+  try {
+    const url = new URL(value)
+    if (!url.protocol.startsWith("http")) {
+      return "URL must start with http:// or https://"
+    }
+  } catch {
+    return "Invalid URL format"
+  }
+  
+  return null
+}
+
 export function EditProfileForm({ user }: EditProfileFormProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const [errors, setErrors] = useState<Record<string, string>>({})
 
   const [formData, setFormData] = useState({
     name: user.name || "",
@@ -70,10 +134,87 @@ export function EditProfileForm({ user }: EditProfileFormProps) {
     reader.readAsDataURL(file)
   }
 
+  // Handle field change with validation
+  const handleFieldChange = (field: keyof typeof formData, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }))
+    
+    // Real-time validation
+    let error: string | null = null
+    switch (field) {
+      case "name":
+        error = validateName(value)
+        break
+      case "username":
+        error = validateUsername(value)
+        break
+      case "headline":
+        error = validateHeadline(value)
+        break
+      case "bio":
+        error = validateBio(value)
+        break
+      case "website":
+      case "linkedin":
+      case "twitter":
+        error = validateUrl(value)
+        break
+    }
+    
+    if (error) {
+      setErrors(prev => ({ ...prev, [field]: error! }))
+    } else {
+      setErrors(prev => {
+        const next = { ...prev }
+        delete next[field]
+        return next
+      })
+    }
+  }
+
+  // Get character count for bio (plain text, no HTML)
+  const getBioCharCount = (value: string): number => {
+    return value.replace(/<[^>]*>/g, "").length
+  }
+
+  // Validate all fields
+  const validateForm = (): boolean => {
+    const newErrors: Record<string, string> = {}
+    
+    const nameError = validateName(formData.name)
+    if (nameError) newErrors.name = nameError
+    
+    const usernameError = validateUsername(formData.username)
+    if (usernameError) newErrors.username = usernameError
+    
+    const headlineError = validateHeadline(formData.headline)
+    if (headlineError) newErrors.headline = headlineError
+    
+    const bioError = validateBio(formData.bio)
+    if (bioError) newErrors.bio = bioError
+    
+    const websiteError = validateUrl(formData.website)
+    if (websiteError) newErrors.website = websiteError
+    
+    const linkedinError = validateUrl(formData.linkedin)
+    if (linkedinError) newErrors.linkedin = linkedinError
+    
+    const twitterError = validateUrl(formData.twitter)
+    if (twitterError) newErrors.twitter = twitterError
+    
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setError(null)
     setSuccess(false)
+
+    // Validate before submission
+    if (!validateForm()) {
+      setError("Please fix the errors in the form before submitting.")
+      return
+    }
 
     startTransition(async () => {
       try {
@@ -157,74 +298,124 @@ export function EditProfileForm({ user }: EditProfileFormProps) {
 
       {/* Name */}
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-          Name
-        </label>
+        <div className="flex items-center justify-between mb-2">
+          <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+            Name
+          </label>
+          <span className={`text-xs ${formData.name.length > MAX_NAME ? "text-red-600" : "text-gray-500"}`}>
+            {formData.name.length}/{MAX_NAME}
+          </span>
+        </div>
         <input
           type="text"
           id="name"
           value={formData.name}
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          className="w-full rounded-lg border-2 border-gray-200 px-4 py-2.5 text-base text-gray-900 placeholder:text-gray-400 focus:border-gray-900 focus:outline-none transition-colors"
+          onChange={(e) => handleFieldChange("name", e.target.value)}
+          maxLength={MAX_NAME}
+          className={`w-full rounded-lg border-2 px-4 py-2.5 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none transition-colors ${
+            errors.name
+              ? "border-red-500 focus:border-red-500"
+              : "border-gray-200 focus:border-gray-900"
+          }`}
           placeholder="Your name"
           disabled={isPending}
         />
+        {errors.name && (
+          <p className="mt-1.5 text-sm text-red-600">{errors.name}</p>
+        )}
       </div>
 
       {/* Username */}
       <div>
-        <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
-          Username
-        </label>
+        <div className="flex items-center justify-between mb-2">
+          <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+            Username
+          </label>
+          <span className={`text-xs ${formData.username.length > MAX_USERNAME ? "text-red-600" : "text-gray-500"}`}>
+            {formData.username.length}/{MAX_USERNAME}
+          </span>
+        </div>
         <input
           type="text"
           id="username"
           value={formData.username}
-          onChange={(e) => setFormData({ ...formData, username: e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, "") })}
-          className="w-full rounded-lg border-2 border-gray-200 px-4 py-2.5 text-base text-gray-900 placeholder:text-gray-400 focus:border-gray-900 focus:outline-none transition-colors"
+          onChange={(e) => handleFieldChange("username", e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ""))}
+          maxLength={MAX_USERNAME}
+          className={`w-full rounded-lg border-2 px-4 py-2.5 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none transition-colors ${
+            errors.username
+              ? "border-red-500 focus:border-red-500"
+              : "border-gray-200 focus:border-gray-900"
+          }`}
           placeholder="username"
           pattern="[a-z0-9_-]+"
           disabled={isPending}
         />
-        <p className="mt-2 text-xs text-gray-500">
+        {errors.username && (
+          <p className="mt-1.5 text-sm text-red-600">{errors.username}</p>
+        )}
+        <p className="mt-1.5 text-xs text-gray-500">
           Only lowercase letters, numbers, hyphens, and underscores
         </p>
       </div>
 
       {/* Headline */}
       <div>
-        <label htmlFor="headline" className="block text-sm font-medium text-gray-700 mb-2">
-          Headline
-        </label>
+        <div className="flex items-center justify-between mb-2">
+          <label htmlFor="headline" className="block text-sm font-medium text-gray-700">
+            Headline
+          </label>
+          <span className={`text-xs ${formData.headline.length > MAX_HEADLINE ? "text-red-600" : "text-gray-500"}`}>
+            {formData.headline.length}/{MAX_HEADLINE}
+          </span>
+        </div>
         <input
           type="text"
           id="headline"
           value={formData.headline}
-          onChange={(e) => setFormData({ ...formData, headline: e.target.value })}
-          className="w-full rounded-lg border-2 border-gray-200 px-4 py-2.5 text-base text-gray-900 placeholder:text-gray-400 focus:border-gray-900 focus:outline-none transition-colors"
+          onChange={(e) => handleFieldChange("headline", e.target.value)}
+          maxLength={MAX_HEADLINE}
+          className={`w-full rounded-lg border-2 px-4 py-2.5 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none transition-colors ${
+            errors.headline
+              ? "border-red-500 focus:border-red-500"
+              : "border-gray-200 focus:border-gray-900"
+          }`}
           placeholder="e.g., building https://guideless.ai"
-          maxLength={100}
           disabled={isPending}
         />
-        <p className="mt-2 text-xs text-gray-500">
+        {errors.headline && (
+          <p className="mt-1.5 text-sm text-red-600">{errors.headline}</p>
+        )}
+        <p className="mt-1.5 text-xs text-gray-500">
           A short tagline that appears below your name
         </p>
       </div>
 
       {/* Bio */}
       <div>
-        <label htmlFor="bio" className="block text-sm font-medium text-gray-700 mb-2">
-          About
-        </label>
+        <div className="flex items-center justify-between mb-2">
+          <label htmlFor="bio" className="block text-sm font-medium text-gray-700">
+            About
+          </label>
+          <span className={`text-xs ${getBioCharCount(formData.bio) > MAX_BIO ? "text-red-600" : "text-gray-500"}`}>
+            {getBioCharCount(formData.bio)}/{MAX_BIO}
+          </span>
+        </div>
         <textarea
           id="bio"
           value={formData.bio}
-          onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+          onChange={(e) => handleFieldChange("bio", e.target.value)}
           rows={6}
-          className="w-full rounded-lg border-2 border-gray-200 px-4 py-2.5 text-base text-gray-900 placeholder:text-gray-400 focus:border-gray-900 focus:outline-none transition-colors resize-none"
+          className={`w-full rounded-lg border-2 px-4 py-2.5 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none transition-colors resize-none ${
+            errors.bio
+              ? "border-red-500 focus:border-red-500"
+              : "border-gray-200 focus:border-gray-900"
+          }`}
           placeholder="Tell us about yourself..."
           disabled={isPending}
         />
+        {errors.bio && (
+          <p className="mt-1.5 text-sm text-red-600">{errors.bio}</p>
+        )}
       </div>
 
       {/* Links Section */}
@@ -233,50 +424,89 @@ export function EditProfileForm({ user }: EditProfileFormProps) {
 
         {/* Website */}
         <div>
-          <label htmlFor="website" className="block text-sm font-medium text-gray-700 mb-2">
-            Website
-          </label>
+          <div className="flex items-center justify-between mb-2">
+            <label htmlFor="website" className="block text-sm font-medium text-gray-700">
+              Website
+            </label>
+            <span className={`text-xs ${formData.website.length > MAX_URL ? "text-red-600" : "text-gray-500"}`}>
+              {formData.website.length}/{MAX_URL}
+            </span>
+          </div>
           <input
             type="url"
             id="website"
             value={formData.website}
-            onChange={(e) => setFormData({ ...formData, website: e.target.value })}
-            className="w-full rounded-lg border-2 border-gray-200 px-4 py-2.5 text-base text-gray-900 placeholder:text-gray-400 focus:border-gray-900 focus:outline-none transition-colors"
+            onChange={(e) => handleFieldChange("website", e.target.value)}
+            maxLength={MAX_URL}
+            className={`w-full rounded-lg border-2 px-4 py-2.5 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none transition-colors ${
+              errors.website
+                ? "border-red-500 focus:border-red-500"
+                : "border-gray-200 focus:border-gray-900"
+            }`}
             placeholder="https://example.com"
             disabled={isPending}
           />
+          {errors.website && (
+            <p className="mt-1.5 text-sm text-red-600">{errors.website}</p>
+          )}
         </div>
 
         {/* LinkedIn */}
         <div>
-          <label htmlFor="linkedin" className="block text-sm font-medium text-gray-700 mb-2">
-            LinkedIn
-          </label>
+          <div className="flex items-center justify-between mb-2">
+            <label htmlFor="linkedin" className="block text-sm font-medium text-gray-700">
+              LinkedIn
+            </label>
+            <span className={`text-xs ${formData.linkedin.length > MAX_URL ? "text-red-600" : "text-gray-500"}`}>
+              {formData.linkedin.length}/{MAX_URL}
+            </span>
+          </div>
           <input
             type="url"
             id="linkedin"
             value={formData.linkedin}
-            onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })}
-            className="w-full rounded-lg border-2 border-gray-200 px-4 py-2.5 text-base text-gray-900 placeholder:text-gray-400 focus:border-gray-900 focus:outline-none transition-colors"
+            onChange={(e) => handleFieldChange("linkedin", e.target.value)}
+            maxLength={MAX_URL}
+            className={`w-full rounded-lg border-2 px-4 py-2.5 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none transition-colors ${
+              errors.linkedin
+                ? "border-red-500 focus:border-red-500"
+                : "border-gray-200 focus:border-gray-900"
+            }`}
             placeholder="https://linkedin.com/in/username"
             disabled={isPending}
           />
+          {errors.linkedin && (
+            <p className="mt-1.5 text-sm text-red-600">{errors.linkedin}</p>
+          )}
         </div>
 
         {/* Twitter/X */}
         <div>
-          <label htmlFor="twitter" className="block text-sm font-medium text-gray-700 mb-2">
-            X
-          </label>
+          <div className="flex items-center justify-between mb-2">
+            <label htmlFor="twitter" className="block text-sm font-medium text-gray-700">
+              X
+            </label>
+            <span className={`text-xs ${formData.twitter.length > MAX_URL ? "text-red-600" : "text-gray-500"}`}>
+              {formData.twitter.length}/{MAX_URL}
+            </span>
+          </div>
           <input
             type="url"
             id="twitter"
             value={formData.twitter}
-            onChange={(e) => setFormData({ ...formData, twitter: e.target.value })}
-            className="w-full rounded-lg border-2 border-gray-200 px-4 py-2.5 text-base text-gray-900 placeholder:text-gray-400 focus:border-gray-900 focus:outline-none transition-colors"
+            onChange={(e) => handleFieldChange("twitter", e.target.value)}
+            maxLength={MAX_URL}
+            className={`w-full rounded-lg border-2 px-4 py-2.5 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none transition-colors ${
+              errors.twitter
+                ? "border-red-500 focus:border-red-500"
+                : "border-gray-200 focus:border-gray-900"
+            }`}
             placeholder="https://x.com/username"
             disabled={isPending}
           />
+          {errors.twitter && (
+            <p className="mt-1.5 text-sm text-red-600">{errors.twitter}</p>
+          )}
         </div>
       </div>
 

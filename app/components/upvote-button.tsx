@@ -53,7 +53,7 @@ export function UpvoteButton({ id, upvotes, hasUpvoted = false, isLoggedIn = fal
         disabled={isDisabled}
         className={`flex items-center gap-1.5 transition-colors ${
           hasUpvoted
-            ? "text-blue-600 hover:text-blue-700"
+            ? "text-green-600 hover:text-green-700"
             : "text-gray-600 hover:text-gray-900"
         } disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded`}
         title={hasUpvoted ? "Downvote" : "Upvote"}
@@ -81,8 +81,8 @@ export function UpvoteButton({ id, upvotes, hasUpvoted = false, isLoggedIn = fal
           hasUpvoted
             ? "bg-green-50 border-green-300 text-green-700 hover:bg-green-100 hover:border-green-400"
             : isLoggedIn
-            ? "bg-white border-gray-300 text-gray-900 hover:border-gray-900 hover:bg-gray-50"
-            : "bg-white border-gray-300 text-gray-600 hover:border-gray-400 hover:bg-gray-50"
+            ? "bg-white border-gray-200 text-gray-900 hover:border-gray-300 hover:bg-gray-50"
+            : "bg-white border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50"
         } disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900`}
         aria-label={
           !isLoggedIn
