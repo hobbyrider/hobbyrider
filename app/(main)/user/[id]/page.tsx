@@ -147,92 +147,99 @@ export default async function UserPage({
   const isOwnProfile = session?.user?.id === user.id
 
   return (
-    <main className="px-4 py-8 sm:px-6 sm:py-10">
-      <div className="mx-auto max-w-5xl">
-        {/* Profile Header */}
-        <header className="mb-8">
-          <div className="mb-6 flex items-start gap-6">
-            {/* Avatar */}
-            <div className="flex-shrink-0">
-              {user.image ? (
-                <div className="h-32 w-32 rounded-full overflow-hidden border-2 border-gray-200 relative">
-                  <Image
-                    src={user.image}
-                    alt={user.name || user.username || "User"}
-                    fill
-                    className="object-cover"
-                    sizes="128px"
-                    priority
-                  />
+    <main className="min-h-screen">
+      <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
+        <div className="mx-auto max-w-5xl">
+          {/* Profile Header */}
+          <header className="mb-8">
+            <div className="mb-6 flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
+              {/* Avatar */}
+              <div className="flex-shrink-0">
+                {user.image ? (
+                  <div className="h-24 w-24 sm:h-32 sm:w-32 rounded-full overflow-hidden border-2 border-gray-200 relative">
+                    <Image
+                      src={user.image}
+                      alt={user.name || user.username || "User"}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 640px) 96px, 128px"
+                      priority
+                    />
+                  </div>
+                ) : (
+                  <div className="flex h-24 w-24 sm:h-32 sm:w-32 items-center justify-center rounded-full bg-gray-200 text-2xl sm:text-4xl font-bold text-gray-700 border-2 border-gray-300">
+                    {(user.name || user.username || user.email || "?")[0].toUpperCase()}
+                  </div>
+                )}
+              </div>
+
+              {/* User Info */}
+              <div className="flex-1 min-w-0 w-full sm:w-auto">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4 mb-3">
+                  <div className="flex-1 min-w-0">
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight text-gray-900 mb-2 break-words">
+                      {user.name || user.username || user.email}
+                    </h1>
+                    {user.headline && (
+                      <p className="text-sm sm:text-base md:text-lg text-gray-600 mb-3 break-words">
+                        {user.headline}
+                      </p>
+                    )}
+                    {user.username && (
+                      <div className="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600 mb-3 flex-wrap">
+                        <span>@{user.username}</span>
+                        <span>•</span>
+                        <span>0 followers</span>
+                        <span>•</span>
+                        <span>0 following</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Edit Button / Report Button */}
+                  <div className="flex-shrink-0 w-full sm:w-auto">
+                    {isOwnProfile ? (
+                      <Link
+                        href={`/user/${user.id}/edit`}
+                        className="inline-flex items-center justify-center rounded-full border-2 border-gray-300 bg-white px-5 py-2.5 text-sm font-semibold text-gray-900 transition-colors hover:bg-gray-50 hover:border-gray-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 w-full sm:w-auto"
+                      >
+                        Edit my profile
+                      </Link>
+                    ) : (
+                      <ReportButton 
+                        type="user" 
+                        contentId={user.id} 
+                        contentName={user.username || user.name || user.email} 
+                      />
+                    )}
+                  </div>
                 </div>
-              ) : (
-                <div className="flex h-32 w-32 items-center justify-center rounded-full bg-gray-200 text-4xl font-bold text-gray-700 border-2 border-gray-300">
-                  {(user.name || user.username || user.email || "?")[0].toUpperCase()}
-                </div>
-              )}
+              </div>
             </div>
 
-            {/* User Info */}
-            <div className="flex-1 min-w-0">
-              <h1 className="text-2xl sm:text-4xl font-semibold tracking-tight text-gray-900 mb-2">
-                {user.name || user.username || user.email}
-              </h1>
-              {user.headline && (
-                <p className="text-base sm:text-lg text-gray-600 mb-3">
-                  {user.headline}
-                </p>
-              )}
-              {user.username && (
-                <div className="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600 mb-3 flex-wrap">
-                  <span>@{user.username}</span>
-                  <span>•</span>
-                  <span>0 followers</span>
-                  <span>•</span>
-                  <span>0 following</span>
-                </div>
-              )}
+            {/* Stats */}
+            <div className="flex flex-wrap gap-4 sm:gap-6 text-xs sm:text-sm text-gray-600 border-t border-gray-200 pt-4">
+              <div>
+                <span className="font-semibold text-gray-900">{totalProducts}</span>{" "}
+                {totalProducts === 1 ? "product" : "products"}
+              </div>
+              <div>
+                <span className="font-semibold text-gray-900">{totalUpvotes}</span>{" "}
+                total upvotes
+              </div>
+              <div>
+                <span className="font-semibold text-gray-900">{totalUpvotedProducts}</span>{" "}
+                upvoted
+              </div>
+              <div>
+                <span className="font-semibold text-gray-900">{totalComments}</span>{" "}
+                {totalComments === 1 ? "comment" : "comments"}
+              </div>
+              <div>
+                Member since {new Date(user.createdAt).getFullYear()}
+              </div>
             </div>
-
-            {/* Edit Button / Report Button */}
-            {isOwnProfile ? (
-              <Link
-                href={`/user/${user.id}/edit`}
-                className="rounded-full border-2 border-gray-300 bg-white px-5 py-2.5 text-sm font-semibold text-gray-900 transition-colors hover:bg-gray-50 hover:border-gray-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
-              >
-                Edit my profile
-              </Link>
-            ) : (
-              <ReportButton 
-                type="user" 
-                contentId={user.id} 
-                contentName={user.username || user.name || user.email} 
-              />
-            )}
-          </div>
-
-          {/* Stats */}
-          <div className="flex flex-wrap gap-6 text-sm text-gray-600 border-t border-gray-200 pt-4">
-            <div>
-              <span className="font-semibold text-gray-900">{totalProducts}</span>{" "}
-              {totalProducts === 1 ? "product" : "products"}
-            </div>
-            <div>
-              <span className="font-semibold text-gray-900">{totalUpvotes}</span>{" "}
-              total upvotes
-            </div>
-            <div>
-              <span className="font-semibold text-gray-900">{totalUpvotedProducts}</span>{" "}
-              upvoted
-            </div>
-            <div>
-              <span className="font-semibold text-gray-900">{totalComments}</span>{" "}
-              {totalComments === 1 ? "comment" : "comments"}
-            </div>
-            <div>
-              Member since {new Date(user.createdAt).getFullYear()}
-            </div>
-          </div>
-        </header>
+          </header>
 
         {/* Tab Navigation */}
         <ProfileTabs
@@ -245,6 +252,7 @@ export default async function UserPage({
           upvotedProducts={user.upvotes.map((u) => u.product)}
           comments={user.comments}
         />
+        </div>
       </div>
     </main>
   )

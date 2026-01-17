@@ -11,9 +11,9 @@ export function FilterControls() {
   const currentDate = (searchParams.get("date") || "all") as DateFilter
 
   const sortOptions: { value: SortOption; label: string }[] = [
-    { value: "upvotes", label: "Most Upvoted" },
-    { value: "newest", label: "Newest" },
-    { value: "comments", label: "Most Commented" },
+    { value: "upvotes", label: "Top" },
+    { value: "newest", label: "New" },
+    { value: "comments", label: "Discussed" },
     { value: "trending", label: "Trending" },
   ]
 
@@ -41,7 +41,7 @@ export function FilterControls() {
       {/* Sort Options */}
       <div>
         <label className="text-xs sm:text-sm font-medium text-gray-700 mb-2 block" id="sort-label">
-          Sort by
+          Rank by
         </label>
         <div className="flex gap-1.5 sm:gap-2 overflow-x-auto sm:flex-wrap hide-scrollbar pb-1 sm:pb-0 -mx-1 sm:mx-0 px-1 sm:px-0" style={{ WebkitOverflowScrolling: 'touch' }} role="group" aria-labelledby="sort-label">
           {sortOptions.map((option) => {
@@ -68,7 +68,7 @@ export function FilterControls() {
       {/* Date Filter */}
       <div>
         <label className="text-xs sm:text-sm font-medium text-gray-700 mb-2 block" id="date-label">
-          Time period
+          Time range
         </label>
         <div className="flex gap-1.5 sm:gap-2 overflow-x-auto sm:flex-wrap hide-scrollbar pb-1 sm:pb-0 -mx-1 sm:mx-0 px-1 sm:px-0" style={{ WebkitOverflowScrolling: 'touch' }} role="group" aria-labelledby="date-label">
           {dateOptions.map((option) => {

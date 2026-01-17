@@ -266,7 +266,7 @@ export function EditProfileForm({ user }: EditProfileFormProps) {
         {/* Twitter/X */}
         <div>
           <label htmlFor="twitter" className="block text-sm font-medium text-gray-700 mb-2">
-            X (Twitter)
+            X
           </label>
           <input
             type="url"

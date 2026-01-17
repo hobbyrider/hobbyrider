@@ -60,6 +60,17 @@ export default function EditProductForm({
     const file = e.target.files?.[0]
     if (!file) return
 
+    // Validate file type for logo (only .svg and .png)
+    const allowedTypes = ["image/svg+xml", "image/png"]
+    const allowedExtensions = [".svg", ".png"]
+    const fileExtension = "." + file.name.split(".").pop()?.toLowerCase()
+    
+    if (!allowedTypes.includes(file.type) && !allowedExtensions.includes(fileExtension)) {
+      setError("Logo must be a .svg or .png file. Please select a valid image format.")
+      e.target.value = ""
+      return
+    }
+
     setUploading(true)
     setError(null)
     try {
@@ -90,11 +101,51 @@ export default function EditProductForm({
     const files = Array.from(e.target.files || [])
     if (files.length === 0) return
 
+    // Validate file types for screenshots (only .png, .jpg, .webp)
+    const allowedTypes = ["image/png", "image/jpeg", "image/webp"]
+    const allowedExtensions = [".png", ".jpg", ".jpeg", ".webp"]
+    
+    const validFiles: File[] = []
+    const invalidFiles: string[] = []
+    
+    for (const file of files) {
+      const fileExtension = "." + file.name.split(".").pop()?.toLowerCase()
+      if (allowedTypes.includes(file.type) || allowedExtensions.includes(fileExtension)) {
+        validFiles.push(file)
+      } else {
+        invalidFiles.push(file.name)
+      }
+    }
+    
+    if (invalidFiles.length > 0) {
+      setError(`Invalid file type(s): ${invalidFiles.join(", ")}. Screenshots must be .png, .jpg, or .webp files.`)
+      if (validFiles.length === 0) {
+        e.target.value = ""
+        return
+      }
+    }
+
+    // Check limit of 6 screenshots
+    const currentCount = galleryUrls.length
+    const maxScreenshots = 6
+    if (currentCount >= maxScreenshots) {
+      setError(`Maximum ${maxScreenshots} screenshots allowed. Please remove some before adding more.`)
+      e.target.value = ""
+      return
+    }
+
+    // Limit files to what can still be added
+    const remainingSlots = maxScreenshots - currentCount
+    const filesToUpload = validFiles.slice(0, remainingSlots)
+    if (validFiles.length > remainingSlots) {
+      setError(`You can only add ${remainingSlots} more screenshot${remainingSlots !== 1 ? "s" : ""}. Uploading ${remainingSlots} of ${validFiles.length}.`)
+    }
+
     setUploadingGallery(true)
     setError(null)
     try {
       const formData = new FormData()
-      files.forEach((file) => {
+      filesToUpload.forEach((file) => {
         formData.append("files", file)
       })
 
@@ -186,8 +237,9 @@ export default function EditProductForm({
   }
 
   return (
-    <main className="px-4 py-8 sm:px-6 sm:py-12">
-      <div className="mx-auto max-w-xl">
+    <main className="min-h-screen">
+      <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
+        <div className="mx-auto max-w-xl">
         <Link
           href={`/product/${product.id}`}
           className="text-sm text-gray-600 hover:text-black mb-6 inline-block"
@@ -267,10 +319,10 @@ export default function EditProductForm({
             <label className="text-sm font-medium">Thumbnail (optional)</label>
             <input
               type="file"
-              accept="image/*"
+              accept=".svg,.png,image/svg+xml,image/png"
               onChange={handleThumbnailUpload}
               disabled={uploading}
-              className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border px-3 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
             />
             {uploading && (
               <p className="mt-1 text-xs text-gray-500">Uploading...</p>
@@ -292,19 +344,19 @@ export default function EditProductForm({
               </div>
             )}
             <p className="mt-1 text-xs text-gray-500">
-              Square image recommended (240x240px). Max 2MB.
+              SVG or PNG only. Square format (240×240px). Max 2MB.
             </p>
           </div>
 
           <div>
-            <label className="text-sm font-medium">Screenshots (optional)</label>
+            <label className="text-sm font-medium">Images (optional)</label>
             <input
               type="file"
-              accept="image/*"
+              accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp"
               multiple
               onChange={handleGalleryUpload}
-              disabled={uploadingGallery}
-              className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
+              disabled={uploadingGallery || galleryUrls.length >= 6}
+              className="mt-1 w-full rounded-lg border px-3 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
             />
             {uploadingGallery && (
               <p className="mt-1 text-xs text-gray-500">Uploading...</p>
@@ -330,7 +382,7 @@ export default function EditProductForm({
               </div>
             )}
             <p className="mt-1 text-xs text-gray-500">
-              Upload multiple screenshots to showcase your product. Max 2MB per image.
+              PNG, JPG, or WebP. Up to 6 images. Max 2MB per image.
             </p>
           </div>
 
@@ -345,8 +397,13 @@ export default function EditProductForm({
                   <input
                     type="checkbox"
                     checked={selectedCategories.includes(category.id)}
+                    disabled={!selectedCategories.includes(category.id) && selectedCategories.length >= 5}
                     onChange={(e) => {
                       if (e.target.checked) {
+                        if (selectedCategories.length >= 5) {
+                          setError("Maximum 5 categories allowed. Please deselect a category first.")
+                          return
+                        }
                         setSelectedCategories([...selectedCategories, category.id])
                       } else {
                         setSelectedCategories(
@@ -354,14 +411,14 @@ export default function EditProductForm({
                         )
                       }
                     }}
-                    className="rounded"
+                    className="rounded disabled:opacity-50 disabled:cursor-not-allowed"
                   />
                   <span className="text-sm">{category.name}</span>
                 </label>
               ))}
             </div>
             <p className="mt-1 text-xs text-gray-500">
-              Select one or more categories (optional)
+              Select up to 5 categories (optional)
             </p>
           </div>
 
@@ -381,6 +438,7 @@ export default function EditProductForm({
             </Link>
           </div>
         </form>
+        </div>
       </div>
     </main>
   )

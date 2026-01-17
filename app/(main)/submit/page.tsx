@@ -90,6 +90,17 @@ export default function SubmitPage() {
     const file = e.target.files?.[0]
     if (!file) return
 
+    // Validate file type for logo (only .svg and .png)
+    const allowedTypes = ["image/svg+xml", "image/png"]
+    const allowedExtensions = [".svg", ".png"]
+    const fileExtension = "." + file.name.split(".").pop()?.toLowerCase()
+    
+    if (!allowedTypes.includes(file.type) && !allowedExtensions.includes(fileExtension)) {
+      toast.error("Logo must be a .svg or .png file. Please select a valid image format.")
+      e.target.value = ""
+      return
+    }
+
     setUploading(true)
     try {
       const formData = new FormData()
@@ -120,10 +131,50 @@ export default function SubmitPage() {
     const files = Array.from(e.target.files || [])
     if (files.length === 0) return
 
+    // Validate file types for screenshots (only .png, .jpg, .webp)
+    const allowedTypes = ["image/png", "image/jpeg", "image/webp"]
+    const allowedExtensions = [".png", ".jpg", ".jpeg", ".webp"]
+    
+    const validFiles: File[] = []
+    const invalidFiles: string[] = []
+    
+    for (const file of files) {
+      const fileExtension = "." + file.name.split(".").pop()?.toLowerCase()
+      if (allowedTypes.includes(file.type) || allowedExtensions.includes(fileExtension)) {
+        validFiles.push(file)
+      } else {
+        invalidFiles.push(file.name)
+      }
+    }
+    
+    if (invalidFiles.length > 0) {
+      toast.error(`Invalid file type(s): ${invalidFiles.join(", ")}. Screenshots must be .png, .jpg, or .webp files.`)
+      if (validFiles.length === 0) {
+        e.target.value = ""
+        return
+      }
+    }
+
+    // Check limit of 6 screenshots
+    const currentCount = galleryUrls.length
+    const maxScreenshots = 6
+    if (currentCount >= maxScreenshots) {
+      toast.error(`Maximum ${maxScreenshots} screenshots allowed. Please remove some before adding more.`)
+      e.target.value = ""
+      return
+    }
+
+    // Limit files to what can still be added
+    const remainingSlots = maxScreenshots - currentCount
+    const filesToUpload = validFiles.slice(0, remainingSlots)
+    if (validFiles.length > remainingSlots) {
+      toast.error(`You can only add ${remainingSlots} more screenshot${remainingSlots !== 1 ? "s" : ""}. Uploading ${remainingSlots} of ${validFiles.length}.`)
+    }
+
     setUploadingGallery(true)
     try {
       const formData = new FormData()
-      files.forEach((file) => {
+      filesToUpload.forEach((file) => {
         formData.append("files", file)
       })
 
@@ -252,7 +303,7 @@ export default function SubmitPage() {
               rows={5}
             />
             <Caption className="mt-1.5">
-              Paste an iframe embed snippet (Loom/YouTube/Guideless, etc.).
+              Paste an iframe embed snippet (YouTube, Guideless, etc.).
             </Caption>
           </div>
 
@@ -262,7 +313,7 @@ export default function SubmitPage() {
             </LabelText>
             <input
               type="file"
-              accept="image/*"
+              accept=".svg,.png,image/svg+xml,image/png"
               onChange={handleThumbnailUpload}
               disabled={uploading}
               className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 file:mr-4 file:rounded-lg file:border-0 file:bg-gray-100 file:px-4 file:py-2 file:text-sm file:font-medium file:text-gray-700 hover:file:bg-gray-200 focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-0 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -281,20 +332,20 @@ export default function SubmitPage() {
               </div>
             )}
             <Caption className="mt-1.5">
-              Square image recommended (240x240px). Max 2MB.
+              SVG or PNG only. Square format (240×240px). Max 2MB.
             </Caption>
           </div>
 
           <div>
             <LabelText className="mb-2 block text-gray-900">
-              Screenshots <span className="text-xs font-normal text-gray-500">(optional)</span>
+              Images <span className="text-xs font-normal text-gray-500">(optional)</span>
             </LabelText>
             <input
               type="file"
-              accept="image/*"
+              accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp"
               multiple
               onChange={handleGalleryUpload}
-              disabled={uploadingGallery}
+              disabled={uploadingGallery || galleryUrls.length >= 6}
               className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 file:mr-4 file:rounded-lg file:border-0 file:bg-gray-100 file:px-4 file:py-2 file:text-sm file:font-medium file:text-gray-700 hover:file:bg-gray-200 focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-0 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             />
             {uploadingGallery && (
@@ -324,7 +375,7 @@ export default function SubmitPage() {
               </div>
             )}
             <Caption className="mt-1.5">
-              Upload multiple screenshots to showcase your product. Max 2MB per image.
+              PNG, JPG, or WebP. Up to 6 images. Max 2MB per image.
             </Caption>
           </div>
 
@@ -348,8 +399,13 @@ export default function SubmitPage() {
                       name="categories"
                       value={category.id}
                       checked={selectedCategories.includes(category.id)}
+                      disabled={!selectedCategories.includes(category.id) && selectedCategories.length >= 5}
                       onChange={(e) => {
                         if (e.target.checked) {
+                          if (selectedCategories.length >= 5) {
+                            toast.error("Maximum 5 categories allowed. Please deselect a category first.")
+                            return
+                          }
                           setSelectedCategories([...selectedCategories, category.id])
                         } else {
                           setSelectedCategories(
@@ -357,7 +413,7 @@ export default function SubmitPage() {
                           )
                         }
                       }}
-                      className="h-4 w-4 rounded border-gray-300 text-gray-900 focus:ring-2 focus:ring-gray-900 focus:ring-offset-0"
+                      className="h-4 w-4 rounded border-gray-300 text-gray-900 focus:ring-2 focus:ring-gray-900 focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
                     />
                     <span className="text-sm text-gray-700">{category.name}</span>
                   </label>
@@ -365,7 +421,7 @@ export default function SubmitPage() {
               )}
             </div>
             <Caption className="mt-1.5">
-              Select one or more categories (optional)
+              Select up to 5 categories (optional)
             </Caption>
           </div>
 

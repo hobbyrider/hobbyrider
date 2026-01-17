@@ -371,6 +371,94 @@ export default async function ProductPage({
               </div>
             )}
 
+            {/* Mobile: Actions, Stats, Builder - shown before comments on mobile only */}
+            <div className="lg:hidden space-y-4 sm:space-y-6">
+              {/* Actions Section */}
+              <SidebarBlock>
+                <ProductActions
+                  productId={product.id}
+                  productName={product.name}
+                  upvotes={product.upvotes}
+                  hasUpvoted={hasUpvoted}
+                  isLoggedIn={!!session?.user?.id}
+                  commentCount={comments.length}
+                />
+              </SidebarBlock>
+
+              {/* Stats Section */}
+              <SidebarBlock title="Stats">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Small className="text-gray-600">Views</Small>
+                    <span className="font-semibold text-gray-900">{product.viewCount || 0}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Small className="text-gray-600">Upvotes</Small>
+                    <span className="font-semibold text-gray-900">{product.upvotes}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Small className="text-gray-600">Comments</Small>
+                    <span className="font-semibold text-gray-900">{comments.length}</span>
+                  </div>
+                </div>
+              </SidebarBlock>
+
+              {/* Builder Info */}
+              {(product.makerUser || product.maker) && (
+                <SidebarBlock title="Builder">
+                  <div className="flex items-center gap-3">
+                    {product.makerUser ? (
+                      <>
+                        {product.makerUser.image ? (
+                          <div className="h-12 w-12 rounded-full overflow-hidden border border-gray-200 relative">
+                            <Image
+                              src={product.makerUser.image}
+                              alt={product.makerUser.username || product.makerUser.name || "Builder"}
+                              fill
+                              className="object-cover"
+                              sizes="48px"
+                            />
+                          </div>
+                        ) : (
+                          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-200 text-lg font-bold text-gray-700 border border-gray-300">
+                            {(product.makerUser.username || product.makerUser.name || "?")[0].toUpperCase()}
+                          </div>
+                        )}
+                        <div>
+                          <Link
+                            href={`/user/${product.makerUser.username || product.makerUser.id}`}
+                            className="block font-semibold text-gray-900 transition-colors hover:text-gray-700 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded"
+                          >
+                            {product.makerUser.username || product.makerUser.name}
+                          </Link>
+                          <p className="text-sm text-gray-500">
+                            {getRelativeTime(product.createdAt)}
+                          </p>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-200 text-lg font-bold text-gray-700 border border-gray-300">
+                          {product.maker?.[0].toUpperCase() || "?"}
+                        </div>
+                        <div>
+                          <Link
+                            href={`/builder/${product.maker}`}
+                            className="block font-semibold text-gray-900 transition-colors hover:text-gray-700 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded"
+                          >
+                            @{product.maker}
+                          </Link>
+                          <p className="text-sm text-gray-500">
+                            {getRelativeTime(product.createdAt)}
+                          </p>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </SidebarBlock>
+              )}
+            </div>
+
             {/* Comments Section */}
             <section id="comments" className="border-t border-gray-200 pt-6 sm:pt-10">
               <SectionTitle className="mb-4 sm:mb-6 text-xl sm:text-2xl text-gray-900">
@@ -399,8 +487,8 @@ export default async function ProductPage({
             </section>
           </div>
 
-          {/* Sidebar */}
-          <aside className="space-y-4 sm:space-y-6">
+          {/* Sidebar - Desktop only */}
+          <aside className="hidden lg:block space-y-4 sm:space-y-6">
             <div className="sticky top-20 sm:top-24 space-y-4 sm:space-y-6">
               {/* Actions Section */}
               <SidebarBlock>

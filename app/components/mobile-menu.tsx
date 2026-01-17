@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useSession } from "next-auth/react"
+import { useSession, signOut } from "next-auth/react"
 import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetTitle } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { NavLinkText } from "@/app/components/typography"
@@ -40,7 +40,7 @@ export function MobileMenu() {
           </svg>
         </button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-[280px] sm:w-[320px]">
+      <SheetContent side="right" className="w-[280px] sm:w-[320px] bg-white">
         <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
         <nav className="flex flex-col gap-1 mt-6">
           {/* Primary CTA - Full width Button */}
@@ -75,17 +75,35 @@ export function MobileMenu() {
           {/* Divider before auth actions */}
           <div className="my-2 border-t border-gray-200"></div>
           
-          {/* Auth Actions - Last and visually separated */}
+          {/* Auth Actions */}
           {session ? (
-            <SheetClose asChild>
-              <Link
-                href={`/user/${session.user.username || session.user.id}`}
-                onClick={handleLinkClick}
-                className="flex items-center px-4 py-3 rounded-lg text-base font-medium text-gray-900 transition-colors hover:bg-gray-100 focus-visible:bg-gray-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
-              >
-                <NavLinkText>Profile</NavLinkText>
-              </Link>
-            </SheetClose>
+            <>
+              <SheetClose asChild>
+                <Link
+                  href={`/user/${session.user.username || session.user.id}`}
+                  onClick={handleLinkClick}
+                  className="flex items-center px-4 py-3 rounded-lg text-base font-medium text-gray-900 transition-colors hover:bg-gray-100 focus-visible:bg-gray-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
+                >
+                  <NavLinkText>Profile</NavLinkText>
+                </Link>
+              </SheetClose>
+              
+              {/* Divider before logout */}
+              <div className="my-2 border-t border-gray-200"></div>
+              
+              {/* Logout - At the bottom */}
+              <SheetClose asChild>
+                <button
+                  onClick={() => {
+                    handleLinkClick()
+                    signOut({ callbackUrl: "/" })
+                  }}
+                  className="flex w-full items-center px-4 py-3 rounded-lg text-base font-medium text-gray-900 transition-colors hover:bg-gray-100 focus-visible:bg-gray-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
+                >
+                  <NavLinkText>Logout</NavLinkText>
+                </button>
+              </SheetClose>
+            </>
           ) : (
             <>
               <SheetClose asChild>

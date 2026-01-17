@@ -79,14 +79,14 @@ export function ProfileTabs({
     <div>
       {/* Tab Navigation */}
       <nav className="border-b border-gray-200 mb-8">
-        <div className="flex gap-8 -mb-px">
+        <div className="flex gap-4 sm:gap-8 -mb-px overflow-x-auto hide-scrollbar pb-1">
           {tabs.map((tab) => {
             const isActive = activeTab === tab.id
             return (
               <Link
                 key={tab.id}
                 href={`/user/${username}?tab=${tab.id}`}
-                className={`pb-4 px-1 text-sm font-medium transition-colors border-b-2 ${
+                className={`pb-4 px-1 text-sm font-medium transition-colors border-b-2 whitespace-nowrap flex-shrink-0 ${
                   isActive
                     ? "border-gray-900 text-gray-900"
                     : "border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300"
@@ -240,40 +240,40 @@ function ActivityTab({ comments }: { comments: Comment[] }) {
 
   return (
     <div>
-      <h2 className="text-2xl font-semibold text-gray-900 mb-6">Activity</h2>
+      <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4 sm:mb-6">Activity</h2>
       <div className="space-y-4">
         {comments.map((comment) => (
           <div
             key={comment.id}
             className="border-b border-gray-200 pb-4 last:border-b-0"
           >
-            <div className="flex items-start gap-4">
+            <div className="flex items-start gap-3 sm:gap-4">
               {comment.product.thumbnail && (
-                <div className="h-12 w-12 rounded-lg overflow-hidden border flex-shrink-0 relative">
+                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg overflow-hidden border flex-shrink-0 relative">
                   <Image
                     src={comment.product.thumbnail}
                     alt={comment.product.name}
                     fill
                     className="object-cover"
-                    sizes="48px"
+                    sizes="(max-width: 640px) 40px, 48px"
                     loading="lazy"
                   />
                 </div>
               )}
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
+              <div className="flex-1 min-w-0">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-1">
                   <Link
                     href={`/product/${comment.product.id}`}
-                    className="font-semibold text-gray-900 hover:underline"
+                    className="font-semibold text-gray-900 hover:underline break-words"
                   >
                     {comment.product.name}
                   </Link>
-                  <span className="text-xs text-gray-500">
+                  <span className="text-xs text-gray-500 flex-shrink-0">
                     {getRelativeTime(comment.createdAt)}
                   </span>
                 </div>
-                <p className="text-sm text-gray-600 mb-1">{comment.product.tagline}</p>
-                <p className="text-gray-700 text-sm">{comment.content}</p>
+                <p className="text-xs sm:text-sm text-gray-600 mb-1 line-clamp-1">{comment.product.tagline}</p>
+                <p className="text-gray-700 text-sm break-words">{comment.content}</p>
               </div>
             </div>
           </div>
@@ -295,30 +295,30 @@ function UpvotesTab({ products }: { products: Product[] }) {
 
   return (
     <div>
-      <h2 className="text-2xl font-semibold text-gray-900 mb-6">Upvotes</h2>
+      <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4 sm:mb-6">Upvotes</h2>
       <div className="space-y-4">
         {products.map((product) => (
           <Link
             key={product.id}
             href={`/product/${product.id}`}
-            className="flex items-start gap-4 rounded-xl border border-gray-200 p-4 hover:bg-gray-50 transition-colors"
+            className="flex items-start gap-3 sm:gap-4 rounded-xl border border-gray-200 p-3 sm:p-4 hover:bg-gray-50 transition-colors"
           >
             {product.thumbnail && (
-              <div className="h-16 w-16 rounded-lg overflow-hidden border flex-shrink-0 relative">
+              <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-lg overflow-hidden border flex-shrink-0 relative">
                 <Image
                   src={product.thumbnail}
                   alt={product.name}
                   fill
                   className="object-cover"
-                  sizes="64px"
+                  sizes="(max-width: 640px) 56px, 64px"
                   loading="lazy"
                 />
               </div>
             )}
-            <div className="flex-1">
-              <h3 className="font-semibold text-gray-900 mb-1">{product.name}</h3>
-              <p className="text-sm text-gray-600 mb-2">{product.tagline}</p>
-              <div className="flex items-center gap-4 text-sm text-gray-500">
+            <div className="flex-1 min-w-0">
+              <h3 className="font-semibold text-gray-900 mb-1 break-words">{product.name}</h3>
+              <p className="text-xs sm:text-sm text-gray-600 mb-2 line-clamp-2">{product.tagline}</p>
+              <div className="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-500 flex-wrap">
                 <span>{product.upvotes} upvotes</span>
                 <span>•</span>
                 <span>{getRelativeTime(product.createdAt)}</span>

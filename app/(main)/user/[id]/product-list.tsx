@@ -68,31 +68,31 @@ export function ProductList({ products, isOwnProfile }: ProductListProps) {
         {products.map((product) => (
           <li
             key={product.id}
-            className="rounded-xl border border-gray-200 bg-white p-5 transition-all hover:border-gray-300 hover:shadow-sm"
+            className="rounded-xl border border-gray-200 bg-white p-4 sm:p-5 transition-all hover:border-gray-300 hover:shadow-sm"
           >
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex gap-4 flex-1 min-w-0">
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+              <div className="flex gap-3 sm:gap-4 flex-1 min-w-0">
                 {product.thumbnail && (
-                  <div className="h-20 w-20 rounded-lg overflow-hidden border border-gray-200 flex-shrink-0 relative">
+                  <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-lg overflow-hidden border border-gray-200 flex-shrink-0 relative">
                     <Image
                       src={product.thumbnail}
                       alt={product.name}
                       fill
                       className="object-cover"
-                      sizes="80px"
+                      sizes="(max-width: 640px) 64px, 80px"
                       loading="lazy"
                     />
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-1">
                     <Link
                       href={`/product/${product.id}`}
-                      className="font-semibold text-gray-900 hover:text-gray-700 transition-colors"
+                      className="font-semibold text-gray-900 hover:text-gray-700 transition-colors break-words"
                     >
                       {product.name}
                     </Link>
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-gray-500 flex-shrink-0">
                       {getRelativeTime(product.createdAt)}
                     </span>
                   </div>
@@ -100,10 +100,10 @@ export function ProductList({ products, isOwnProfile }: ProductListProps) {
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 flex-shrink-0">
+              <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
                 <Link
                   href={`/product/${product.id}#comments`}
-                  className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                  className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 transition-colors flex-shrink-0"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -119,14 +119,14 @@ export function ProductList({ products, isOwnProfile }: ProductListProps) {
                   </svg>
                   <span>{product._count?.comments || 0}</span>
                 </Link>
-                <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5">
+                <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-2.5 sm:px-3 py-1.5 flex-shrink-0">
                   <span className="text-sm font-semibold text-gray-900">
                     {product.upvotes}
                   </span>
-                  <span className="text-sm text-gray-600">upvotes</span>
+                  <span className="text-xs sm:text-sm text-gray-600">upvotes</span>
                 </div>
                 {isOwnProfile && (
-                  <div className="flex items-center gap-3 ml-2">
+                  <div className="flex items-center gap-3 flex-shrink-0">
                     <Link
                       href={`/product/${product.id}/edit`}
                       className="text-sm text-gray-700 hover:text-gray-900 font-medium transition-colors"
