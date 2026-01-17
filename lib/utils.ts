@@ -1,9 +1,12 @@
+import { clsx, type ClassValue } from "clsx"
+import { twMerge } from "tailwind-merge"
+
 /**
- * Utility function to merge class names
- * Combines class names and handles conditional classes
+ * Utility function to merge class names (shadcn/ui compatible)
+ * Combines clsx and tailwind-merge for conditional classes and Tailwind conflict resolution
  */
-export function cn(...classes: (string | undefined | null | false)[]): string {
-  return classes.filter(Boolean).join(" ")
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
 }
 
 export function getRelativeTime(date: Date): string {

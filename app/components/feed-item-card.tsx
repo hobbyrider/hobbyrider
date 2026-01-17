@@ -6,6 +6,8 @@ import { ShareButton } from "@/app/components/share-button"
 import { CommentIcon } from "@/app/components/icons"
 import type { SoftwareItem } from "@/app/(main)/page"
 import { CardTitle, Small, Caption, NavLinkText } from "@/app/components/typography"
+import { Card, CardContent } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 
 type FeedItemCardProps = {
   item: SoftwareItem
@@ -24,8 +26,10 @@ type FeedItemCardProps = {
  */
 export function FeedItemCard({ item, hasUpvoted, isLoggedIn }: FeedItemCardProps) {
   return (
-    <li className="group rounded-xl border border-gray-200 bg-white p-4 sm:p-5 transition-all duration-200 hover:border-gray-300 hover:bg-gray-50 hover:shadow-sm">
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 sm:gap-6">
+    <li>
+      <Card className="group transition-all duration-200 hover:shadow-sm">
+        <CardContent className="p-4 sm:p-5">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 sm:gap-6">
         {/* Main content */}
         <div className="flex gap-3 sm:gap-4 flex-1 min-w-0">
           {/* Thumbnail */}
@@ -71,9 +75,11 @@ export function FeedItemCard({ item, hasUpvoted, isLoggedIn }: FeedItemCardProps
                     <Link
                       key={category.id}
                       href={`/?category=${category.slug}`}
-                      className="inline-flex items-center px-2.5 py-1 rounded-full bg-gray-100 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-200 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-gray-700"
+                      className="focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-gray-700 rounded"
                     >
-                      {category.name}
+                      <Badge variant="secondary" className="text-xs font-medium cursor-pointer">
+                        {category.name}
+                      </Badge>
                     </Link>
                   ))}
                   {item.categories.length > 3 && (
@@ -124,8 +130,10 @@ export function FeedItemCard({ item, hasUpvoted, isLoggedIn }: FeedItemCardProps
           
           {/* Share button */}
           <ShareButton productId={item.id} productName={item.name} />
+          </div>
         </div>
-      </div>
+        </CardContent>
+      </Card>
     </li>
   )
 }

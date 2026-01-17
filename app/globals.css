@@ -2,9 +2,28 @@
 
 /* Design System Tokens */
 :root {
-  /* Base colors */
-  --background: #ffffff;
-  --foreground: #171717;
+  /* shadcn/ui CSS Variables - Aligned with existing design system */
+  /* Colors match existing palette: gray-900 (#171717), gray-200 (#e5e5e5), etc. */
+  --background: 0 0% 100%;           /* white - matches existing background */
+  --foreground: 0 0% 9.4%;           /* #171717 - matches --color-gray-900 */
+  --card: 0 0% 100%;                 /* white */
+  --card-foreground: 0 0% 9.4%;      /* #171717 */
+  --popover: 0 0% 100%;              /* white */
+  --popover-foreground: 0 0% 9.4%;   /* #171717 */
+  --primary: 0 0% 9.4%;              /* #171717 - matches --color-primary */
+  --primary-foreground: 0 0% 98%;    /* white */
+  --secondary: 0 0% 96.1%;           /* gray-100 - matches existing secondary */
+  --secondary-foreground: 0 0% 9.4%; /* #171717 */
+  --muted: 0 0% 96.1%;               /* gray-100 */
+  --muted-foreground: 0 0% 45.1%;    /* gray-500 (#737373) */
+  --accent: 0 0% 96.1%;              /* gray-100 */
+  --accent-foreground: 0 0% 9.4%;    /* #171717 */
+  --destructive: 0 84.2% 60.2%;      /* red - matches --color-error */
+  --destructive-foreground: 0 0% 98%; /* white */
+  --border: 0 0% 89.8%;              /* gray-200 (#e5e5e5) - matches --color-border */
+  --input: 0 0% 89.8%;               /* gray-200 - matches --color-border */
+  --ring: 0 0% 9.4%;                 /* #171717 - matches --color-primary for focus */
+  --radius: 0.5rem;                  /* 8px - matches --radius-base */
   
   /* Spacing scale (4px base) */
   --spacing-xs: 0.25rem;    /* 4px */
@@ -78,8 +97,26 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* Dark mode - matches existing dark theme tokens */
+    --background: 0 0% 3.9%;         /* #0a0a0a - matches existing dark background */
+    --foreground: 0 0% 93%;          /* #ededed - matches existing dark foreground */
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 93%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 93%;
+    --primary: 0 0% 93%;             /* Light text in dark mode */
+    --primary-foreground: 0 0% 3.9%; /* Dark background */
+    --secondary: 0 0% 14.9%;         /* Darker gray */
+    --secondary-foreground: 0 0% 93%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 93%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
   }
 }
 

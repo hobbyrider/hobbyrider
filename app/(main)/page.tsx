@@ -161,11 +161,11 @@ export default async function Home({
   }
 
   return (
-    <main className="px-4 py-6 sm:px-6 sm:py-10">
-      <div className="mx-auto max-w-5xl">
+    <main className="min-h-screen">
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
         {/* Page Header */}
-        <header className="mb-6 sm:mb-8">
-          <PageTitle className="text-2xl sm:text-3xl text-gray-900">
+        <header className="mb-6 text-center sm:text-left sm:mb-8">
+          <PageTitle className="text-2xl sm:text-3xl lg:text-4xl text-gray-900">
             {categorySlug 
               ? `Top in ${categorySlug.replace(/-/g, " ")}` 
               : "Discover software worth riding"}
@@ -181,8 +181,8 @@ export default async function Home({
         {/* Feed Section */}
         <section>
           {paginatedProducts.length === 0 ? (
-            <div className="rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 p-12 text-center">
-              <Text className="text-gray-600">
+            <div className="rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 p-8 sm:p-12 text-center">
+              <Text className="text-base text-gray-600">
                 {totalItems === 0
                   ? "No submissions yet. Be the first!"
                   : "No products on this page."}
@@ -190,7 +190,7 @@ export default async function Home({
             </div>
           ) : (
             <>
-              <ul className="space-y-3">
+              <ul className="space-y-4 sm:space-y-3">
                 {paginatedProducts.map((item) => (
                   <FeedItemCard
                     key={item.id}
@@ -203,7 +203,7 @@ export default async function Home({
               
               {/* Pagination */}
               {totalPages > 1 && (
-                <div className="mt-8">
+                <div className="mt-6 sm:mt-8">
                   <Pagination
                     currentPage={currentPage}
                     totalPages={totalPages}
