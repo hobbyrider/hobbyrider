@@ -18,8 +18,8 @@ export default async function CategoriesPage() {
   })
 
   return (
-    <main className="px-4 py-8 sm:px-6 sm:py-10">
-      <div className="mx-auto max-w-6xl">
+    <main className="min-h-screen">
+      <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
         <Link
           href="/"
           className="mb-4 sm:mb-6 inline-block text-sm font-medium text-gray-600 transition-colors hover:text-gray-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded"
@@ -36,7 +36,7 @@ export default async function CategoriesPage() {
           </Muted>
         </header>
 
-        <ul className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="grid gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-3">
           {categories.map((c) => (
             <li key={c.id} className="group rounded-xl border border-gray-200 bg-white p-4 sm:p-5 transition-all hover:border-gray-300 hover:bg-gray-50 hover:shadow-sm">
               <Link href={`/?category=${c.slug}`} className="block">

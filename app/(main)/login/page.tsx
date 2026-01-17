@@ -39,8 +39,9 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="px-4 py-8 sm:px-6 sm:py-12">
-      <div className="mx-auto max-w-md">
+    <main className="min-h-screen">
+      <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
+        <div className="mx-auto max-w-md">
         <Link
           href="/"
           className="text-sm text-gray-600 hover:text-black mb-4 sm:mb-6 inline-block"
@@ -116,6 +117,7 @@ export default function LoginPage() {
               Sign up
             </Link>
           </p>
+        </div>
         </div>
       </div>
     </main>

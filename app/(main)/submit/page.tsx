@@ -38,9 +38,11 @@ export default function SubmitPage() {
 
   if (status === "loading") {
     return (
-      <main className="px-6 py-10">
-        <div className="mx-auto max-w-2xl">
-          <Muted>Loading...</Muted>
+      <main className="min-h-screen">
+        <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
+          <div className="mx-auto max-w-2xl">
+            <Muted>Loading...</Muted>
+          </div>
         </div>
       </main>
     )
@@ -48,8 +50,9 @@ export default function SubmitPage() {
 
   if (!session) {
     return (
-      <main className="px-6 py-10">
-        <div className="mx-auto max-w-2xl">
+      <main className="min-h-screen">
+        <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
+          <div className="mx-auto max-w-2xl">
           <header className="mb-10">
             <PageTitle className="mb-2 text-gray-900">
               Submit Software
@@ -76,6 +79,7 @@ export default function SubmitPage() {
                 Sign up
               </Link>
             </div>
+          </div>
           </div>
         </div>
       </main>
@@ -182,8 +186,9 @@ export default function SubmitPage() {
   }
 
   return (
-    <main className="px-4 py-8 sm:px-6 sm:py-12">
-      <div className="mx-auto max-w-xl">
+    <main className="min-h-screen">
+      <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
+        <div className="mx-auto max-w-xl">
         <PageTitle className="text-2xl sm:text-3xl text-gray-900">Submit your product</PageTitle>
         <Muted className="mt-2 text-sm sm:text-base">
           Get ranked by the community and discovered by your future users.
@@ -372,6 +377,7 @@ export default function SubmitPage() {
             </button>
           </div>
         </form>
+        </div>
       </div>
     </main>
   )

@@ -80,8 +80,8 @@ export default async function CategoryPage({
   }
 
   return (
-    <main className="px-4 py-8 sm:px-6 sm:py-10">
-      <div className="mx-auto max-w-5xl">
+    <main className="min-h-screen">
+      <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
         <Link
           href="/"
           className="mb-4 sm:mb-6 inline-block text-sm font-medium text-gray-600 transition-colors hover:text-gray-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded"
