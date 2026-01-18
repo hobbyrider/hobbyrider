@@ -21,21 +21,7 @@ export async function createComment(
   productId: string,
   content: string
 ) {
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/4547670b-f49c-49d0-8d5b-e313b24778f7',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/actions/comments.ts:8',message:'createComment entry',data:{productId},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-  // #endregion
-  let session
-  try {
-    session = await getSession()
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/4547670b-f49c-49d0-8d5b-e313b24778f7',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/actions/comments.ts:12',message:'getSession in createComment',data:{hasSession:!!session,userId:session?.user?.id||null},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-    // #endregion
-  } catch (err: any) {
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/4547670b-f49c-49d0-8d5b-e313b24778f7',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/actions/comments.ts:16',message:'getSession error in createComment',data:{error:err?.message||String(err)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-    // #endregion
-    throw new Error("You must be logged in to comment")
-  }
+  const session = await getSession()
   if (!session?.user?.id) {
     throw new Error("You must be logged in to comment")
   }
@@ -56,29 +42,11 @@ export async function createComment(
     throw new Error(rateLimit.error || "Rate limit exceeded for comments")
   }
 
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/4547670b-f49c-49d0-8d5b-e313b24778f7',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/actions/comments.ts:25',message:'Before user query',data:{userId:session.user.id},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-  // #endregion
   // Get user for backward compatibility
-  let user
-  try {
-    user = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      select: { username: true, name: true },
-    })
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/4547670b-f49c-49d0-8d5b-e313b24778f7',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/actions/comments.ts:32',message:'User query result',data:{found:!!user},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-    // #endregion
-  } catch (err: any) {
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/4547670b-f49c-49d0-8d5b-e313b24778f7',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/actions/comments.ts:35',message:'User query error',data:{error:err?.message||String(err),code:err?.code},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-    // #endregion
-    throw err
-  }
-
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/4547670b-f49c-49d0-8d5b-e313b24778f7',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/actions/comments.ts:40',message:'Before comment create',data:{productId,hasAuthorId:true},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-  // #endregion
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { username: true, name: true },
+  })
   
   // Get product and owner info for email notification
   const product = await prisma.software.findUnique({

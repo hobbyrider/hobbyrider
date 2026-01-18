@@ -127,30 +127,16 @@ export async function upvoteSoftware(id: string) {
     throw new Error("You must be logged in to upvote a product")
   }
 
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/4547670b-f49c-49d0-8d5b-e313b24778f7',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/actions/software.ts:95',message:'upvoteSoftware entry',data:{productId:id,userId:session.user.id},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-  // #endregion
   // Toggle: if already upvoted, remove upvote. Otherwise create it.
-  let existingUpvote
-  try {
-    existingUpvote = await prismaAny.upvote.findUnique({
-      where: {
-        userId_productId: {
-          userId: session.user.id,
-          productId: id,
-        },
+  const existingUpvote = await prismaAny.upvote.findUnique({
+    where: {
+      userId_productId: {
+        userId: session.user.id,
+        productId: id,
       },
-      select: { id: true },
-    })
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/4547670b-f49c-49d0-8d5b-e313b24778f7',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/actions/software.ts:108',message:'Upvote findUnique success',data:{found:!!existingUpvote},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-    // #endregion
-  } catch (err: any) {
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/4547670b-f49c-49d0-8d5b-e313b24778f7',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/actions/software.ts:111',message:'Upvote findUnique error',data:{error:err?.message||String(err),code:err?.code},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-    // #endregion
-    throw err
-  }
+    },
+    select: { id: true },
+  })
 
   if (existingUpvote) {
     // Removing upvote - no rate limit check needed

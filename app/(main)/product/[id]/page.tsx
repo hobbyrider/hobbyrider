@@ -116,25 +116,9 @@ export default async function ProductPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/4547670b-f49c-49d0-8d5b-e313b24778f7',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/product/[id]/page.tsx:20',message:'ProductPage entry',data:{productId:id},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-  // #endregion
-  let session
-  try {
-    session = await getSession()
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/4547670b-f49c-49d0-8d5b-e313b24778f7',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/product/[id]/page.tsx:25',message:'getSession result',data:{hasSession:!!session,userId:session?.user?.id||null},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-    // #endregion
-  } catch (err: any) {
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/4547670b-f49c-49d0-8d5b-e313b24778f7',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/product/[id]/page.tsx:28',message:'getSession error',data:{error:err?.message||String(err)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-    // #endregion
-    session = null
-  }
-
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/4547670b-f49c-49d0-8d5b-e313b24778f7',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/product/[id]/page.tsx:32',message:'Before product query',data:{productId:id},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-  // #endregion
+  
+  // Get session (non-blocking - page works without session)
+  const session = await getSession().catch(() => null)
   
   // Fetch product with full data and comments in parallel
   const [product, comments] = await Promise.all([
@@ -180,9 +164,6 @@ export default async function ProductPage({
     }),
   ])
 
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/4547670b-f49c-49d0-8d5b-e313b24778f7',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/product/[id]/page.tsx:65',message:'Product query result',data:{found:!!product,hasMakerId:!!product?.makerId},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-  // #endregion
   if (!product) {
     notFound()
   }
@@ -195,28 +176,15 @@ export default async function ProductPage({
   // Check if user has upvoted this product
   let hasUpvoted = false
   if (session?.user?.id) {
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/4547670b-f49c-49d0-8d5b-e313b24778f7',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/product/[id]/page.tsx:72',message:'Before upvote query',data:{userId:session.user.id,productId:id},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-    // #endregion
-    try {
-      const upvote = await prisma.upvote.findUnique({
-        where: {
-          userId_productId: {
-            userId: session.user.id,
-            productId: id,
-          },
+    const upvote = await prisma.upvote.findUnique({
+      where: {
+        userId_productId: {
+          userId: session.user.id,
+          productId: id,
         },
-      })
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/4547670b-f49c-49d0-8d5b-e313b24778f7',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/product/[id]/page.tsx:84',message:'Upvote query success',data:{found:!!upvote},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-      // #endregion
-      hasUpvoted = !!upvote
-    } catch (err: any) {
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/4547670b-f49c-49d0-8d5b-e313b24778f7',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/product/[id]/page.tsx:88',message:'Upvote query error',data:{error:err?.message||String(err),code:err?.code},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-      // #endregion
-      hasUpvoted = false
-    }
+      },
+    }).catch(() => null)
+    hasUpvoted = !!upvote
   }
 
   const baseUrl = getBaseUrl()
