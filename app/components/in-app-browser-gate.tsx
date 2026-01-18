@@ -40,15 +40,62 @@ export function InAppBrowserGate({ children, onBlocked }: InAppBrowserGateProps)
     }
   }, [searchParams, onBlocked])
 
-  const handleOpenInBrowser = () => {
+  const handleOpenInBrowser = async () => {
     // Build URL with external param to prevent gate from showing again
     const url = new URL(window.location.href)
     url.searchParams.set('external', '1')
+    const targetUrl = url.toString()
+
+    // Unfortunately, JavaScript cannot reliably force an in-app browser to open the system browser
+    // We need to guide users to use the native share button or try Web Share API
     
-    // Do a top-level navigation - this should trigger system browser on mobile
-    // For iOS Safari, this should open in Safari
-    // For Android, this should open in the default browser
-    window.location.href = url.toString()
+    // Method 1: Try Web Share API (most reliable if supported)
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Sign up on Hobbyrider',
+          url: targetUrl,
+        })
+        // If share succeeded, the user will open it in their browser
+        return
+      } catch (err: any) {
+        // User cancelled or share failed - continue to fallback methods
+        if (err.name !== 'AbortError') {
+          console.log('Web Share API failed:', err)
+        }
+      }
+    }
+
+    // Method 2: Try window.open with _blank
+    try {
+      const newWindow = window.open(targetUrl, '_blank', 'noopener,noreferrer')
+      
+      // Check if window.open was successful
+      if (newWindow) {
+        // Give it a moment, then check if it's still focused on this window
+        setTimeout(() => {
+          if (document.hasFocus() && newWindow) {
+            // Still in webview, show instructions
+            showBrowserInstructions()
+          }
+        }, 500)
+      } else {
+        // window.open was blocked, show instructions immediately
+        showBrowserInstructions()
+      }
+    } catch (err) {
+      console.error('window.open failed:', err)
+      showBrowserInstructions()
+    }
+  }
+
+  const showBrowserInstructions = () => {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream
+    const message = isIOS
+      ? 'To continue, tap the share button at the bottom of the screen and select "Open in Safari".'
+      : 'To continue, tap the share button at the bottom of the screen and select "Open in Chrome" or your default browser.'
+    
+    alert(message)
   }
 
   const handleCopyLink = async () => {
