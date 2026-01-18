@@ -66,7 +66,7 @@ export function AuthProviders({ email, setEmail, loading = false }: AuthProvider
             <button
               onClick={handleGoogleSignIn}
               disabled={loading}
-              className="w-full flex items-center justify-center gap-3 rounded-lg border px-4 py-2 font-semibold hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-3 rounded-lg border px-4 py-2 font-semibold hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed relative"
             >
           <svg className="w-5 h-5" viewBox="0 0 24 24">
             <path
