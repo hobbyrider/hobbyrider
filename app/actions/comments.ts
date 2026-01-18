@@ -105,25 +105,37 @@ export async function createComment(
     },
   })
 
-  // Send email notification to product owner (if different from commenter)
+  // Send email notification to product owner (if different from commenter and notifications enabled)
   if (product?.makerUser?.email && product.makerUser.id !== session.user.id) {
-    const baseUrl = getBaseUrl()
-    const commentUrl = `${baseUrl}/product/${productId}#comments`
-    const commenterName = user?.name || user?.username || "Someone"
-    
-    // Send email asynchronously (don't block the response)
-    sendCommentNotification({
-      productOwnerEmail: product.makerUser.email,
-      productOwnerName: product.makerUser.name || product.makerUser.username || "User",
-      productName: product.name,
-      productId: product.id,
-      commenterName,
-      commentContent: sanitizedContent,
-      commentUrl,
-    }).catch((error) => {
-      // Log error but don't fail the comment creation
-      console.error("Failed to send comment notification email:", error)
+    // Check if product owner has comment notifications enabled
+    const productOwner = await prisma.user.findUnique({
+      where: { id: product.makerUser.id },
+      select: { notifyOnComments: true, username: true },
     })
+
+    if (productOwner?.notifyOnComments !== false) {
+      const baseUrl = getBaseUrl()
+      const commentUrl = `${baseUrl}/product/${productId}#comments`
+      const profileSettingsUrl = `${baseUrl}/user/${productOwner?.username || product.makerUser.id}/edit#notifications`
+      const commenterName = user?.name || user?.username || "Someone"
+      
+      // Send email asynchronously (don't block the response)
+      sendCommentNotification({
+        productOwnerEmail: product.makerUser.email,
+        productOwnerName: product.makerUser.name || product.makerUser.username || "User",
+        productOwnerId: product.makerUser.id,
+        productOwnerUsername: productOwner?.username || null,
+        productName: product.name,
+        productId: product.id,
+        commenterName,
+        commentContent: sanitizedContent,
+        commentUrl,
+        profileSettingsUrl,
+      }).catch((error) => {
+        // Log error but don't fail the comment creation
+        console.error("Failed to send comment notification email:", error)
+      })
+    }
   }
 
   revalidatePath(`/product/${productId}`)

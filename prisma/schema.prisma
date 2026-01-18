@@ -90,6 +90,8 @@ model User {
   website       String? // Personal website URL
   linkedin      String? // LinkedIn profile URL
   twitter       String? // Twitter/X profile URL
+  notifyOnUpvotes Boolean @default(true) // Email notifications for upvotes
+  notifyOnComments Boolean @default(true) // Email notifications for comments
   isAdmin       Boolean   @default(false)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt

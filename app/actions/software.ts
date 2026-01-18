@@ -201,28 +201,40 @@ export async function upvoteSoftware(id: string) {
       }),
     ])
 
-    // Send email notification to product owner (if different from upvoter)
+    // Send email notification to product owner (if different from upvoter and notifications enabled)
     if (product?.makerUser?.email && product.makerUser.id !== session.user.id) {
-      const baseUrl = getBaseUrl()
-      const productUrl = `${baseUrl}/product/${id}`
-      const upvoter = await prismaAny.user.findUnique({
-        where: { id: session.user.id },
-        select: { name: true, username: true },
+      // Check if product owner has upvote notifications enabled
+      const productOwner = await prismaAny.user.findUnique({
+        where: { id: product.makerUser.id },
+        select: { notifyOnUpvotes: true, username: true },
       })
-      const upvoterName = upvoter?.name || upvoter?.username || "Someone"
-      
-      // Send email asynchronously (don't block the response)
-      sendUpvoteNotification({
-        productOwnerEmail: product.makerUser.email,
-        productOwnerName: product.makerUser.name || product.makerUser.username || "User",
-        productName: product.name,
-        productId: product.id,
-        upvoterName,
-        productUrl,
-      }).catch((error) => {
-        // Log error but don't fail the upvote
-        console.error("Failed to send upvote notification email:", error)
-      })
+
+      if (productOwner?.notifyOnUpvotes !== false) {
+        const baseUrl = getBaseUrl()
+        const productUrl = `${baseUrl}/product/${id}`
+        const profileSettingsUrl = `${baseUrl}/user/${productOwner.username || product.makerUser.id}/edit#notifications`
+        const upvoter = await prismaAny.user.findUnique({
+          where: { id: session.user.id },
+          select: { name: true, username: true },
+        })
+        const upvoterName = upvoter?.name || upvoter?.username || "Someone"
+        
+        // Send email asynchronously (don't block the response)
+        sendUpvoteNotification({
+          productOwnerEmail: product.makerUser.email,
+          productOwnerName: product.makerUser.name || product.makerUser.username || "User",
+          productOwnerId: product.makerUser.id,
+          productOwnerUsername: productOwner?.username || null,
+          productName: product.name,
+          productId: product.id,
+          upvoterName,
+          productUrl,
+          profileSettingsUrl,
+        }).catch((error) => {
+          // Log error but don't fail the upvote
+          console.error("Failed to send upvote notification email:", error)
+        })
+      }
     }
   }
 

@@ -72,19 +72,25 @@ function stripHtml(html: string): string {
 export async function sendCommentNotification({
   productOwnerEmail,
   productOwnerName,
+  productOwnerId,
+  productOwnerUsername,
   productName,
   productId,
   commenterName,
   commentContent,
   commentUrl,
+  profileSettingsUrl,
 }: {
   productOwnerEmail: string
   productOwnerName: string
+  productOwnerId: string
+  productOwnerUsername: string | null
   productName: string
   productId: string
   commenterName: string
   commentContent: string
   commentUrl: string
+  profileSettingsUrl: string
 }) {
   const subject = `${commenterName} commented on "${productName}"`
   
@@ -112,7 +118,7 @@ export async function sendCommentNotification({
       </div>
       <p style="color: #999; font-size: 12px; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
         You're receiving this because someone commented on your product. 
-        <a href="${commentUrl}" style="color: #2563eb;">Manage notifications</a>
+        <a href="${profileSettingsUrl}" style="color: #2563eb;">Manage notifications</a>
       </p>
     </div>
   </body>
@@ -135,17 +141,23 @@ export async function sendCommentNotification({
 export async function sendUpvoteNotification({
   productOwnerEmail,
   productOwnerName,
+  productOwnerId,
+  productOwnerUsername,
   productName,
   productId,
   upvoterName,
   productUrl,
+  profileSettingsUrl,
 }: {
   productOwnerEmail: string
   productOwnerName: string
+  productOwnerId: string
+  productOwnerUsername: string | null
   productName: string
   productId: string
   upvoterName: string
   productUrl: string
+  profileSettingsUrl: string
 }) {
   const subject = `${upvoterName} upvoted "${productName}"`
   
@@ -170,7 +182,7 @@ export async function sendUpvoteNotification({
       </div>
       <p style="color: #999; font-size: 12px; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
         You're receiving this because someone upvoted your product. 
-        <a href="${productUrl}" style="color: #2563eb;">Manage notifications</a>
+        <a href="${profileSettingsUrl}" style="color: #2563eb;">Manage notifications</a>
       </p>
     </div>
   </body>

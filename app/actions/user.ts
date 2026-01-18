@@ -1,20 +1,19 @@
 "use server"
 
 import { prisma } from "@/lib/prisma"
-import { getSession } from "@/lib/get-session"
 import { revalidatePath } from "next/cache"
-import { sanitizeInput } from "@/lib/utils"
+import { getSession } from "@/lib/get-session"
+import { redirect } from "next/navigation"
 
-// Field limits
+// NOTE: We cast Prisma client to `any` to avoid occasional stale Prisma type issues
+// in editor tooling. Runtime schema is authoritative.
+const prismaAny = prisma as any
+
 const MAX_NAME = 50
 const MAX_USERNAME = 30
 const MAX_HEADLINE = 100
 const MAX_BIO = 1000
 const MAX_URL = 200
-
-// NOTE: We cast Prisma client to `any` to avoid occasional stale Prisma type issues
-// in editor tooling. Runtime schema is authoritative.
-const prismaAny = prisma as any
 
 type UpdateProfileData = {
   name?: string | null
@@ -25,6 +24,8 @@ type UpdateProfileData = {
   linkedin?: string | null
   twitter?: string | null
   image?: string | null
+  notifyOnUpvotes?: boolean
+  notifyOnComments?: boolean
 }
 
 export async function updateUserProfile(data: UpdateProfileData) {
@@ -34,118 +35,105 @@ export async function updateUserProfile(data: UpdateProfileData) {
     throw new Error("You must be logged in to update your profile")
   }
 
+  const updateData: any = {}
+
   // Validate username if provided
   if (data.username !== undefined && data.username !== null) {
     const trimmedUsername = data.username.trim()
     
-    if (trimmedUsername) {
-      // Check if username is already taken by another user
-      const existingUser = await prismaAny.user.findFirst({
-        where: {
-          username: trimmedUsername,
-          NOT: { id: session.user.id },
-        },
-      })
-
-      if (existingUser) {
-        throw new Error("Username is already taken")
-      }
-
-      // Validate username format
-      if (!/^[a-z0-9_-]+$/.test(trimmedUsername)) {
-        throw new Error("Username can only contain lowercase letters, numbers, hyphens, and underscores")
-      }
+    if (!trimmedUsername) {
+      throw new Error("Username is required")
     }
+
+    // Check if username is already taken by another user
+    const existingUser = await prismaAny.user.findFirst({
+      where: {
+        username: trimmedUsername,
+        NOT: { id: session.user.id },
+      },
+    })
+
+    if (existingUser) {
+      throw new Error("Username is already taken")
+    }
+
+    // Validate username format
+    if (!/^[a-z0-9_-]+$/.test(trimmedUsername)) {
+      throw new Error("Username can only contain lowercase letters, numbers, hyphens, and underscores")
+    }
+    // else: if username is undefined or null, let it be handled by other parts of the logic
+  } else {
+    throw new Error("Username is required")
   }
 
   // Validate URLs if provided
-  const urlFields = ["website", "linkedin", "twitter"] as const
-  for (const field of urlFields) {
-    const value = data[field]
-    if (value && value.trim()) {
-      try {
-        const url = new URL(value)
-        // Ensure URL has http or https protocol
-        if (!url.protocol.startsWith("http")) {
-          throw new Error(`URL must start with http:// or https://`)
-        }
-      } catch {
-        throw new Error(`Invalid URL for ${field}`)
-      }
+  if (data.website !== undefined) {
+    const websiteValue = data.website?.trim() || null
+    if (websiteValue && !websiteValue.match(/^https?:\/\//)) {
+      throw new Error("Website URL must start with http:// or https://")
     }
+    if (websiteValue && websiteValue.length > MAX_URL) {
+      throw new Error(`Website URL must be ${MAX_URL} characters or less`)
+    }
+    updateData.website = websiteValue
   }
 
-  // Prepare update data with validation and sanitization
-  const updateData: any = {}
+  if (data.linkedin !== undefined) {
+    const linkedinValue = data.linkedin?.trim() || null
+    if (linkedinValue && !linkedinValue.match(/^https?:\/\//)) {
+      throw new Error("LinkedIn URL must start with http:// or https://")
+    }
+    if (linkedinValue && linkedinValue.length > MAX_URL) {
+      throw new Error(`LinkedIn URL must be ${MAX_URL} characters or less`)
+    }
+    updateData.linkedin = linkedinValue
+  }
   
+  if (data.twitter !== undefined) {
+    const twitterValue = data.twitter?.trim() || null
+    if (twitterValue && !twitterValue.match(/^https?:\/\//)) {
+      throw new Error("X (Twitter) URL must start with http:// or https://")
+    }
+    if (twitterValue && twitterValue.length > MAX_URL) {
+      throw new Error(`X (Twitter) URL must be ${MAX_URL} characters or less`)
+    }
+    updateData.twitter = twitterValue
+  }
+  if (data.image !== undefined) {
+    updateData.image = data.image || null
+  }
+
+  if (data.notifyOnUpvotes !== undefined) {
+    updateData.notifyOnUpvotes = data.notifyOnUpvotes
+  }
+
+  if (data.notifyOnComments !== undefined) {
+    updateData.notifyOnComments = data.notifyOnComments
+  }
+
+  // Validate other fields if provided
   if (data.name !== undefined) {
     const nameValue = data.name?.trim() || null
     if (nameValue && nameValue.length > MAX_NAME) {
       throw new Error(`Name must be ${MAX_NAME} characters or less`)
     }
-    // Strip HTML tags from name
-    const nameClean = nameValue ? nameValue.replace(/<[^>]*>/g, "") : null
-    updateData.name = sanitizeInput(nameClean || "", MAX_NAME) || null
+    updateData.name = nameValue
   }
-  
-  if (data.username !== undefined) {
-    const usernameValue = data.username?.trim() || null
-    if (usernameValue && usernameValue.length > MAX_USERNAME) {
-      throw new Error(`Username must be ${MAX_USERNAME} characters or less`)
-    }
-    updateData.username = usernameValue || null
-  }
-  
+
   if (data.headline !== undefined) {
     const headlineValue = data.headline?.trim() || null
     if (headlineValue && headlineValue.length > MAX_HEADLINE) {
       throw new Error(`Headline must be ${MAX_HEADLINE} characters or less`)
     }
-    // Strip HTML tags from headline
-    const headlineClean = headlineValue ? headlineValue.replace(/<[^>]*>/g, "") : null
-    updateData.headline = sanitizeInput(headlineClean || "", MAX_HEADLINE) || null
+    updateData.headline = headlineValue
   }
   
   if (data.bio !== undefined) {
     const bioValue = data.bio?.trim() || null
-    if (bioValue) {
-      // Strip HTML tags for character count
-      const bioClean = bioValue.replace(/<[^>]*>/g, "")
-      if (bioClean.length > MAX_BIO) {
-        throw new Error(`Bio must be ${MAX_BIO} characters or less`)
-      }
-      // Strip HTML tags from bio (plain text only)
-      updateData.bio = sanitizeInput(bioClean, MAX_BIO) || null
-    } else {
-      updateData.bio = null
+    if (bioValue && bioValue.length > MAX_BIO) {
+      throw new Error(`Bio must be ${MAX_BIO} characters or less`)
     }
-  }
-  
-  if (data.website !== undefined) {
-    const websiteValue = data.website?.trim() || null
-    if (websiteValue && websiteValue.length > MAX_URL) {
-      throw new Error(`Website URL must be ${MAX_URL} characters or less`)
-    }
-    updateData.website = websiteValue || null
-  }
-  
-  if (data.linkedin !== undefined) {
-    const linkedinValue = data.linkedin?.trim() || null
-    if (linkedinValue && linkedinValue.length > MAX_URL) {
-      throw new Error(`LinkedIn URL must be ${MAX_URL} characters or less`)
-    }
-    updateData.linkedin = linkedinValue || null
-  }
-  
-  if (data.twitter !== undefined) {
-    const twitterValue = data.twitter?.trim() || null
-    if (twitterValue && twitterValue.length > MAX_URL) {
-      throw new Error(`X (Twitter) URL must be ${MAX_URL} characters or less`)
-    }
-    updateData.twitter = twitterValue || null
-  }
-  if (data.image !== undefined) {
-    updateData.image = data.image || null
+    updateData.bio = bioValue
   }
 
   // Only update if there's data to update
@@ -181,15 +169,107 @@ export async function updateUserProfile(data: UpdateProfileData) {
     
     // Provide more helpful error messages
     if (error?.code === "P2002") {
-      const field = error?.meta?.target?.[0] || "field"
-      throw new Error(`${field === "username" ? "Username" : "Field"} is already taken`)
+      // Unique constraint violation
+      const target = error?.meta?.target
+      if (Array.isArray(target) && target.includes("username")) {
+        throw new Error("Username is already taken")
+      }
+      if (Array.isArray(target) && target.includes("email")) {
+        throw new Error("Email is already in use")
+      }
     }
     
-    // Check for unknown field errors
-    if (error?.message?.includes("Unknown argument")) {
-      throw new Error("Database schema is out of sync. Please restart the server.")
-    }
+    throw new Error(error?.message || "Failed to update profile")
+  }
+}
+
+/**
+ * Delete user account and all associated data
+ * This permanently deletes:
+ * - All user's products (and their images, comments, upvotes)
+ * - All user's comments
+ * - All user's upvotes
+ * - All user's follow relationships
+ * - All reports made by or about the user
+ * - User's accounts, sessions, and profile
+ */
+export async function deleteUserAccount() {
+  const session = await getSession()
+
+  if (!session?.user?.id) {
+    throw new Error("You must be logged in to delete your account")
+  }
+
+  const userId = session.user.id
+
+  try {
+    // Get user's products before deletion (to delete associated data)
+    const userProducts = await prismaAny.software.findMany({
+      where: { makerId: userId },
+      select: { id: true },
+    })
+
+    const productIds = userProducts.map((p: any) => p.id)
+
+    // Delete all comments on user's products (these will cascade via product deletion, but we'll be explicit)
+    // Actually, when we delete products, their comments will cascade automatically
     
-    throw new Error(error?.message || "Failed to update profile. Please try again.")
+    // Delete all user's products (this will cascade delete product images, comments on products, upvotes on products)
+    if (productIds.length > 0) {
+      await prismaAny.software.deleteMany({
+        where: { id: { in: productIds } },
+      })
+    }
+
+    // Delete all user's comments (comments where authorId = userId)
+    await prismaAny.comment.deleteMany({
+      where: { authorId: userId },
+    })
+
+    // Delete all user's upvotes (these will cascade automatically, but being explicit)
+    await prismaAny.upvote.deleteMany({
+      where: { userId },
+    })
+
+    // Delete all follow relationships (where user is follower or following)
+    await prismaAny.follow.deleteMany({
+      where: {
+        OR: [
+          { followerId: userId },
+          { followingId: userId },
+        ],
+      },
+    })
+
+    // Delete all reports made by the user
+    await prismaAny.report.deleteMany({
+      where: { reporterId: userId },
+    })
+
+    // Delete all reports about the user
+    await prismaAny.report.deleteMany({
+      where: { reportedUserId: userId },
+    })
+
+    // Finally, delete the user (this will cascade delete accounts and sessions)
+    await prismaAny.user.delete({
+      where: { id: userId },
+    })
+
+    // Revalidate all relevant paths
+    revalidatePath("/")
+    revalidatePath("/search")
+
+    // Note: We can't redirect here in a server action, so the component will handle it
+    return { success: true }
+  } catch (error: any) {
+    console.error("Error deleting user account:", {
+      error,
+      message: error?.message,
+      code: error?.code,
+      userId,
+    })
+    
+    throw new Error(error?.message || "Failed to delete account. Please try again.")
   }
 }

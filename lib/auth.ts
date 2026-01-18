@@ -6,6 +6,40 @@ import Email from "next-auth/providers/email"
 import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
 
+// Helper function to generate username from email
+function generateUsernameFromEmail(email: string): string {
+  // Extract username from email: take part before @ or before first . (whichever comes first)
+  // e.g., "felata9289@elafans.com" -> "felata9289"
+  // e.g., "user.name@example.com" -> "user"
+  let emailPart = email.split("@")[0]
+  // Take part before first dot if it exists
+  if (emailPart.includes(".")) {
+    emailPart = emailPart.split(".")[0]
+  }
+  return emailPart.toLowerCase().replace(/[^a-z0-9_]/g, "") || "user"
+}
+
+// Helper function to ensure unique username (for OAuth/magic link - uses random number)
+async function ensureUniqueUsername(baseUsername: string): Promise<string> {
+  let username = baseUsername
+  let attempts = 0
+  const maxAttempts = 100 // Safety limit to prevent infinite loops
+
+  // If username exists, append a random 4-digit number
+  while (await prisma.user.findUnique({ where: { username } })) {
+    attempts++
+    if (attempts > maxAttempts) {
+      // Fallback to timestamp-based suffix if too many collisions
+      username = `${baseUsername}${Date.now().toString().slice(-6)}`
+      break
+    }
+    const randomNum = Math.floor(1000 + Math.random() * 9000) // 4-digit number (1000-9999)
+    username = `${baseUsername}${randomNum}`
+  }
+
+  return username
+}
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma) as any,
   secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET,
@@ -140,29 +174,37 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
     },
   },
+  events: {
+    async createUser({ user }) {
+      // Generate username for newly created OAuth/magic link users
+      if (user.email && !user.username) {
+        const baseUsername = generateUsernameFromEmail(user.email)
+        const uniqueUsername = await ensureUniqueUsername(baseUsername)
+
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { username: uniqueUsername },
+        })
+      }
+    },
+  },
   callbacks: {
-    async signIn({ user, account, profile }) {
-      // For OAuth providers, ensure user has a username
+    async signIn({ user, account }) {
+      // For OAuth providers and magic link, ensure existing users have a username
+      // (New users are handled by the createUser event)
       if (account?.provider !== "credentials" && user.email) {
-        const existingUser = await prisma.user.findUnique({
+        const dbUser = await prisma.user.findUnique({
           where: { email: user.email },
         })
 
-        // If user exists but doesn't have username, generate one
-        if (existingUser && !existingUser.username) {
-          const baseUsername = user.email.split("@")[0].toLowerCase().replace(/[^a-z0-9_]/g, "")
-          let username = baseUsername
-          let counter = 1
-
-          // Find unique username
-          while (await prisma.user.findUnique({ where: { username } })) {
-            username = `${baseUsername}${counter}`
-            counter++
-          }
+        // If user exists but doesn't have username, generate one from email
+        if (dbUser && !dbUser.username) {
+          const baseUsername = generateUsernameFromEmail(user.email)
+          const uniqueUsername = await ensureUniqueUsername(baseUsername)
 
           await prisma.user.update({
-            where: { id: existingUser.id },
-            data: { username },
+            where: { id: dbUser.id },
+            data: { username: uniqueUsername },
           })
         }
       }

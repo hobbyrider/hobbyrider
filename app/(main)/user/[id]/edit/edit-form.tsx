@@ -2,7 +2,8 @@
 
 import { useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
-import { updateUserProfile } from "@/app/actions/user"
+import { updateUserProfile, deleteUserAccount } from "@/app/actions/user"
+import { signOut } from "next-auth/react"
 import Link from "next/link"
 
 type User = {
@@ -16,6 +17,8 @@ type User = {
   website: string | null
   linkedin: string | null
   twitter: string | null
+  notifyOnUpvotes: boolean
+  notifyOnComments: boolean
 }
 
 type EditProfileFormProps = {
@@ -42,7 +45,7 @@ function validateName(value: string): string | null {
 }
 
 function validateUsername(value: string): string | null {
-  if (!value.trim()) return null // Optional field
+  if (!value.trim()) return "Username is required" // Required field
   if (value.length > MAX_USERNAME) return `Username must be ${MAX_USERNAME} characters or less`
   if (!/^[a-z0-9_-]+$/.test(value)) return "Username can only contain lowercase letters, numbers, hyphens, and underscores"
   return null
@@ -100,12 +103,17 @@ export function EditProfileForm({ user }: EditProfileFormProps) {
     website: user.website || "",
     linkedin: user.linkedin || "",
     twitter: user.twitter || "",
+    notifyOnUpvotes: user.notifyOnUpvotes ?? true,
+    notifyOnComments: user.notifyOnComments ?? true,
   })
 
   const [profileImage, setProfileImage] = useState<File | null>(null)
   const [profileImagePreview, setProfileImagePreview] = useState<string | null>(
     user.image || null
   )
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -249,6 +257,8 @@ export function EditProfileForm({ user }: EditProfileFormProps) {
           linkedin: formData.linkedin.trim() || null,
           twitter: formData.twitter.trim() || null,
           image: imageUrl || null,
+          notifyOnUpvotes: formData.notifyOnUpvotes,
+          notifyOnComments: formData.notifyOnComments,
         })
 
         setSuccess(true)
@@ -329,7 +339,7 @@ export function EditProfileForm({ user }: EditProfileFormProps) {
       <div>
         <div className="flex items-center justify-between mb-2">
           <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-            Username
+            Username <span className="text-red-600">*</span>
           </label>
           <span className={`text-xs ${formData.username.length > MAX_USERNAME ? "text-red-600" : "text-gray-500"}`}>
             {formData.username.length}/{MAX_USERNAME}
@@ -341,6 +351,7 @@ export function EditProfileForm({ user }: EditProfileFormProps) {
           value={formData.username}
           onChange={(e) => handleFieldChange("username", e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ""))}
           maxLength={MAX_USERNAME}
+          required
           className={`w-full rounded-lg border-2 px-4 py-2.5 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none transition-colors ${
             errors.username
               ? "border-red-500 focus:border-red-500"
@@ -509,6 +520,124 @@ export function EditProfileForm({ user }: EditProfileFormProps) {
           )}
         </div>
       </div>
+
+      {/* Notification Settings Section */}
+      <div id="notifications" className="space-y-4 scroll-mt-6">
+        <h2 className="text-lg font-semibold text-gray-900">Email Notifications</h2>
+        <p className="text-sm text-gray-600">
+          Choose which email notifications you want to receive
+        </p>
+
+        <div className="space-y-3">
+          <label className="flex items-center gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={formData.notifyOnUpvotes}
+              onChange={(e) => setFormData(prev => ({ ...prev, notifyOnUpvotes: e.target.checked }))}
+              className="w-4 h-4 rounded border-gray-300 text-gray-900 focus:ring-2 focus:ring-gray-900"
+              disabled={isPending}
+            />
+            <div>
+              <span className="text-sm font-medium text-gray-900">Upvotes</span>
+              <p className="text-xs text-gray-500">Receive emails when someone upvotes your products</p>
+            </div>
+          </label>
+
+          <label className="flex items-center gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={formData.notifyOnComments}
+              onChange={(e) => setFormData(prev => ({ ...prev, notifyOnComments: e.target.checked }))}
+              className="w-4 h-4 rounded border-gray-300 text-gray-900 focus:ring-2 focus:ring-gray-900"
+              disabled={isPending}
+            />
+            <div>
+              <span className="text-sm font-medium text-gray-900">Comments</span>
+              <p className="text-xs text-gray-500">Receive emails when someone comments on your products</p>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      {/* Delete Account Section */}
+      <div className="space-y-4 pt-6 border-t border-red-200">
+        <div>
+          <h2 className="text-lg font-semibold text-red-900">Delete Account</h2>
+          <p className="mt-1 text-sm text-gray-600">
+            Permanently delete your account and all associated data. This action cannot be undone.
+          </p>
+        </div>
+        <div>
+          <button
+            type="button"
+            onClick={() => setShowDeleteConfirm(true)}
+            disabled={isPending || isDeleting}
+            className="px-4 py-2 rounded-lg border-2 border-red-600 bg-red-600 text-white text-sm font-semibold transition-colors hover:bg-red-700 hover:border-red-700 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
+          >
+            Delete my account
+          </button>
+          {deleteError && (
+            <p className="mt-3 text-sm text-red-800">{deleteError}</p>
+          )}
+        </div>
+      </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <h3 className="text-xl font-semibold text-red-900 mb-3">Delete Account</h3>
+            <div className="space-y-3 mb-6">
+              <p className="text-gray-700">
+                Are you absolutely sure you want to delete your account? This action <strong>cannot be undone</strong>.
+              </p>
+              <div className="rounded-lg border-2 border-red-200 bg-red-50 p-3">
+                <p className="text-sm font-semibold text-red-900 mb-2">This will permanently delete:</p>
+                <ul className="text-sm text-red-800 space-y-1 list-disc list-inside">
+                  <li>All your products and their images</li>
+                  <li>All your comments</li>
+                  <li>All your upvotes</li>
+                  <li>All your follow relationships</li>
+                  <li>Your profile and account information</li>
+                </ul>
+              </div>
+              <p className="text-sm text-gray-600">
+                If you're sure, click "Yes, delete my account" below. Otherwise, click "Cancel" to keep your account.
+              </p>
+            </div>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => {
+                  setShowDeleteConfirm(false)
+                  setDeleteError(null)
+                }}
+                disabled={isDeleting}
+                className="px-4 py-2 rounded-lg border-2 border-gray-300 text-gray-700 text-sm font-semibold transition-colors hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={async () => {
+                  setIsDeleting(true)
+                  setDeleteError(null)
+                  try {
+                    await deleteUserAccount()
+                    // Sign out and redirect to home
+                    await signOut({ callbackUrl: "/" })
+                  } catch (err: any) {
+                    setIsDeleting(false)
+                    setDeleteError(err.message || "Failed to delete account. Please try again.")
+                  }
+                }}
+                disabled={isDeleting}
+                className="px-4 py-2 rounded-lg border-2 border-red-600 bg-red-600 text-white text-sm font-semibold transition-colors hover:bg-red-700 hover:border-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isDeleting ? "Deleting..." : "Yes, delete my account"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Error Message */}
       {error && (
