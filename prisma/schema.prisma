@@ -11,31 +11,38 @@ datasource db {
 }
 
 model Software {
-  id          String         @id @default(cuid())
-  name        String
-  tagline     String
-  description String?        @db.Text
-  url         String         @unique
-  maker       String? // Keep for backward compatibility
-  makerId     String?
-  makerUser   User?          @relation("MadeProducts", fields: [makerId], references: [id], onDelete: SetNull)
-  thumbnail   String?
-  embedHtml   String?        @db.Text
-  upvotes     Int            @default(0)
-  viewCount   Int            @default(0)
-  isHidden    Boolean        @default(false)
-  createdAt   DateTime       @default(now())
-  lastViewedAt DateTime?
-  comments    Comment[]
-  categories  Category[]
-  images      ProductImage[]
-  upvotedBy   Upvote[]
-  reports     Report[]
+  id              String         @id @default(cuid())
+  name            String
+  tagline         String
+  description     String?        @db.Text
+  url             String         @unique
+  maker           String? // Keep for backward compatibility
+  makerId         String?
+  makerUser       User?          @relation("MadeProducts", fields: [makerId], references: [id], onDelete: SetNull)
+  thumbnail       String?
+  embedHtml       String?        @db.Text
+  upvotes         Int            @default(0)
+  viewCount       Int            @default(0)
+  isHidden        Boolean        @default(false)
+  ownershipStatus String         @default("owned") // seeded, claimed, owned
+  seededBy        String? // User ID who seeded this product (admin)
+  seededByUser    User?          @relation("SeededProducts", fields: [seededBy], references: [id], onDelete: SetNull)
+  createdAt       DateTime       @default(now())
+  lastViewedAt    DateTime?
+  comments        Comment[]
+  categories      Category[]
+  images          ProductImage[]
+  upvotedBy       Upvote[]
+  reports         Report[]
+  ownershipClaims OwnershipClaim[]
+  launchTeam      LaunchTeamMember[]
 
   @@index([upvotes, createdAt])
   @@index([viewCount, createdAt])
   @@index([makerId])
   @@index([isHidden])
+  @@index([ownershipStatus])
+  @@index([seededBy])
 }
 
 model ProductImage {
@@ -96,15 +103,18 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  accounts       Account[]
-  sessions       Session[]
-  madeProducts   Software[] @relation("MadeProducts")
-  comments       Comment[]  @relation("Comments")
-  upvotes        Upvote[]
-  reportsMade    Report[]   @relation("ReportsMade")
-  reportsReceived Report[]  @relation("ReportsReceived")
-  followers      Follow[]   @relation("Followers")
-  following      Follow[]   @relation("Following")
+  accounts         Account[]
+  sessions         Session[]
+  madeProducts     Software[] @relation("MadeProducts")
+  seededProducts   Software[] @relation("SeededProducts")
+  comments         Comment[]  @relation("Comments")
+  upvotes          Upvote[]
+  reportsMade      Report[]   @relation("ReportsMade")
+  reportsReceived  Report[]  @relation("ReportsReceived")
+  followers        Follow[]   @relation("Followers")
+  following        Follow[]   @relation("Following")
+  ownershipClaims  OwnershipClaim[]
+  launchTeamMembers LaunchTeamMember[]
 
   @@index([email])
   @@index([username])
@@ -199,4 +209,40 @@ model Report {
   @@index([reportedUserId])
   @@index([reporterId])
   @@index([createdAt])
+}
+
+model OwnershipClaim {
+  id          String   @id @default(cuid())
+  productId   String
+  product     Software @relation(fields: [productId], references: [id], onDelete: Cascade)
+  claimantId  String
+  claimant    User     @relation(fields: [claimantId], references: [id], onDelete: Cascade)
+  reason      String   @db.Text // Why they should own it
+  status      String   @default("pending") // pending, approved, rejected
+  adminNotes  String?  @db.Text // Admin can add notes
+  reviewedBy  String? // Admin user ID who reviewed
+  reviewedAt  DateTime?
+  createdAt   DateTime @default(now())
+
+  @@index([productId])
+  @@index([claimantId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model LaunchTeamMember {
+  id        String   @id @default(cuid())
+  productId String
+  product   Software @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId    String? // Optional: if they're a Hobbyrider user
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  name      String   // Required display name
+  role      String? // Optional role (e.g., "Founder", "Designer", "Developer")
+  isExternal Boolean @default(false) // True if not a Hobbyrider user
+  order     Int      @default(0) // For display order
+  createdAt DateTime @default(now())
+
+  @@index([productId])
+  @@index([userId])
+  @@index([productId, order])
 }

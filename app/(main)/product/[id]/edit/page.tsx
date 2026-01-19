@@ -38,8 +38,14 @@ export default async function EditProductPage({
     notFound()
   }
 
-  // Check if user is the creator
-  if (product.makerId !== session.user.id) {
+  // Check if user is admin
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { isAdmin: true },
+  })
+
+  // Check if user is the creator or an admin
+  if (product.makerId !== session.user.id && !user?.isAdmin) {
     redirect(`/product/${id}`)
   }
 

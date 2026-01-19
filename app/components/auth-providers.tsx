@@ -8,9 +8,10 @@ type AuthProvidersProps = {
   email: string
   setEmail: (email: string) => void
   loading?: boolean
+  callbackUrl?: string
 }
 
-export function AuthProviders({ email, setEmail, loading = false }: AuthProvidersProps) {
+export function AuthProviders({ email, setEmail, loading = false, callbackUrl = "/" }: AuthProvidersProps) {
   const [magicLinkSent, setMagicLinkSent] = useState(false)
   const [providers, setProviders] = useState<Record<string, any> | null>(null)
   const [error, setError] = useState("")
@@ -23,7 +24,7 @@ export function AuthProviders({ email, setEmail, loading = false }: AuthProvider
     try {
       setError("")
       await signIn("google", {
-        callbackUrl: "/",
+        callbackUrl,
         redirect: true,
       })
       // Note: With redirect: true, signIn will redirect and not return
@@ -40,7 +41,7 @@ export function AuthProviders({ email, setEmail, loading = false }: AuthProvider
     }
     try {
       setError("")
-      await signIn("email", { email, callbackUrl: "/" })
+      await signIn("email", { email, callbackUrl })
       setMagicLinkSent(true)
     } catch (error: any) {
       console.error("Magic link error:", error)

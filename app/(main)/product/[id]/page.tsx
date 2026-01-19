@@ -16,6 +16,11 @@ import type { Metadata } from "next"
 import { PageTitle, SectionTitle, Text, Muted, Small } from "@/app/components/typography"
 import { ProductActions } from "./product-actions"
 import { MarkdownContent } from "@/app/components/markdown-content"
+import { OwnershipBadge } from "@/app/components/ownership-badge"
+import { LaunchTeam } from "@/app/components/launch-team"
+import { ClaimOwnershipButton } from "@/app/components/claim-ownership-button"
+import { getLaunchTeam } from "@/app/actions/launch-team"
+import { getProductOwnershipClaim } from "@/app/actions/ownership"
 
 export const dynamic = "force-dynamic"
 export const revalidate = 60 // Revalidate product pages every 60 seconds
@@ -120,8 +125,8 @@ export default async function ProductPage({
   // Get session (non-blocking - page works without session)
   const session = await getSession().catch(() => null)
   
-  // Fetch product with full data and comments in parallel
-  const [product, comments] = await Promise.all([
+  // Fetch product with full data, comments, launch team, and ownership claim in parallel
+  const [product, comments, launchTeam, userClaim] = await Promise.all([
     prisma.software.findUnique({
       where: { id },
       include: {
@@ -162,6 +167,8 @@ export default async function ProductPage({
         },
       },
     }),
+    getLaunchTeam(id).catch(() => []),
+    session?.user?.id ? getProductOwnershipClaim(id).catch(() => null) : Promise.resolve(null),
   ])
 
   if (!product) {
@@ -260,19 +267,24 @@ export default async function ProductPage({
                     {product.tagline}
                   </Muted>
                   
-                  {product.categories.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                      {product.categories.map((category) => (
-                        <Link
-                          key={category.id}
-                          href={`/category/${category.slug}`}
-                          className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-gray-700"
-                        >
-                          {category.name}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
+                  <div className="mb-4 flex flex-wrap items-center gap-2">
+                    {product.categories.length > 0 && (
+                      <>
+                        {product.categories.map((category) => (
+                          <Link
+                            key={category.id}
+                            href={`/category/${category.slug}`}
+                            className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-gray-700"
+                          >
+                            {category.name}
+                          </Link>
+                        ))}
+                      </>
+                    )}
+                    {product.ownershipStatus && (
+                      <OwnershipBadge status={product.ownershipStatus as "seeded" | "claimed" | "owned"} />
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -368,56 +380,104 @@ export default async function ProductPage({
                 </div>
               </SidebarBlock>
 
-              {/* Builder Info */}
+              {/* Owner Info */}
               {(product.makerUser || product.maker) && (
-                <SidebarBlock title="Builder">
-                  <div className="flex items-center gap-3">
-                    {product.makerUser ? (
-                      <>
-                        {product.makerUser.image ? (
-                          <div className="h-12 w-12 rounded-full overflow-hidden border border-gray-200 relative">
-                            <Image
-                              src={product.makerUser.image}
-                              alt={product.makerUser.username || product.makerUser.name || "Builder"}
-                              fill
-                              className="object-cover"
-                              sizes="48px"
-                            />
+                <SidebarBlock title={(product.ownershipStatus === "seeded" || product.seededBy) ? "Published by" : "Owned by"}>
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      {product.makerUser ? (
+                        <>
+                          {product.makerUser.image ? (
+                            <div className="h-12 w-12 rounded-full overflow-hidden border border-gray-200 relative">
+                              <Image
+                                src={product.makerUser.image}
+                                alt={product.makerUser.username || product.makerUser.name || "Builder"}
+                                fill
+                                className="object-cover"
+                                sizes="48px"
+                              />
+                            </div>
+                          ) : (
+                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-200 text-lg font-bold text-gray-700 border border-gray-300">
+                              {(product.makerUser.username || product.makerUser.name || "?")[0].toUpperCase()}
+                            </div>
+                          )}
+                          <div>
+                            <Link
+                              href={`/user/${product.makerUser.username || product.makerUser.id}`}
+                              className="block font-semibold text-gray-900 transition-colors hover:text-gray-700 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded"
+                            >
+                              {product.makerUser.username || product.makerUser.name}
+                            </Link>
+                            <p className="text-sm text-gray-500">
+                              {getRelativeTime(product.createdAt)}
+                            </p>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-200 text-lg font-bold text-gray-700 border border-gray-300">
+                            {product.maker?.[0].toUpperCase() || "?"}
+                          </div>
+                          <div>
+                            <Link
+                              href={`/user/${product.maker}`}
+                              className="block font-semibold text-gray-900 transition-colors hover:text-gray-700 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded"
+                            >
+                              @{product.maker}
+                            </Link>
+                            <p className="text-sm text-gray-500">
+                              {getRelativeTime(product.createdAt)}
+                            </p>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                    {(product.ownershipStatus === "seeded" || (product.ownershipStatus === "owned" && product.seededBy)) && (
+                      <div className="pt-3 border-t border-gray-200">
+                        {userClaim ? (
+                          <div className="inline-flex items-center gap-2 rounded-lg border-2 border-yellow-300 bg-yellow-50 px-3 py-2 text-sm font-semibold text-yellow-800 w-full justify-center">
+                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
+                            </svg>
+                            Claim Pending Review
                           </div>
                         ) : (
-                          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-200 text-lg font-bold text-gray-700 border border-gray-300">
-                            {(product.makerUser.username || product.makerUser.name || "?")[0].toUpperCase()}
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2">
+                              <ClaimOwnershipButton 
+                                productId={product.id} 
+                                productName={product.name}
+                                isLoggedIn={!!session?.user?.id}
+                              />
+                              <div className="group relative">
+                                <button
+                                  type="button"
+                                  className="flex items-center justify-center w-5 h-5 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors"
+                                  aria-label="What is claiming?"
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                    className="w-3.5 h-3.5"
+                                  >
+                                    <path
+                                      fillRule="evenodd"
+                                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z"
+                                      clipRule="evenodd"
+                                    />
+                                  </svg>
+                                </button>
+                                <div className="absolute left-0 bottom-full mb-2 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
+                                  <p>Request ownership of this product page. Tell us why you should own it and we'll review your request.</p>
+                                  <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         )}
-                        <div>
-                          <Link
-                            href={`/user/${product.makerUser.username || product.makerUser.id}`}
-                            className="block font-semibold text-gray-900 transition-colors hover:text-gray-700 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded"
-                          >
-                            {product.makerUser.username || product.makerUser.name}
-                          </Link>
-                          <p className="text-sm text-gray-500">
-                            {getRelativeTime(product.createdAt)}
-                          </p>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-200 text-lg font-bold text-gray-700 border border-gray-300">
-                          {product.maker?.[0].toUpperCase() || "?"}
-                        </div>
-                        <div>
-                          <Link
-                            href={`/user/${product.maker}`}
-                            className="block font-semibold text-gray-900 transition-colors hover:text-gray-700 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded"
-                          >
-                            @{product.maker}
-                          </Link>
-                          <p className="text-sm text-gray-500">
-                            {getRelativeTime(product.createdAt)}
-                          </p>
-                        </div>
-                      </>
+                      </div>
                     )}
                   </div>
                 </SidebarBlock>
@@ -485,58 +545,117 @@ export default async function ProductPage({
                 </div>
               </SidebarBlock>
 
-              {/* Builder Info */}
+              {/* Owner Info */}
               {(product.makerUser || product.maker) && (
-                <SidebarBlock title="Builder">
-                  <div className="flex items-center gap-3">
-                    {product.makerUser ? (
-                      <>
-                        {product.makerUser.image ? (
-                          <div className="h-12 w-12 rounded-full overflow-hidden border border-gray-200 relative">
-                            <Image
-                              src={product.makerUser.image}
-                              alt={product.makerUser.username || product.makerUser.name || "Builder"}
-                              fill
-                              className="object-cover"
-                              sizes="48px"
-                            />
+                <SidebarBlock title={(product.ownershipStatus === "seeded" || product.seededBy) ? "Published by" : "Owned by"}>
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      {product.makerUser ? (
+                        <>
+                          {product.makerUser.image ? (
+                            <div className="h-12 w-12 rounded-full overflow-hidden border border-gray-200 relative">
+                              <Image
+                                src={product.makerUser.image}
+                                alt={product.makerUser.username || product.makerUser.name || "Owner"}
+                                fill
+                                className="object-cover"
+                                sizes="48px"
+                              />
+                            </div>
+                          ) : (
+                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-200 text-lg font-bold text-gray-700 border border-gray-300">
+                              {(product.makerUser.username || product.makerUser.name || "?")[0].toUpperCase()}
+                            </div>
+                          )}
+                          <div>
+                            <Link
+                              href={`/user/${product.makerUser.username || product.makerUser.id}`}
+                              className="block font-semibold text-gray-900 transition-colors hover:text-gray-700 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded"
+                            >
+                              {product.makerUser.username || product.makerUser.name}
+                            </Link>
+                            <p className="text-sm text-gray-500">
+                              {getRelativeTime(product.createdAt)}
+                            </p>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-200 text-lg font-bold text-gray-700 border border-gray-300">
+                            {product.maker?.[0].toUpperCase() || "?"}
+                          </div>
+                          <div>
+                            <Link
+                              href={`/user/${product.maker}`}
+                              className="block font-semibold text-gray-900 transition-colors hover:text-gray-700 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded"
+                            >
+                              @{product.maker}
+                            </Link>
+                            <p className="text-sm text-gray-500">
+                              {getRelativeTime(product.createdAt)}
+                            </p>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                    {(product.ownershipStatus === "seeded" || (product.ownershipStatus === "owned" && product.seededBy)) && (
+                      <div className="pt-3 border-t border-gray-200">
+                        {userClaim ? (
+                          <div className="inline-flex items-center gap-2 rounded-lg border-2 border-yellow-300 bg-yellow-50 px-3 py-2 text-sm font-semibold text-yellow-800 w-full justify-center">
+                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
+                            </svg>
+                            Claim Pending Review
                           </div>
                         ) : (
-                          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-200 text-lg font-bold text-gray-700 border border-gray-300">
-                            {(product.makerUser.username || product.makerUser.name || "?")[0].toUpperCase()}
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2">
+                              <ClaimOwnershipButton 
+                                productId={product.id} 
+                                productName={product.name}
+                                isLoggedIn={!!session?.user?.id}
+                              />
+                              <div className="group relative">
+                                <button
+                                  type="button"
+                                  className="flex items-center justify-center w-5 h-5 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors"
+                                  aria-label="What is claiming?"
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                    className="w-3.5 h-3.5"
+                                  >
+                                    <path
+                                      fillRule="evenodd"
+                                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z"
+                                      clipRule="evenodd"
+                                    />
+                                  </svg>
+                                </button>
+                                <div className="absolute left-0 bottom-full mb-2 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
+                                  <p>Request ownership of this product page. Tell us why you should own it and we'll review your request.</p>
+                                  <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         )}
-                        <div>
-                          <Link
-                            href={`/user/${product.makerUser.username || product.makerUser.id}`}
-                            className="block font-semibold text-gray-900 transition-colors hover:text-gray-700 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded"
-                          >
-                            {product.makerUser.username || product.makerUser.name}
-                          </Link>
-                          <p className="text-sm text-gray-500">
-                            {getRelativeTime(product.createdAt)}
-                          </p>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-200 text-lg font-bold text-gray-700 border border-gray-300">
-                          {product.maker?.[0].toUpperCase() || "?"}
-                        </div>
-                        <div>
-                          <Link
-                            href={`/user/${product.maker}`}
-                            className="block font-semibold text-gray-900 transition-colors hover:text-gray-700 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded"
-                          >
-                            @{product.maker}
-                          </Link>
-                          <p className="text-sm text-gray-500">
-                            {getRelativeTime(product.createdAt)}
-                          </p>
-                        </div>
-                      </>
+                      </div>
                     )}
                   </div>
+                </SidebarBlock>
+              )}
+
+              {/* Launch Team */}
+              {launchTeam && launchTeam.length > 0 && (
+                <SidebarBlock>
+                  <LaunchTeam
+                    members={launchTeam}
+                    isOwner={session?.user?.id === product.makerId}
+                    productId={product.id}
+                  />
                 </SidebarBlock>
               )}
             </div>

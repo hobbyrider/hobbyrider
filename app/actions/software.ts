@@ -246,7 +246,13 @@ export async function updateSoftware(
     throw new Error("You must be logged in to edit a product")
   }
 
-  // Verify the user is the creator
+  // Check if user is admin
+  const user = await prismaAny.user.findUnique({
+    where: { id: session.user.id },
+    select: { isAdmin: true },
+  })
+
+  // Verify the user is the creator or an admin
   const product = await prismaAny.software.findUnique({
     where: { id: productId },
   })
@@ -255,7 +261,7 @@ export async function updateSoftware(
     throw new Error("Product not found")
   }
 
-  if (product.makerId !== session.user.id) {
+  if (product.makerId !== session.user.id && !user?.isAdmin) {
     throw new Error("You can only edit your own products")
   }
 
@@ -363,4 +369,90 @@ export async function deleteSoftwareByCreator(productId: string): Promise<void> 
 
   revalidatePath("/")
   revalidatePath(`/user/${session.user.username || session.user.id}`)
+}
+
+/**
+ * Get all products with ownership info (admin only)
+ */
+export async function getAllProductsForAdmin() {
+  const session = await getSession()
+  if (!session?.user?.id) {
+    throw new Error("You must be logged in")
+  }
+
+  // Check if user is admin
+  const user = await prismaAny.user.findUnique({
+    where: { id: session.user.id },
+    select: { isAdmin: true },
+  })
+
+  if (!user?.isAdmin) {
+    throw new Error("Only admins can view all products")
+  }
+
+  const products = await prismaAny.software.findMany({
+    select: {
+      id: true,
+      name: true,
+      url: true,
+      ownershipStatus: true,
+      seededBy: true,
+      makerId: true,
+      makerUser: {
+        select: {
+          id: true,
+          username: true,
+          name: true,
+        },
+      },
+      seededByUser: {
+        select: {
+          id: true,
+          username: true,
+          name: true,
+        },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  })
+
+  return products
+}
+
+/**
+ * Update product ownership status (admin only)
+ */
+export async function updateProductOwnershipStatus(
+  productId: string,
+  ownershipStatus: "seeded" | "owned"
+) {
+  const session = await getSession()
+  if (!session?.user?.id) {
+    throw new Error("You must be logged in")
+  }
+
+  // Check if user is admin
+  const user = await prismaAny.user.findUnique({
+    where: { id: session.user.id },
+    select: { isAdmin: true },
+  })
+
+  if (!user?.isAdmin) {
+    throw new Error("Only admins can update product ownership status")
+  }
+
+  // Update product
+  await prismaAny.software.update({
+    where: { id: productId },
+    data: {
+      ownershipStatus,
+      seededBy: ownershipStatus === "seeded" ? session.user.id : null,
+    },
+  })
+
+  revalidatePath(`/product/${productId}`)
+  revalidatePath("/")
+  revalidatePath("/admin/moderation")
+
+  return { success: true }
 }

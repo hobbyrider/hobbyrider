@@ -3,12 +3,14 @@
 import { signUp } from "@/app/actions/auth"
 import { signIn } from "next-auth/react"
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { AuthProviders } from "@/app/components/auth-providers"
 
 export default function SignupPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const callbackUrl = searchParams.get("callbackUrl") || "/"
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [username, setUsername] = useState("")
@@ -34,7 +36,7 @@ export default function SignupPage() {
       if (result?.error) {
         setError("Account created but sign in failed. Please try logging in.")
       } else {
-        router.push("/")
+        router.push(callbackUrl)
         router.refresh()
       }
     } catch (error: any) {
@@ -63,7 +65,7 @@ export default function SignupPage() {
 
           {/* OAuth & Magic Link Providers */}
           <div className="space-y-3 mb-6">
-            <AuthProviders email={email} setEmail={setEmail} loading={loading} />
+            <AuthProviders email={email} setEmail={setEmail} loading={loading} callbackUrl={callbackUrl} />
           </div>
 
           <div className="relative mb-6">
