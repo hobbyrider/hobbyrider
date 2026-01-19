@@ -1,5 +1,6 @@
 import { createSoftware } from "@/app/actions/software"
 import { NextRequest, NextResponse } from "next/server"
+import { prisma } from "@/lib/prisma"
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,7 +14,16 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    return NextResponse.json({ productId })
+    // Fetch product to get slug for canonical URL
+    const product = await prisma.software.findUnique({
+      where: { id: productId },
+      select: { slug: true },
+    })
+
+    return NextResponse.json({ 
+      productId,
+      slug: product?.slug || null,
+    })
   } catch (error: any) {
     console.error("Create product error:", error)
     return NextResponse.json(

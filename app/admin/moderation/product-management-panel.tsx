@@ -5,10 +5,12 @@ import { updateProductOwnershipStatus, deleteSoftwareAsAdmin } from "@/app/actio
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import toast from "react-hot-toast"
+import { getProductUrl, generateSlug } from "@/lib/slug"
 
 type Product = {
   id: string
   name: string
+  slug: string | null // URL-friendly slug
   url: string
   ownershipStatus: string
   seededBy: string | null
@@ -132,7 +134,7 @@ export function ProductManagementPanel({ initialProducts }: ProductManagementPan
                   </td>
                   <td className="px-4 py-3">
                     <Link
-                      href={`/product/${product.id}`}
+                      href={getProductUrl(product.slug || generateSlug(product.name), product.id)}
                       className="text-sm font-medium text-gray-900 hover:text-gray-700 transition-colors"
                     >
                       {product.name}
@@ -165,7 +167,7 @@ export function ProductManagementPanel({ initialProducts }: ProductManagementPan
                   <td className="px-4 py-3 whitespace-nowrap">
                     <div className="flex gap-2">
                       <Link
-                        href={`/product/${product.id}/edit`}
+                        href={`${getProductUrl(product.slug || generateSlug(product.name), product.id)}/edit`}
                         className="px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition-colors"
                       >
                         Edit

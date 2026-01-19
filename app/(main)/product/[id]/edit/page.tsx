@@ -20,7 +20,16 @@ export default async function EditProductPage({
 
   const product = await prisma.software.findUnique({
     where: { id },
-    include: {
+    select: {
+      id: true,
+      name: true,
+      slug: true, // Include slug for canonical URLs
+      tagline: true,
+      description: true,
+      url: true,
+      thumbnail: true,
+      embedHtml: true,
+      makerId: true,
       categories: {
         select: {
           id: true,
@@ -30,6 +39,11 @@ export default async function EditProductPage({
       },
       images: {
         orderBy: { order: "asc" },
+        select: {
+          id: true,
+          url: true,
+          order: true,
+        },
       },
     },
   })
@@ -46,7 +60,10 @@ export default async function EditProductPage({
 
   // Check if user is the creator or an admin
   if (product.makerId !== session.user.id && !user?.isAdmin) {
-    redirect(`/product/${id}`)
+    // Redirect to canonical URL
+    const { getProductUrl, generateSlug } = await import("@/lib/slug")
+    const canonicalSlug = product.slug || generateSlug(product.name)
+    redirect(getProductUrl(canonicalSlug, id))
   }
 
   const categories = await getAllCategories()

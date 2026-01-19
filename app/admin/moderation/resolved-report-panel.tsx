@@ -5,6 +5,7 @@ import { manageContent, archiveReport } from "@/app/actions/moderation"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { getRelativeTime } from "@/lib/utils"
+import { getProductUrl, generateSlug } from "@/lib/slug"
 
 type ResolvedReport = {
   id: string
@@ -22,6 +23,7 @@ type ResolvedReport = {
   product: {
     id: string
     name: string
+    slug: string | null // URL-friendly slug
     tagline: string
     url: string
     isHidden: boolean
@@ -33,6 +35,7 @@ type ResolvedReport = {
     product: {
       id: string
       name: string
+      slug: string | null // URL-friendly slug
     }
   } | null
   reportedUser: {
@@ -148,7 +151,7 @@ export function ResolvedReportPanel({ report }: ResolvedReportPanelProps) {
                 )}
               </div>
               <Link
-                href={`/product/${report.product.id}`}
+                href={getProductUrl(report.product.slug || generateSlug(report.product.name), report.product.id)}
                 className="text-sm font-semibold text-gray-900 hover:text-gray-700 hover:underline"
                 target="_blank"
               >
@@ -194,7 +197,7 @@ export function ResolvedReportPanel({ report }: ResolvedReportPanelProps) {
               </div>
               <p className="text-xs text-gray-700 line-clamp-2">{report.comment.content}</p>
               <Link
-                href={`/product/${report.comment.product.id}`}
+                href={getProductUrl(report.comment.product.slug || generateSlug(report.comment.product.name), report.comment.product.id)}
                 className="mt-1 inline-block text-xs text-gray-500 hover:text-gray-700 hover:underline"
                 target="_blank"
               >

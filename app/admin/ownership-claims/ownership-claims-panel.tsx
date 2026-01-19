@@ -7,6 +7,7 @@ import Link from "next/link"
 import Image from "next/image"
 import toast from "react-hot-toast"
 import { getRelativeTime } from "@/lib/utils"
+import { getProductUrl, generateSlug } from "@/lib/slug"
 
 type OwnershipClaim = {
   id: string
@@ -16,6 +17,7 @@ type OwnershipClaim = {
   product: {
     id: string
     name: string
+    slug: string | null // URL-friendly slug
     url: string
     thumbnail: string | null
     ownershipStatus: string
@@ -91,7 +93,7 @@ export function OwnershipClaimsPanel({ initialClaims }: OwnershipClaimsPanelProp
                 )}
                 <div className="flex-1 min-w-0">
                   <Link
-                    href={`/product/${claim.product.id}`}
+                    href={getProductUrl(claim.product.slug || generateSlug(claim.product.name), claim.product.id)}
                     className="text-lg font-semibold text-gray-900 hover:text-gray-700 transition-colors block truncate"
                   >
                     {claim.product.name}

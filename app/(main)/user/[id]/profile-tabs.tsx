@@ -6,6 +6,7 @@ import Image from "next/image"
 import { useSearchParams } from "next/navigation"
 import { ProductList } from "./product-list"
 import { getRelativeTime } from "@/lib/utils"
+import { getProductUrl } from "@/lib/slug"
 
 type Tab = "about" | "products" | "activity" | "upvotes"
 
@@ -26,6 +27,7 @@ type User = {
 type Product = {
   id: string
   name: string
+  slug: string | null // URL-friendly slug
   tagline: string
   thumbnail: string | null
   upvotes: number
@@ -42,6 +44,7 @@ type Comment = {
   product: {
     id: string
     name: string
+    slug: string | null // URL-friendly slug
     tagline: string
     thumbnail: string | null
   }
@@ -267,7 +270,7 @@ function ActivityTab({ comments }: { comments: Comment[] }) {
               <div className="flex-1 min-w-0">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-1">
                   <Link
-                    href={`/product/${comment.product.id}`}
+                    href={getProductUrl(comment.product.slug || null, comment.product.id)}
                     className="font-semibold text-gray-900 hover:underline break-words"
                   >
                     {comment.product.name}
@@ -304,7 +307,7 @@ function UpvotesTab({ products }: { products: Product[] }) {
         {products.map((product) => (
           <Link
             key={product.id}
-            href={`/product/${product.id}`}
+            href={getProductUrl(product.slug || null, product.id)}
             className="flex items-start gap-3 sm:gap-4 rounded-xl border border-gray-200 p-3 sm:p-4 hover:bg-gray-50 transition-colors"
           >
             {product.thumbnail && (

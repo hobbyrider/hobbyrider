@@ -8,6 +8,7 @@ import type { SoftwareItem } from "@/app/(main)/page"
 import { CardTitle, Small, Caption, NavLinkText } from "@/app/components/typography"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { getProductUrl } from "@/lib/slug"
 
 type FeedItemCardProps = {
   item: SoftwareItem
@@ -51,7 +52,7 @@ export function FeedItemCard({ item, hasUpvoted, isLoggedIn }: FeedItemCardProps
             {/* Title */}
             <div>
               <Link
-                href={`/product/${item.id}`}
+                href={getProductUrl(item.slug || null, item.id)}
                 className="transition-colors hover:text-gray-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded"
               >
                 <CardTitle className="text-lg sm:text-xl text-gray-900">{item.name}</CardTitle>
@@ -116,7 +117,7 @@ export function FeedItemCard({ item, hasUpvoted, isLoggedIn }: FeedItemCardProps
           
           {/* Comment count */}
           <Link
-            href={`/product/${item.id}#comments`}
+            href={`${getProductUrl(item.slug || null, item.id)}#comments`}
             className="flex items-center gap-1.5 text-gray-600 hover:text-gray-900 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600 rounded"
             title="Comment"
             aria-label={`${item.commentCount} comments`}
@@ -126,7 +127,7 @@ export function FeedItemCard({ item, hasUpvoted, isLoggedIn }: FeedItemCardProps
           </Link>
           
           {/* Share button */}
-          <ShareButton productId={item.id} productName={item.name} />
+          <ShareButton productId={item.id} productName={item.name} productSlug={item.slug} />
           </div>
         </div>
         </CardContent>

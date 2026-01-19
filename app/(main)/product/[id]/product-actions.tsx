@@ -2,15 +2,17 @@
 
 import { useRouter, usePathname } from "next/navigation"
 import Link from "next/link"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { UpvoteIcon, CommentIcon, CopyIcon, ReportIcon } from "@/app/components/icons"
 import { upvoteSoftware } from "@/app/actions/software"
 import { ReportButton } from "@/app/components/report-button"
 import toast from "react-hot-toast"
+import { getProductFullUrl } from "@/lib/slug"
 
 type ProductActionsProps = {
   productId: string
   productName: string
+  productSlug?: string | null // Optional slug - will be generated if missing
   upvotes: number
   hasUpvoted: boolean
   isLoggedIn: boolean
@@ -20,6 +22,7 @@ type ProductActionsProps = {
 export function ProductActions({
   productId,
   productName,
+  productSlug,
   upvotes,
   hasUpvoted,
   isLoggedIn,
@@ -28,6 +31,13 @@ export function ProductActions({
   const router = useRouter()
   const pathname = usePathname()
   const [isUpvoting, setIsUpvoting] = useState(false)
+  const [shareUrl, setShareUrl] = useState<string>("")
+
+  // Get canonical URL (client-side, uses current window origin)
+  useEffect(() => {
+    const url = getProductFullUrl(productSlug || null, productId, window.location.origin)
+    setShareUrl(url)
+  }, [productId, productSlug])
 
   const handleUpvote = async () => {
     if (!isLoggedIn) {
@@ -47,7 +57,7 @@ export function ProductActions({
   }
 
   const handleCopyUrl = async () => {
-    const url = `${window.location.origin}/product/${productId}`
+    const url = shareUrl || `${window.location.origin}/products/product-${productId}` // Fallback
     try {
       await navigator.clipboard.writeText(url)
       toast.success("URL copied!")

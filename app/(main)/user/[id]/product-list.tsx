@@ -9,10 +9,12 @@ import { DeleteConfirm } from "@/app/components/delete-confirm"
 import { CommentIcon } from "@/app/components/icons"
 import { useRouter } from "next/navigation"
 import toast from "react-hot-toast"
+import { getProductUrl } from "@/lib/slug"
 
 type Product = {
   id: string
   name: string
+  slug: string | null // URL-friendly slug
   tagline: string
   thumbnail: string | null
   upvotes: number
@@ -88,7 +90,7 @@ export function ProductList({ products, isOwnProfile }: ProductListProps) {
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-1">
                     <Link
-                      href={`/product/${product.id}`}
+                      href={getProductUrl(product.slug || null, product.id)}
                       className="font-semibold text-gray-900 hover:text-gray-700 transition-colors break-words"
                     >
                       {product.name}
@@ -103,7 +105,7 @@ export function ProductList({ products, isOwnProfile }: ProductListProps) {
 
               <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
                 <Link
-                  href={`/product/${product.id}#comments`}
+                  href={`${getProductUrl(product.slug || null, product.id)}#comments`}
                   className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 transition-colors flex-shrink-0"
                   title="Comments"
                   aria-label={`${product._count?.comments || 0} comments`}
@@ -120,7 +122,7 @@ export function ProductList({ products, isOwnProfile }: ProductListProps) {
                 {isOwnProfile && (
                   <div className="flex items-center gap-3 flex-shrink-0">
                     <Link
-                      href={`/product/${product.id}/edit`}
+                      href={`${getProductUrl(product.slug || null, product.id)}/edit`}
                       className="text-sm text-gray-700 hover:text-gray-900 font-medium transition-colors"
                     >
                       Edit

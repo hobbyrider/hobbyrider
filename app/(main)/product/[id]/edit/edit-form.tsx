@@ -6,6 +6,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { MarkdownInfo } from "@/app/components/markdown-info"
+import { getProductUrl, generateSlug } from "@/lib/slug"
 
 type Category = {
   id: string
@@ -16,6 +17,7 @@ type Category = {
 type Product = {
   id: string
   name: string
+  slug: string | null // URL-friendly slug
   tagline: string
   description?: string | null
   url: string
@@ -228,7 +230,9 @@ export default function EditProductForm({
         await addProductImages(product.id, newGalleryUrls)
       }
 
-      router.push(`/product/${product.id}`)
+      // Redirect to canonical URL
+      const canonicalSlug = product.slug || generateSlug(product.name)
+      router.push(getProductUrl(canonicalSlug, product.id))
       router.refresh()
     } catch (error: any) {
       console.error("Update error:", error)
@@ -242,7 +246,7 @@ export default function EditProductForm({
       <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
         <div className="mx-auto max-w-xl">
         <Link
-          href={`/product/${product.id}`}
+          href={getProductUrl(product.slug || generateSlug(product.name), product.id)}
           className="text-sm text-gray-600 hover:text-black mb-6 inline-block"
         >
           ← Back to product
@@ -452,7 +456,7 @@ export default function EditProductForm({
               {saving ? "Saving..." : "Save Changes"}
             </button>
             <Link
-              href={`/product/${product.id}`}
+              href={getProductUrl(product.slug || generateSlug(product.name), product.id)}
               className="px-4 py-2 rounded-lg border hover:bg-gray-100 transition"
             >
               Cancel

@@ -122,6 +122,7 @@ export default async function CategoryPage({
                   item={{
                     id: product.id,
                     name: product.name,
+                    slug: product.slug || null, // Include slug for canonical URLs
                     tagline: product.tagline,
                     url: product.url,
                     maker: product.maker,

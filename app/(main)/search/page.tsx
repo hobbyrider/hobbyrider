@@ -5,10 +5,12 @@ import { searchSoftware } from "@/app/actions/search"
 import Link from "next/link"
 import Image from "next/image"
 import { getRelativeTime } from "@/lib/utils"
+import { getProductUrl } from "@/lib/slug"
 
 type SoftwareItem = {
   id: string
   name: string
+  slug: string | null // URL-friendly slug (e.g., "guideless")
   tagline: string
   url: string
   maker: string | null
@@ -132,7 +134,7 @@ export default function SearchPage() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
                           <Link
-                            href={`/product/${item.id}`}
+                            href={getProductUrl(item.slug || null, item.id)}
                             className="font-semibold text-sm sm:text-base underline underline-offset-4 inline-flex items-center gap-1 hover:text-gray-600"
                           >
                             {item.name}
@@ -171,7 +173,7 @@ export default function SearchPage() {
 
                     <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
                       <Link
-                        href={`/product/${item.id}#comments`}
+                        href={`${getProductUrl(item.slug || null, item.id)}#comments`}
                         className="flex items-center gap-1 text-xs sm:text-sm text-gray-600 hover:text-black"
                       >
                         <svg

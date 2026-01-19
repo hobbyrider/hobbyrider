@@ -1,18 +1,27 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { CopyIcon } from "@/app/components/icons"
+import { getProductFullUrl } from "@/lib/slug"
 
 type ShareButtonProps = {
   productId: string
   productName: string
+  productSlug?: string | null // Optional slug - will be generated if missing
 }
 
-export function ShareButton({ productId, productName }: ShareButtonProps) {
+export function ShareButton({ productId, productName, productSlug }: ShareButtonProps) {
   const [copied, setCopied] = useState(false)
+  const [shareUrl, setShareUrl] = useState<string>("")
+
+  // Get canonical URL (client-side, uses current window origin)
+  useEffect(() => {
+    const url = getProductFullUrl(productSlug || null, productId, window.location.origin)
+    setShareUrl(url)
+  }, [productId, productSlug])
 
   const handleShare = async () => {
-    const url = `${window.location.origin}/product/${productId}`
+    const url = shareUrl || `${window.location.origin}/products/product-${productId}` // Fallback
     
     try {
       await navigator.clipboard.writeText(url)

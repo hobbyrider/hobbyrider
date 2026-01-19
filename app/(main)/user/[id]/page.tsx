@@ -94,7 +94,14 @@ export default async function UserPage({
     include: {
       madeProducts: {
         orderBy: [{ upvotes: "desc" }, { createdAt: "desc" }],
-        include: {
+        select: {
+          id: true,
+          name: true,
+          slug: true, // Include slug for canonical URLs
+          tagline: true,
+          thumbnail: true,
+          upvotes: true,
+          createdAt: true,
           _count: {
             select: {
               comments: true,
@@ -108,6 +115,7 @@ export default async function UserPage({
             select: {
               id: true,
               name: true,
+              slug: true, // Include slug for canonical URLs
               tagline: true,
               thumbnail: true,
               upvotes: true,
@@ -124,6 +132,7 @@ export default async function UserPage({
             select: {
               id: true,
               name: true,
+              slug: true, // Include slug for canonical URLs
               tagline: true,
               thumbnail: true,
             },

@@ -10,6 +10,7 @@ import Link from "next/link"
 import toast from "react-hot-toast"
 import { PageTitle, Muted, Text, SmallHeading, LabelText, Small as SmallText, Caption } from "@/app/components/typography"
 import { MarkdownInfo } from "@/app/components/markdown-info"
+import { getProductUrl } from "@/lib/slug"
 
 type Category = {
   id: string
@@ -429,7 +430,7 @@ export default function SubmitPage() {
         throw new Error(error.error || "Failed to create product")
       }
 
-      const { productId } = await response.json()
+      const { productId, slug } = await response.json()
 
       // Then add gallery images if any
       if (galleryUrls.length > 0) {
@@ -437,7 +438,8 @@ export default function SubmitPage() {
       }
 
       toast.success("Product submitted successfully!")
-      router.push(`/product/${productId}`)
+      // Redirect to canonical URL format
+      router.push(getProductUrl(slug || null, productId))
     } catch (error: any) {
       console.error("Submit error:", error)
       toast.error(error.message || "Failed to submit product. Please try again.")

@@ -6,6 +6,7 @@ import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { searchSoftware, getDiscoverData } from "@/app/actions/search"
 import { getRelativeTime } from "@/lib/utils"
+import { getProductUrl } from "@/lib/slug"
 
 type CategoryItem = {
   id: string
@@ -18,6 +19,7 @@ type CategoryItem = {
 type ProductItem = {
   id: string
   name: string
+  slug: string | null // URL-friendly slug
   tagline: string
   thumbnail: string | null
   maker: string | null
@@ -29,6 +31,7 @@ type ProductItem = {
 type SearchResult = {
   id: string
   name: string
+  slug: string | null // URL-friendly slug
   tagline: string
   url: string
   maker: string | null
@@ -221,7 +224,7 @@ export function SearchModal({
                       <li key={item.id} className="group rounded-lg border border-gray-200 bg-white p-4 transition-all hover:border-gray-300 hover:bg-gray-50">
                         <button
                           type="button"
-                          onClick={() => goTo(`/product/${item.id}`)}
+                          onClick={() => goTo(getProductUrl(item.slug || null, item.id))}
                           className="w-full text-left"
                         >
                           <div className="flex items-start justify-between gap-4">
@@ -333,7 +336,7 @@ export function SearchModal({
                         <li key={p.id} className="group rounded-lg border border-gray-200 bg-white p-3 transition-all hover:border-gray-300 hover:bg-gray-50">
                           <button
                             type="button"
-                            onClick={() => goTo(`/product/${p.id}`)}
+                            onClick={() => goTo(getProductUrl(p.slug || null, p.id))}
                             className="w-full text-left"
                           >
                             <div className="flex items-center justify-between gap-3">

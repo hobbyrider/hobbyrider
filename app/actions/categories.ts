@@ -17,6 +17,7 @@ export async function getCategoryBySlug(slug: string) {
         select: {
           id: true,
           name: true,
+          slug: true, // Include slug for canonical URLs
           tagline: true,
           url: true,
           maker: true,

@@ -1,5 +1,6 @@
 import { MetadataRoute } from "next"
 import { prisma } from "@/lib/prisma"
+import { getProductUrl, generateSlug } from "@/lib/slug"
 
 function getBaseUrl() {
   if (process.env.NEXTAUTH_URL) {
@@ -61,7 +62,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ]
 
-  // Dynamic product pages
+  // Dynamic product pages (using canonical URLs)
   try {
     const products = await prisma.software.findMany({
       where: {
@@ -69,17 +70,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       },
       select: {
         id: true,
+        slug: true,
+        name: true, // Need name to generate slug if missing
         createdAt: true,
       },
       take: 10000, // Limit to prevent timeout
     })
 
-    const productPages: MetadataRoute.Sitemap = products.map((product) => ({
-      url: `${baseUrl}/product/${product.id}`,
-      lastModified: product.createdAt,
-      changeFrequency: "weekly",
-      priority: 0.7,
-    }))
+    const productPages: MetadataRoute.Sitemap = products.map((product) => {
+      // Use canonical URL format: /products/{slug}-{id}
+      const canonicalSlug = product.slug || generateSlug(product.name)
+      const canonicalUrl = getProductUrl(canonicalSlug, product.id)
+      return {
+        url: `${baseUrl}${canonicalUrl}`,
+        lastModified: product.createdAt,
+        changeFrequency: "weekly",
+        priority: 0.7,
+      }
+    })
 
     // Blog posts from PayloadCMS (currently disabled - see docs/archive/payloadcms/)
     // When PayloadCMS is re-enabled, uncomment this section

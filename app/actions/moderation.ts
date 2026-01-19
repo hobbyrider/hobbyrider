@@ -114,6 +114,7 @@ export async function getReports(
         select: {
           id: true,
           name: true,
+          slug: true, // Include slug for canonical URLs
           tagline: true,
           url: true,
           isHidden: true,
@@ -128,6 +129,7 @@ export async function getReports(
             select: {
               id: true,
               name: true,
+              slug: true, // Include slug for canonical URLs
             },
           },
         },

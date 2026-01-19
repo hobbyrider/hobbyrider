@@ -40,8 +40,9 @@ Site Overview
 Product Discovery and Exploration
 
 Products
-	•	Path format: /product/{id}
-	Example: https://hobbyrider.io/product/guideless
+	•	Path format: /products/{slug}-{id}
+	Example: https://hobbyrider.io/products/guideless-cmklm8srz0000awjyd5mj8l38
+	•	Legacy format /product/{id} redirects to canonical format
 	•	Each product page may include:
 	•	Name and short tagline
 	•	Description and use case
@@ -85,7 +86,8 @@ Community & Participation
 
 Key Content Paths
 	•	Home feed: /
-	•	Product page: /product/{id}
+	•	Product page: /products/{slug}-{id} (canonical format)
+	•	Legacy format: /product/{id} (redirects to canonical)
 	•	Categories index: /categories
 	•	Category page: /category/{slug}
 	•	Submit a product: /submit

@@ -312,10 +312,15 @@ export async function seedProductAction(
     select: { username: true, name: true },
   })
 
+  // Generate slug from product name
+  const { generateSlug } = await import("@/lib/slug")
+  const slug = generateSlug(productData.name)
+
   // Create product
   const product = await prismaAny.software.create({
     data: {
       name: productData.name,
+      slug, // Store slug for canonical URLs
       tagline: productData.tagline,
       description: productData.description,
       url: productData.url,
@@ -342,8 +347,10 @@ export async function seedProductAction(
   }
 
   // Revalidate pages
+  const { getProductUrl } = await import("@/lib/slug")
   revalidatePath("/")
-  revalidatePath(`/product/${product.id}`)
+  revalidatePath(getProductUrl(product.slug, product.id))
+  revalidatePath(`/product/${product.id}`) // Keep old path for backward compatibility
 
   return {
     success: true,

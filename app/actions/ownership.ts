@@ -229,6 +229,7 @@ export async function getPendingOwnershipClaims() {
         select: {
           id: true,
           name: true,
+          slug: true, // Include slug for canonical URLs
           url: true,
           thumbnail: true,
           ownershipStatus: true,

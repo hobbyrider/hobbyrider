@@ -5,6 +5,7 @@ import { reviewReport } from "@/app/actions/moderation"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import toast from "react-hot-toast"
+import { getProductUrl, generateSlug } from "@/lib/slug"
 
 function getRelativeTime(date: Date): string {
   const now = new Date()
@@ -52,6 +53,7 @@ type Report = {
   product: {
     id: string
     name: string
+    slug: string | null // URL-friendly slug
     tagline: string
     url: string
     isHidden: boolean
@@ -63,6 +65,7 @@ type Report = {
     product: {
       id: string
       name: string
+      slug: string | null // URL-friendly slug
     }
   } | null
   reportedUser: {
@@ -137,7 +140,7 @@ export function ModerationPanel({ report }: ModerationPanelProps) {
             )}
           </div>
           <Link
-            href={`/product/${report.product.id}`}
+            href={getProductUrl(report.product.slug || generateSlug(report.product.name), report.product.id)}
             className="text-lg font-semibold text-gray-900 hover:text-gray-700 hover:underline"
             target="_blank"
           >
@@ -169,7 +172,7 @@ export function ModerationPanel({ report }: ModerationPanelProps) {
           </div>
           <p className="text-sm text-gray-700">{report.comment.content}</p>
           <Link
-            href={`/product/${report.comment.product.id}`}
+            href={getProductUrl(report.comment.product.slug || generateSlug(report.comment.product.name), report.comment.product.id)}
             className="mt-2 inline-block text-sm text-gray-500 hover:text-gray-700 hover:underline"
             target="_blank"
           >

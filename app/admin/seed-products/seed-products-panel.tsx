@@ -185,7 +185,7 @@ export function SeedProductsPanel() {
                           </p>
                           {result.productId && (
                             <Link
-                              href={`/product/${result.productId}`}
+                              href={`/products/product-${result.productId}`}
                               className="text-xs text-green-700 hover:underline"
                             >
                               View Product →

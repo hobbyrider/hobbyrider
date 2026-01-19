@@ -20,7 +20,16 @@ export async function searchSoftware(query: string) {
     },
     orderBy: [{ upvotes: "desc" }, { createdAt: "desc" }],
     take: 50,
-    include: {
+    select: {
+      id: true,
+      name: true,
+      slug: true, // Include slug for canonical URLs
+      tagline: true,
+      url: true,
+      maker: true,
+      thumbnail: true,
+      upvotes: true,
+      createdAt: true,
       categories: {
         select: {
           id: true,
@@ -58,7 +67,14 @@ export async function getDiscoverData() {
     prisma.software.findMany({
       orderBy: [{ upvotes: "desc" }, { createdAt: "desc" }],
       take: 8,
-      include: {
+      select: {
+        id: true,
+        name: true,
+        slug: true, // Include slug for canonical URLs
+        tagline: true,
+        thumbnail: true,
+        maker: true,
+        createdAt: true,
         categories: { select: { id: true, name: true, slug: true } },
       },
     }),

@@ -29,6 +29,7 @@ import { PageTitle, Muted, Text } from "@/app/components/typography"
 export type SoftwareItem = {
   id: string
   name: string
+  slug: string | null // URL-friendly slug (e.g., "guideless")
   tagline: string
   url: string
   maker: string | null
@@ -112,6 +113,7 @@ export default async function Home({
     select: {
       id: true,
       name: true,
+      slug: true, // Include slug for canonical URLs
       tagline: true,
       url: true,
       maker: true,
@@ -147,6 +149,7 @@ export default async function Home({
   let softwareWithCounts: SoftwareItem[] = allProducts.map((item: any) => ({
     ...item,
     commentCount: item._count.comments,
+    slug: item.slug || null, // Ensure slug is included
     // Prefer makerUser.username over maker field (maker field can be stale)
     maker: item.makerUser?.username || item.maker,
   }))

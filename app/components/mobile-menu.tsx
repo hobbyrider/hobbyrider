@@ -24,6 +24,7 @@ export function MobileMenu() {
           className="inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white p-2.5 hover:border-gray-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 transition-colors"
           aria-label="Open menu"
           aria-expanded={open}
+          suppressHydrationWarning
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

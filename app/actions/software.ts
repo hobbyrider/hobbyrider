@@ -7,6 +7,7 @@ import { sanitizeEmbedHtml, sanitizeInput } from "@/lib/utils"
 import { getSession } from "@/lib/get-session"
 import { checkRateLimit, RATE_LIMITS } from "@/lib/rate-limit"
 import { sendUpvoteNotification } from "@/lib/email"
+import { generateSlug, getProductUrl } from "@/lib/slug"
 
 function getBaseUrl() {
   if (process.env.NEXTAUTH_URL) {
@@ -21,6 +22,39 @@ function getBaseUrl() {
 // NOTE: We cast Prisma client to `any` to avoid occasional stale Prisma type issues
 // in editor tooling. Runtime schema is authoritative.
 const prismaAny = prisma as any
+
+/**
+ * Get product URL for revalidation (handles products without slugs)
+ * This is a helper function for revalidation paths
+ */
+async function getProductUrlForRevalidation(productId: string): Promise<string> {
+  try {
+    const product = await prismaAny.software.findUnique({
+      where: { id: productId },
+      select: { slug: true, id: true },
+    })
+    if (product) {
+      return getProductUrl(product.slug, product.id)
+    }
+  } catch (error) {
+    // Fallback to old format if product not found
+  }
+  return `/product/${productId}`
+}
+
+/**
+ * Get product URL with base URL for emails/notifications
+ */
+async function getProductFullUrlForNotification(productId: string): Promise<string> {
+  const product = await prismaAny.software.findUnique({
+    where: { id: productId },
+    select: { slug: true, id: true },
+  })
+  if (product) {
+    return `${getBaseUrl()}${getProductUrl(product.slug, product.id)}`
+  }
+  return `${getBaseUrl()}/product/${productId}`
+}
 
 export async function createSoftware(
   formData: FormData,
@@ -104,9 +138,13 @@ export async function createSoftware(
     select: { username: true, name: true },
   })
 
+  // Generate slug from product name
+  const slug = generateSlug(name)
+
   const product = await prismaAny.software.create({
     data: {
       name,
+      slug, // Store slug for canonical URLs
       tagline,
       description,
       url,
@@ -122,12 +160,14 @@ export async function createSoftware(
   })
 
   revalidatePath("/")
+  revalidatePath(getProductUrl(product.slug, product.id))
 
   if (returnId) {
     return product.id
   }
 
-  redirect("/")
+  // Redirect to canonical product URL
+  redirect(getProductUrl(product.slug, product.id))
 }
 
 export async function upvoteSoftware(id: string) {
@@ -206,7 +246,7 @@ export async function upvoteSoftware(id: string) {
 
       if (productOwner?.notifyOnUpvotes !== false) {
         const baseUrl = getBaseUrl()
-        const productUrl = `${baseUrl}/product/${id}`
+        const productUrl = await getProductFullUrlForNotification(id)
         const profileSettingsUrl = `${baseUrl}/user/${productOwner.username || product.makerUser.id}/edit#notifications`
         const upvoter = await prismaAny.user.findUnique({
           where: { id: session.user.id },
@@ -234,7 +274,9 @@ export async function upvoteSoftware(id: string) {
   }
 
   revalidatePath("/")
-  revalidatePath(`/product/${id}`)
+  const productPath = await getProductUrlForRevalidation(id)
+  revalidatePath(productPath)
+  revalidatePath(`/product/${id}`) // Keep old path for backward compatibility
 }
 
 export async function deleteSoftware(id: string, adminPassword: string) {
@@ -279,7 +321,9 @@ export async function deleteSoftwareAsAdmin(productId: string): Promise<void> {
   revalidatePath("/")
   revalidatePath("/admin")
   revalidatePath("/admin/moderation")
-  revalidatePath(`/product/${productId}`)
+  const productPath = await getProductUrlForRevalidation(productId)
+  revalidatePath(productPath)
+  revalidatePath(`/product/${productId}`) // Keep old path for backward compatibility
 }
 
 export async function updateSoftware(
@@ -377,7 +421,8 @@ export async function updateSoftware(
     }
   }
 
-  // Update product
+  // Update product (slug is NOT updated automatically - URLs remain stable)
+  // Only update slug if name changed significantly and explicitly requested
   await prismaAny.software.update({
     where: { id: productId },
     data: {
@@ -387,6 +432,8 @@ export async function updateSoftware(
       url,
       thumbnail,
       embedHtml,
+      // Note: slug is intentionally NOT updated here to maintain stable URLs
+      // If slug update is needed, it should be explicit and require a separate action
       categories: {
         set: [], // Clear existing categories
         connect: categoryIds.map((id) => ({ id })),
@@ -395,7 +442,9 @@ export async function updateSoftware(
   })
 
   revalidatePath("/")
-  revalidatePath(`/product/${productId}`)
+  const productPath = await getProductUrlForRevalidation(productId)
+  revalidatePath(productPath)
+  revalidatePath(`/product/${productId}`) // Keep old path for backward compatibility
   revalidatePath(`/user/${session.user.username || session.user.id}`)
 }
 
@@ -448,6 +497,7 @@ export async function getAllProductsForAdmin() {
     select: {
       id: true,
       name: true,
+      slug: true, // Include slug for canonical URLs
       url: true,
       ownershipStatus: true,
       seededBy: true,

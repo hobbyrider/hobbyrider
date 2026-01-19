@@ -6,6 +6,7 @@ import { sanitizeInput } from "@/lib/utils"
 import { getSession } from "@/lib/get-session"
 import { checkRateLimit, RATE_LIMITS } from "@/lib/rate-limit"
 import { sendCommentNotification } from "@/lib/email"
+import { getProductFullUrl } from "@/lib/slug"
 
 function getBaseUrl() {
   if (process.env.NEXTAUTH_URL) {
@@ -83,7 +84,12 @@ export async function createComment(
 
     if (productOwner?.notifyOnComments !== false) {
       const baseUrl = getBaseUrl()
-      const commentUrl = `${baseUrl}/product/${productId}#comments`
+      // Get product slug for canonical URL
+      const productForUrl = await prisma.software.findUnique({
+        where: { id: productId },
+        select: { slug: true },
+      })
+      const commentUrl = `${getProductFullUrl(productForUrl?.slug || null, productId, baseUrl)}#comments`
       const profileSettingsUrl = `${baseUrl}/user/${productOwner?.username || product.makerUser.id}/edit#notifications`
       const commenterName = user?.name || user?.username || "Someone"
       
