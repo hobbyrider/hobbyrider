@@ -16,7 +16,7 @@ This documentation has been split into multiple files for easier navigation and 
 6. **[Limitations & Risks](06-LIMITATIONS-RISKS.md)** - Technical debt, security risks, performance bottlenecks
 7. **[Scaling Plan](07-SCALING-PLAN.md)** - Priority roadmap for stability, performance, and scale
 8. **[Work Playbook](08-WORK-PLAYBOOK.md)** - How to work safely, checklists, coding standards
-9. **[Quick Reference](09-QUICK-REFERENCE.md)** - File paths, commands, next actions
+9. **[Quick Reference](09-QUICK-REFERENCE.md)** - File paths, commands, next actions for founder
 
 ---
 

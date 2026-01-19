@@ -9,18 +9,16 @@ This folder contains all documentation related to the Hobbyrider build, architec
 - **`HOBBYRIDER_BUILD_BACKUP.md`** - Backup copy of the original file
 - **`00-INDEX.md`** - Navigation index with links to all sections
 
-### Split Documentation (Easier to navigate)
+### Complete Documentation (All Parts)
 - **`01-EXECUTIVE-OVERVIEW.md`** - Part 1: Executive overview, architecture, request lifecycle
 - **`02-TECH-STACK.md`** - Part 2: Tech stack details (Next.js, Prisma, NextAuth, etc.)
-
-### Additional Files (To be created)
-- `03-PROJECT-STRUCTURE.md` - Part 3: Project structure and "mental model"
-- `04-DATA-MODEL.md` - Part 4: Data model and flows
-- `05-FRONTEND-UI.md` - Part 5: Frontend design system and UI architecture
-- `06-LIMITATIONS-RISKS.md` - Part 6: Current limitations, risks, and "things that will break"
-- `07-SCALING-PLAN.md` - Part 7: Scaling plan and priority roadmap
-- `08-WORK-PLAYBOOK.md` - Part 8: "How to work safely" playbook
-- `09-QUICK-REFERENCE.md` - Appendix: Quick reference and next actions
+- **`03-PROJECT-STRUCTURE.md`** - Part 3: Project structure and "mental model"
+- **`04-DATA-MODEL.md`** - Part 4: Data model and flows
+- **`05-FRONTEND-UI.md`** - Part 5: Frontend design system and UI architecture
+- **`06-LIMITATIONS-RISKS.md`** - Part 6: Current limitations, risks, and "things that will break"
+- **`07-SCALING-PLAN.md`** - Part 7: Scaling plan and priority roadmap
+- **`08-WORK-PLAYBOOK.md`** - Part 8: "How to work safely" playbook
+- **`09-QUICK-REFERENCE.md`** - Part 9: Quick reference and next actions for founder
 
 ## 🚀 Quick Start
 
@@ -30,7 +28,7 @@ This folder contains all documentation related to the Hobbyrider build, architec
 
 **For specific topics:** Navigate directly to the numbered split files (01-09)
 
-**For quick reference:** See `09-QUICK-REFERENCE.md` (when created)
+**For quick reference:** See `09-QUICK-REFERENCE.md` - includes next actions and file paths
 
 ## 📍 Location
 
