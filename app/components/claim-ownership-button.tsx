@@ -53,9 +53,10 @@ export function ClaimOwnershipButton({ productId, productName, isLoggedIn = fals
     <>
       <button
         onClick={handleClick}
-        className="flex-1 inline-flex items-center justify-center gap-2 rounded-lg border-2 border-gray-300 bg-white px-3 sm:px-4 py-2 text-sm font-semibold text-gray-900 transition-all hover:border-gray-900 hover:bg-gray-900 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
+        className="flex-1 inline-flex items-center justify-center gap-1.5 sm:gap-2 rounded-lg border-2 border-gray-300 bg-white px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-gray-900 transition-all hover:border-gray-900 hover:bg-gray-900 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
       >
-        Claim Product
+        <span className="hidden sm:inline">Claim Product</span>
+        <span className="sm:hidden">Claim</span>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 20 20"
@@ -77,19 +78,19 @@ export function ClaimOwnershipButton({ productId, productName, isLoggedIn = fals
       </button>
 
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
-            <h3 className="text-xl font-semibold text-gray-900 mb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 sm:p-6">
+          <div className="bg-white rounded-lg p-4 sm:p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">
               Claim Ownership of {productName}
             </h3>
             
-            <p className="text-sm text-gray-600 mb-4">
+            <p className="text-xs sm:text-sm text-gray-600 mb-4">
               Tell us why you should own this product page. We'll review your request and get back to you soon.
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label htmlFor="reason" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="reason" className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
                   Why should you own this product?
                 </label>
                 <textarea
@@ -107,7 +108,7 @@ export function ClaimOwnershipButton({ productId, productName, isLoggedIn = fals
                 </p>
               </div>
 
-              <div className="flex gap-3 justify-end">
+              <div className="flex flex-col sm:flex-row gap-3 justify-end">
                 <button
                   type="button"
                   onClick={() => {
@@ -115,14 +116,14 @@ export function ClaimOwnershipButton({ productId, productName, isLoggedIn = fals
                     setReason("")
                   }}
                   disabled={isPending}
-                  className="px-4 py-2 rounded-lg border-2 border-gray-300 text-gray-700 text-sm font-semibold transition-colors hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full sm:w-auto px-4 py-2 rounded-lg border-2 border-gray-300 text-gray-700 text-sm font-semibold transition-colors hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isPending || !reason.trim() || reason.trim().length < 10}
-                  className="px-4 py-2 rounded-lg border-2 border-gray-900 bg-gray-900 text-white text-sm font-semibold transition-colors hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full sm:w-auto px-4 py-2 rounded-lg border-2 border-gray-900 bg-gray-900 text-white text-sm font-semibold transition-colors hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isPending ? "Submitting..." : "Submit Claim"}
                 </button>

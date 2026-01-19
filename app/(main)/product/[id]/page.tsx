@@ -444,16 +444,16 @@ export default async function ProductPage({
                           </div>
                         ) : (
                           <div className="space-y-2">
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-start gap-2">
                               <ClaimOwnershipButton 
                                 productId={product.id} 
                                 productName={product.name}
                                 isLoggedIn={!!session?.user?.id}
                               />
-                              <div className="group relative">
+                              <div className="group relative flex-shrink-0">
                                 <button
                                   type="button"
-                                  className="flex items-center justify-center w-5 h-5 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors"
+                                  className="flex items-center justify-center w-5 h-5 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors mt-0.5"
                                   aria-label="What is claiming?"
                                 >
                                   <svg
@@ -469,9 +469,9 @@ export default async function ProductPage({
                                     />
                                   </svg>
                                 </button>
-                                <div className="absolute left-0 bottom-full mb-2 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
+                                <div className="absolute right-0 sm:left-0 bottom-full mb-2 w-56 sm:w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
                                   <p>Request ownership of this product page. Tell us why you should own it and we'll review your request.</p>
-                                  <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                                  <div className="absolute right-4 sm:left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
                                 </div>
                               </div>
                             </div>
@@ -609,16 +609,16 @@ export default async function ProductPage({
                           </div>
                         ) : (
                           <div className="space-y-2">
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-start gap-2">
                               <ClaimOwnershipButton 
                                 productId={product.id} 
                                 productName={product.name}
                                 isLoggedIn={!!session?.user?.id}
                               />
-                              <div className="group relative">
+                              <div className="group relative flex-shrink-0">
                                 <button
                                   type="button"
-                                  className="flex items-center justify-center w-5 h-5 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors"
+                                  className="flex items-center justify-center w-5 h-5 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors mt-0.5"
                                   aria-label="What is claiming?"
                                 >
                                   <svg
@@ -634,9 +634,9 @@ export default async function ProductPage({
                                     />
                                   </svg>
                                 </button>
-                                <div className="absolute left-0 bottom-full mb-2 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
+                                <div className="absolute right-0 sm:left-0 bottom-full mb-2 w-56 sm:w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
                                   <p>Request ownership of this product page. Tell us why you should own it and we'll review your request.</p>
-                                  <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                                  <div className="absolute right-4 sm:left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
                                 </div>
                               </div>
                             </div>
