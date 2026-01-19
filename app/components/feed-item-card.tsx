@@ -34,12 +34,12 @@ export function FeedItemCard({ item, hasUpvoted, isLoggedIn }: FeedItemCardProps
         <div className="flex gap-3 sm:gap-4 flex-1 min-w-0">
           {/* Thumbnail */}
           {item.thumbnail && (
-            <div className="h-14 w-14 sm:h-16 sm:w-16 flex-shrink-0 rounded-lg border border-gray-200 overflow-hidden relative">
+            <div className="h-14 w-14 sm:h-16 sm:w-16 flex-shrink-0 rounded-lg overflow-hidden relative bg-white">
               <Image
                 src={item.thumbnail}
                 alt={item.name}
                 fill
-                className="object-cover transition-transform duration-200 group-hover:scale-[1.02]"
+                className="object-contain p-2 transition-transform duration-200 group-hover:scale-[1.02]"
                 sizes="(max-width: 640px) 56px, 64px"
                 loading="lazy"
               />

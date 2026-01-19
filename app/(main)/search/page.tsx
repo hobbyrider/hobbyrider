@@ -118,12 +118,12 @@ export default function SearchPage() {
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
                     <div className="flex gap-3 sm:gap-4 flex-1">
                       {item.thumbnail && (
-                        <div className="h-12 w-12 sm:h-16 sm:w-16 rounded-lg overflow-hidden border flex-shrink-0 relative">
+                        <div className="h-12 w-12 sm:h-16 sm:w-16 rounded-lg overflow-hidden flex-shrink-0 relative bg-white">
                           <Image
                             src={item.thumbnail}
                             alt={item.name}
                             fill
-                            className="object-cover"
+                            className="object-contain p-1.5 sm:p-2"
                             sizes="(max-width: 640px) 48px, 64px"
                             loading="lazy"
                           />

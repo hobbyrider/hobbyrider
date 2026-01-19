@@ -16,9 +16,9 @@ import type { Metadata } from "next"
 import { PageTitle, SectionTitle, Text, Muted, Small } from "@/app/components/typography"
 import { ProductActions } from "./product-actions"
 import { MarkdownContent } from "@/app/components/markdown-content"
-import { OwnershipBadge } from "@/app/components/ownership-badge"
 import { LaunchTeam } from "@/app/components/launch-team"
 import { ClaimOwnershipButton } from "@/app/components/claim-ownership-button"
+import { InfoTooltip } from "@/app/components/info-tooltip"
 import { getLaunchTeam } from "@/app/actions/launch-team"
 import { getProductOwnershipClaim } from "@/app/actions/ownership"
 
@@ -247,12 +247,12 @@ export default async function ProductPage({
             <div>
               <div className="mb-4 sm:mb-6 flex items-start gap-3 sm:gap-5">
                 {product.thumbnail && (
-                  <div className="h-16 w-16 sm:h-24 sm:w-24 flex-shrink-0 rounded-xl border border-gray-200 overflow-hidden relative">
+                  <div className="h-16 w-16 sm:h-24 sm:w-24 flex-shrink-0 rounded-xl overflow-hidden relative bg-white">
                     <Image
                       src={product.thumbnail}
                       alt={product.name}
                       fill
-                      className="object-cover"
+                      className="object-contain p-2 sm:p-3"
                       sizes="(max-width: 640px) 64px, 96px"
                       priority
                       unoptimized={process.env.NODE_ENV === 'development'}
@@ -281,9 +281,7 @@ export default async function ProductPage({
                         ))}
                       </>
                     )}
-                    {product.ownershipStatus && (
-                      <OwnershipBadge status={product.ownershipStatus as "seeded" | "claimed" | "owned"} />
-                    )}
+                    {/* Ownership badge removed - only shown in admin views */}
                   </div>
                 </div>
               </div>
@@ -382,7 +380,7 @@ export default async function ProductPage({
 
               {/* Owner Info */}
               {(product.makerUser || product.maker) && (
-                <SidebarBlock title={(product.ownershipStatus === "seeded" || product.seededBy) ? "Published by" : "Owned by"}>
+                <SidebarBlock title={(product.ownershipStatus === "seeded" || product.seededBy) ? "Published by" : "Built by"}>
                   <div className="space-y-4">
                     <div className="flex items-center gap-3">
                       {product.makerUser ? (
@@ -450,30 +448,11 @@ export default async function ProductPage({
                                 productName={product.name}
                                 isLoggedIn={!!session?.user?.id}
                               />
-                              <div className="group relative flex-shrink-0">
-                                <button
-                                  type="button"
-                                  className="flex items-center justify-center w-5 h-5 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors mt-0.5"
-                                  aria-label="What is claiming?"
-                                >
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 20 20"
-                                    fill="currentColor"
-                                    className="w-3.5 h-3.5"
-                                  >
-                                    <path
-                                      fillRule="evenodd"
-                                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z"
-                                      clipRule="evenodd"
-                                    />
-                                  </svg>
-                                </button>
-                                <div className="absolute right-0 sm:left-0 bottom-full mb-2 w-56 sm:w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
-                                  <p>Request ownership of this product page. Tell us why you should own it and we'll review your request.</p>
-                                  <div className="absolute right-4 sm:left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
-                                </div>
-                              </div>
+                              <InfoTooltip
+                                content="Request ownership of this product page. Tell us why you should own it and we'll review your request."
+                                ariaLabel="What is claiming?"
+                                className="mt-0.5"
+                              />
                             </div>
                           </div>
                         )}
@@ -547,7 +526,7 @@ export default async function ProductPage({
 
               {/* Owner Info */}
               {(product.makerUser || product.maker) && (
-                <SidebarBlock title={(product.ownershipStatus === "seeded" || product.seededBy) ? "Published by" : "Owned by"}>
+                <SidebarBlock title={(product.ownershipStatus === "seeded" || product.seededBy) ? "Published by" : "Built by"}>
                   <div className="space-y-4">
                     <div className="flex items-center gap-3">
                       {product.makerUser ? (
@@ -615,30 +594,11 @@ export default async function ProductPage({
                                 productName={product.name}
                                 isLoggedIn={!!session?.user?.id}
                               />
-                              <div className="group relative flex-shrink-0">
-                                <button
-                                  type="button"
-                                  className="flex items-center justify-center w-5 h-5 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors mt-0.5"
-                                  aria-label="What is claiming?"
-                                >
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 20 20"
-                                    fill="currentColor"
-                                    className="w-3.5 h-3.5"
-                                  >
-                                    <path
-                                      fillRule="evenodd"
-                                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z"
-                                      clipRule="evenodd"
-                                    />
-                                  </svg>
-                                </button>
-                                <div className="absolute right-0 sm:left-0 bottom-full mb-2 w-56 sm:w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
-                                  <p>Request ownership of this product page. Tell us why you should own it and we'll review your request.</p>
-                                  <div className="absolute right-4 sm:left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
-                                </div>
-                              </div>
+                              <InfoTooltip
+                                content="Request ownership of this product page. Tell us why you should own it and we'll review your request."
+                                ariaLabel="What is claiming?"
+                                className="mt-0.5"
+                              />
                             </div>
                           </div>
                         )}

@@ -68,6 +68,11 @@ function validateTagline(value: string): string | null {
   const promoPatterns = /\b(free|50%|off|try now|sign up|get started|download|buy|purchase|discount|promo|sale)\b/i
   if (promoPatterns.test(value)) return "Tagline cannot contain pricing, promotions, or CTAs"
   
+  // Check if it ends with a period
+  if (!value.trim().endsWith('.')) {
+    return "Tagline must end with a period (.)"
+  }
+  
   return null
 }
 

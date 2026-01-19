@@ -253,12 +253,12 @@ function ActivityTab({ comments }: { comments: Comment[] }) {
           >
             <div className="flex items-start gap-3 sm:gap-4">
               {comment.product.thumbnail && (
-                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg overflow-hidden border flex-shrink-0 relative">
+                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg overflow-hidden flex-shrink-0 relative bg-white">
                   <Image
                     src={comment.product.thumbnail}
                     alt={comment.product.name}
                     fill
-                    className="object-cover"
+                    className="object-contain p-1.5"
                     sizes="(max-width: 640px) 40px, 48px"
                     loading="lazy"
                   />
@@ -308,12 +308,12 @@ function UpvotesTab({ products }: { products: Product[] }) {
             className="flex items-start gap-3 sm:gap-4 rounded-xl border border-gray-200 p-3 sm:p-4 hover:bg-gray-50 transition-colors"
           >
             {product.thumbnail && (
-              <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-lg overflow-hidden border flex-shrink-0 relative">
+              <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-lg overflow-hidden flex-shrink-0 relative bg-white">
                 <Image
                   src={product.thumbnail}
                   alt={product.name}
                   fill
-                  className="object-cover"
+                  className="object-contain p-2"
                   sizes="(max-width: 640px) 56px, 64px"
                   loading="lazy"
                 />

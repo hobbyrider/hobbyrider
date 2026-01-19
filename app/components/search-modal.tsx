@@ -227,12 +227,12 @@ export function SearchModal({
                           <div className="flex items-start justify-between gap-4">
                             <div className="flex gap-3 flex-1 min-w-0">
                               {item.thumbnail && (
-                                <div className="h-12 w-12 flex-shrink-0 rounded-lg overflow-hidden border border-gray-200 relative">
+                                <div className="h-12 w-12 flex-shrink-0 rounded-lg overflow-hidden relative bg-white">
                                   <Image
                                     src={item.thumbnail}
                                     alt={item.name}
                                     fill
-                                    className="object-cover"
+                                    className="object-contain p-1.5"
                                     sizes="48px"
                                     loading="lazy"
                                   />

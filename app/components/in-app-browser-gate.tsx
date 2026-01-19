@@ -30,7 +30,7 @@ export function InAppBrowserGate({ children, onBlocked }: InAppBrowserGateProps)
         onBlocked()
       } else {
         // Default logging
-        console.log('[InAppBrowserGate] Blocked in-app browser access')
+        // In-app browser detected - blocking access
       }
     } else {
       setShowGate(false)

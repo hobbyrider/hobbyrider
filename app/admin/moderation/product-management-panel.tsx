@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useTransition } from "react"
-import { updateProductOwnershipStatus } from "@/app/actions/software"
+import { updateProductOwnershipStatus, deleteSoftwareAsAdmin } from "@/app/actions/software"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import toast from "react-hot-toast"
@@ -33,6 +33,7 @@ export function ProductManagementPanel({ initialProducts }: ProductManagementPan
   const [products, setProducts] = useState(initialProducts)
   const [isPending, startTransition] = useTransition()
   const [updatingId, setUpdatingId] = useState<string | null>(null)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
   const router = useRouter()
 
   const handleStatusChange = async (productId: string, newStatus: "seeded" | "owned") => {
@@ -54,6 +55,29 @@ export function ProductManagementPanel({ initialProducts }: ProductManagementPan
         toast.error(error.message || "Failed to update product status")
       } finally {
         setUpdatingId(null)
+      }
+    })
+  }
+
+  const handleDelete = async (productId: string, productName: string) => {
+    if (!confirm(`Are you sure you want to delete "${productName}"? This action cannot be undone.`)) {
+      return
+    }
+
+    setDeletingId(productId)
+    
+    startTransition(async () => {
+      try {
+        await deleteSoftwareAsAdmin(productId)
+        toast.success(`Product "${productName}" deleted successfully`)
+        
+        // Remove from local state
+        setProducts(products.filter(p => p.id !== productId))
+        router.refresh()
+      } catch (error: any) {
+        toast.error(error.message || "Failed to delete product")
+      } finally {
+        setDeletingId(null)
       }
     })
   }
@@ -148,7 +172,7 @@ export function ProductManagementPanel({ initialProducts }: ProductManagementPan
                       </Link>
                       <button
                         onClick={() => handleStatusChange(product.id, "seeded")}
-                        disabled={isUpdating || currentStatus === "seeded"}
+                        disabled={isUpdating || currentStatus === "seeded" || deletingId === product.id}
                         className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors ${
                           currentStatus === "seeded"
                             ? "border-blue-300 bg-blue-50 text-blue-700 cursor-not-allowed"
@@ -159,7 +183,7 @@ export function ProductManagementPanel({ initialProducts }: ProductManagementPan
                       </button>
                       <button
                         onClick={() => handleStatusChange(product.id, "owned")}
-                        disabled={isUpdating || currentStatus === "owned"}
+                        disabled={isUpdating || currentStatus === "owned" || deletingId === product.id}
                         className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors ${
                           currentStatus === "owned"
                             ? "border-green-300 bg-green-50 text-green-700 cursor-not-allowed"
@@ -167,6 +191,14 @@ export function ProductManagementPanel({ initialProducts }: ProductManagementPan
                         }`}
                       >
                         {isUpdating && currentStatus !== "owned" ? "Updating..." : "Set Owned"}
+                      </button>
+                      <button
+                        onClick={() => handleDelete(product.id, product.name)}
+                        disabled={deletingId === product.id || isUpdating}
+                        className="px-3 py-1.5 text-xs font-medium rounded-lg border border-red-300 bg-white text-red-700 hover:bg-red-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        title="Delete product"
+                      >
+                        {deletingId === product.id ? "Deleting..." : "Delete"}
                       </button>
                     </div>
                   </td>

@@ -74,12 +74,12 @@ export function ProductList({ products, isOwnProfile }: ProductListProps) {
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
               <div className="flex gap-3 sm:gap-4 flex-1 min-w-0">
                 {product.thumbnail && (
-                  <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-lg overflow-hidden border border-gray-200 flex-shrink-0 relative">
+                  <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-lg overflow-hidden flex-shrink-0 relative bg-white">
                     <Image
                       src={product.thumbnail}
                       alt={product.name}
                       fill
-                      className="object-cover"
+                      className="object-contain p-2"
                       sizes="(max-width: 640px) 64px, 80px"
                       loading="lazy"
                     />

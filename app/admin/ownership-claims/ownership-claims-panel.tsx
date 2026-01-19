@@ -78,12 +78,12 @@ export function OwnershipClaimsPanel({ initialClaims }: OwnershipClaimsPanelProp
             <div className="flex-1 min-w-0">
               <div className="flex items-start gap-4">
                 {claim.product.thumbnail && (
-                  <div className="h-16 w-16 flex-shrink-0 rounded-lg overflow-hidden border border-gray-200 relative">
+                  <div className="h-16 w-16 flex-shrink-0 rounded-lg overflow-hidden relative bg-white">
                     <Image
                       src={claim.product.thumbnail}
                       alt={claim.product.name}
                       fill
-                      className="object-cover"
+                      className="object-contain p-2"
                       sizes="64px"
                       unoptimized={process.env.NODE_ENV === 'development'}
                     />

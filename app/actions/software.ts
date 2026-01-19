@@ -32,7 +32,16 @@ export async function createSoftware(
   }
 
   const name = sanitizeInput(String(formData.get("name") ?? ""), 40)
-  const tagline = sanitizeInput(String(formData.get("tagline") ?? ""), 70)
+  let tagline = sanitizeInput(String(formData.get("tagline") ?? ""), 70).trim()
+  
+  // Ensure tagline ends with a period
+  if (tagline && !tagline.endsWith('.')) {
+    if (tagline.length < 70) {
+      tagline = tagline + '.'
+    } else {
+      tagline = tagline.slice(0, 69) + '.'
+    }
+  }
   
   // Allow markdown in description, but strip HTML tags for security
   const descriptionRaw = String(formData.get("description") ?? "").trim()
@@ -237,6 +246,42 @@ export async function deleteSoftware(id: string, adminPassword: string) {
   revalidatePath("/")
 }
 
+/**
+ * Delete a product as an admin (checks admin status, not password)
+ */
+export async function deleteSoftwareAsAdmin(productId: string): Promise<void> {
+  const session = await getSession()
+  if (!session?.user?.id) {
+    throw new Error("You must be logged in to delete a product")
+  }
+
+  // Check if user is admin
+  const user = await prismaAny.user.findUnique({
+    where: { id: session.user.id },
+    select: { isAdmin: true },
+  })
+
+  if (!user?.isAdmin) {
+    throw new Error("Unauthorized: Only admins can delete products")
+  }
+
+  const product = await prismaAny.software.findUnique({
+    where: { id: productId },
+  })
+
+  if (!product) {
+    throw new Error("Product not found")
+  }
+
+  // Delete the product (cascades will handle related data)
+  await prismaAny.software.delete({ where: { id: productId } })
+
+  revalidatePath("/")
+  revalidatePath("/admin")
+  revalidatePath("/admin/moderation")
+  revalidatePath(`/product/${productId}`)
+}
+
 export async function updateSoftware(
   productId: string,
   formData: FormData
@@ -266,7 +311,16 @@ export async function updateSoftware(
   }
 
   const name = sanitizeInput(String(formData.get("name") ?? ""), 40)
-  const tagline = sanitizeInput(String(formData.get("tagline") ?? ""), 70)
+  let tagline = sanitizeInput(String(formData.get("tagline") ?? ""), 70).trim()
+  
+  // Ensure tagline ends with a period
+  if (tagline && !tagline.endsWith('.')) {
+    if (tagline.length < 70) {
+      tagline = tagline + '.'
+    } else {
+      tagline = tagline.slice(0, 69) + '.'
+    }
+  }
   
   // Allow markdown in description, but strip HTML tags for security
   const descriptionRaw = String(formData.get("description") ?? "").trim()
