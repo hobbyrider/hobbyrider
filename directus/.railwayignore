@@ -1,0 +1,2 @@
+# Tell Railway this is a Docker deployment, not Node.js
+# Railway will use the Dockerfile instead of trying to build as a Node.js project

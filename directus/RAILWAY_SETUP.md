@@ -28,7 +28,29 @@ This guide will help you deploy Directus on Railway for **~$5-10/month** (vs $99
    - This tells Railway to deploy from the `directus/` folder
 5. Click **"Deploy Now"**
 
-Railway will start building your Directus project.
+**IMPORTANT - If Railway tries to build as Node.js:**
+
+If Railway detects Node.js and tries to run `npm build` (you'll see "Railpack detected"), you need to configure Docker:
+
+1. **Wait for the first deployment to start** (it will likely fail)
+2. Click on your service in Railway
+3. Go to **"Settings"** tab
+4. Scroll to **"Build"** section
+5. Change **"Build Command"** to: (leave empty)
+6. Set **"Dockerfile Path"** to: `Dockerfile`
+7. Save changes
+8. Railway will automatically redeploy using Docker
+
+**Alternative - Force Docker from the start:**
+
+1. After selecting the repo, click **"Advanced"** or **"Settings"** before deploying
+2. Look for **"Build Type"** or **"Deploy Method"**
+3. Select **"Dockerfile"**
+4. Set Root Directory to: `directus`
+
+The `railway.json` file in the `directus/` directory should tell Railway to use Docker, but sometimes you need to manually configure it.
+
+Railway will start building your Directus project using Docker.
 
 ## Step 3: Set Environment Variables
 
