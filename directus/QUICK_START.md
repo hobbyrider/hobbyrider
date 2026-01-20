@@ -1,6 +1,12 @@
 # Directus Quick Start
 
-## Fastest Way to Get Started (Directus Cloud)
+## ⚠️ Directus is FREE to Self-Host!
+
+Directus itself is **100% open-source and free**. Directus Cloud costs $99/month, but you can self-host for **free** (just pay for hosting, or use free tiers).
+
+**For a free setup, see `FREE_SETUP.md` (recommended - Railway is ~$5-10/month).**
+
+## Option 1: Directus Cloud (Paid - Fastest)
 
 ### Step 1: Create Directus Cloud Project
 

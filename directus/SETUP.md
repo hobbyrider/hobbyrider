@@ -1,6 +1,10 @@
 # Directus Setup Guide
 
-## Option 1: Directus Cloud (Recommended - Easiest)
+## ⚠️ Important: Directus is FREE to Self-Host!
+
+Directus itself is **100% open-source and free**. Directus Cloud (their hosted service) costs $99/month, but you can self-host Directus for free. You'll only pay for hosting infrastructure (or use free tiers).
+
+## Option 1: Directus Cloud (Paid - Easiest)
 
 ### Step 1: Create Directus Cloud Project
 
@@ -74,7 +78,9 @@ In Directus admin, create the following collections with fields:
 
 ---
 
-## Option 2: Self-Hosted with Docker
+## Option 2: Self-Hosted with Docker (FREE - Recommended)
+
+This is the **free option** - Directus software is free, you just need to host it.
 
 ### Step 1: Set Up Environment Variables
 
@@ -131,7 +137,9 @@ docker-compose up -d
 
 ---
 
-## Option 3: Railway/Render (Serverless-Friendly)
+## Option 3: Railway/Render (Serverless-Friendly - FREE/Cheap)
+
+**Best free/cheap option for production!**
 
 ### Railway Setup
 
@@ -182,14 +190,21 @@ See `lib/directus.ts` for SDK setup and helper functions.
 
 ## Recommended Approach
 
-**For Quick Start:** Use Directus Cloud
+**For Free (Recommended):** Self-host on Railway/Render/Fly.io
+- ✅ Directus software is 100% free (open-source)
+- ✅ Railway: $5/month free credit, then ~$5-10/month
+- ✅ Render: Free tier available (with limitations)
+- ✅ Fly.io: Generous free tier
+- ✅ Fast setup (~10 minutes)
+- ✅ Use existing PostgreSQL database
+
+**For Easiest (Paid):** Use Directus Cloud
 - Fastest setup
 - No infrastructure to manage
-- Generous free tier
+- $99/month after 14-day free trial
 - Can always migrate to self-hosted later
 
-**For Full Control:** Self-host with Docker
+**For Full Control:** Self-host with Docker on your own server
 - Use existing PostgreSQL database
 - Full control over infrastructure
-- No monthly costs (just hosting)
-- Can deploy to Railway/Render/Fly.io
+- Free if you already have a server
