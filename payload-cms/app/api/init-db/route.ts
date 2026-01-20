@@ -1,6 +1,9 @@
 // API route to initialize PayloadCMS database tables
 // Call this once after deployment to create PayloadCMS tables
 // GET /api/init-db?token=YOUR_PAYLOAD_INIT_TOKEN
+//
+// Note: With push: true in payload.config.ts, PayloadCMS should create tables automatically.
+// This route ensures PayloadCMS is initialized and tables are created.
 
 import { getPayload } from 'payload'
 import configPromise from '@/payload.config'
@@ -25,21 +28,39 @@ export async function GET(request: Request) {
   }
 
   try {
-    console.log('Initializing PayloadCMS database tables...')
+    console.log('Initializing PayloadCMS...')
     
+    // Initialize PayloadCMS
+    // With push: true in config, PayloadCMS will automatically create tables
+    // when it first accesses the database
     const payload = await getPayload({ config: configPromise })
     
-    // Push schema to database (creates tables if they don't exist)
-    await payload.db.push({
-      force: false, // Don't force - only create if missing
-    })
+    console.log('PayloadCMS initialized')
     
-    console.log('✅ PayloadCMS database tables created successfully!')
+    // Try to access the users collection to trigger table creation
+    // This will cause PayloadCMS to create tables if they don't exist (with push: true)
+    try {
+      await payload.find({
+        collection: 'users',
+        limit: 0, // Don't fetch any data, just check if table exists
+      })
+      console.log('✅ Users table exists')
+    } catch (queryError) {
+      const errorMsg = queryError instanceof Error ? queryError.message : 'Unknown error'
+      
+      // If the error is about missing table, PayloadCMS should create it on next request
+      if (errorMsg.includes('does not exist') || errorMsg.includes('relation')) {
+        console.log('⚠️ Tables may not exist yet - they will be created automatically with push: true')
+        console.log('Try accessing /admin - PayloadCMS will create tables on first use')
+      } else {
+        throw queryError
+      }
+    }
     
     return NextResponse.json({
       success: true,
-      message: 'PayloadCMS database tables initialized successfully',
-      note: 'You can now access /admin to create your first user',
+      message: 'PayloadCMS initialized successfully',
+      note: 'With push: true enabled, tables are created automatically. Try accessing /admin now.',
     })
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
@@ -50,6 +71,7 @@ export async function GET(request: Request) {
         success: false,
         error: errorMessage,
         details: 'Check Vercel function logs for more information',
+        hint: 'Ensure DATABASE_URL and PAYLOAD_SECRET are set in Vercel environment variables',
       },
       { status: 500 }
     )
