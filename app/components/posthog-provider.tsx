@@ -17,7 +17,7 @@ function PostHogInner({ children }: { children: React.ReactNode }) {
     // - Session replay is automatically enabled (unless disabled via env var)
     // - Pageviews are automatically tracked on route changes
     // - All components can import and use PostHog functions from @/lib/posthog
-    // - See docs/POSTHOG_DEVELOPER_GUIDE.md for integration guidelines
+    // - See docs/features/POSTHOG_DEVELOPER_GUIDE.md for integration guidelines
     if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_POSTHOG_KEY) {
       posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
         api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com",

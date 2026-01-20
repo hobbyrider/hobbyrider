@@ -16,15 +16,26 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## Analytics & Monitoring
+## Documentation
 
-- **PostHog**: Product analytics, session replay, and user behavior tracking
-  - See `docs/POSTHOG_SETUP.md` for setup instructions
-  - See `docs/POSTHOG_DEVELOPER_GUIDE.md` for integration guidelines
-  - **Important**: All new features must integrate with PostHog tracking
+All project documentation is organized in the `docs/` directory:
 
-- **Sentry**: Error tracking and monitoring
-  - See `docs/SENTRY_SETUP.md` for configuration details
+- 📘 **Guides** (`docs/guides/`) - User and admin guides
+- ⚙️ **Setup** (`docs/setup/`) - Deployment and configuration
+- 🎯 **Features** (`docs/features/`) - Feature documentation
+- 🏗️ **Architecture** (`docs/architecture/`) - Technical architecture
+- 🔧 **Troubleshooting** (`docs/troubleshooting/`) - Problem resolution
+- 📋 **Planning** (`docs/planning/`) - Roadmap and planning
+
+See [docs/README.md](docs/README.md) for complete documentation index.
+
+## Quick Links
+
+- **Development Setup**: [`docs/setup/DEVELOPMENT.md`](docs/setup/DEVELOPMENT.md)
+- **Deployment Guide**: [`docs/setup/DEPLOYMENT.md`](docs/setup/DEPLOYMENT.md)
+- **PostHog Integration**: [`docs/features/POSTHOG_DEVELOPER_GUIDE.md`](docs/features/POSTHOG_DEVELOPER_GUIDE.md)
+- **Sentry Setup**: [`docs/features/SENTRY_SETUP.md`](docs/features/SENTRY_SETUP.md)
+- **Project Roadmap**: [`docs/planning/ROADMAP.md`](docs/planning/ROADMAP.md)
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 

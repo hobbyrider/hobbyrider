@@ -1,31 +1,28 @@
-# Archived Documentation & Code
+# Archive
 
-This folder (`.archive/`) contains archived documentation and code that is not currently in use.
-
-**Note:** This folder is excluded from TypeScript compilation and Next.js builds to prevent build errors.
+This directory contains archived files that are no longer actively used but kept for reference.
 
 ## Structure
 
-- **`payloadcms/`** - PayloadCMS integration (currently disabled)
-  - Documentation files (`.md`)
-  - `code/` - PayloadCMS code (collections, config, routes)
-  
-- **`cms/`** - CMS implementation planning documents (not implemented)
+- **`temp-docs/`** - Temporary documentation files, fix guides, migration notes, and setup guides that are no longer relevant
+- **`test-routes/`** - Development/test API routes that were used for testing but aren't needed in production
 
-## Why Archived?
+## Contents
 
-PayloadCMS integration was paused due to HTML nesting conflicts with Next.js App Router. The integration will be resumed when a subdomain is available (e.g., `admin.hobbyrider.com`).
+### Temp Docs
+Temporary documentation files including:
+- Setup and migration guides
+- Fix documentation for resolved issues
+- One-off implementation notes
+- Test reports
 
-## Re-enabling PayloadCMS
+### Test Routes
+Development-only API routes:
+- `/api/test-sentry` - Sentry testing route
+- `/api/test-sentry-server` - Server-side Sentry testing route
 
-When ready to re-enable:
+These can be restored if needed for debugging, but are not part of the active codebase.
 
-1. Move `payloadcms/code/collections/` back to project root
-2. Move `payloadcms/code/payload.config.ts` back to project root
-3. Move `payloadcms/code/(payload-disabled)/` back to `app/(payload)/`
-4. Move `payloadcms/code/payload/` back to `app/api/payload/`
-5. Move `payloadcms/code/blog/` back to `app/(main)/blog/`
-6. Move `payloadcms/code/rich-text.tsx` back to `app/components/rich-text.tsx`
-7. Uncomment PayloadCMS code in `app/sitemap.ts`
-8. Uncomment `withPayload` in `next.config.ts`
-9. See `payloadcms/DISABLE_PAYLOADCMS.md` for detailed instructions
+---
+
+**Note**: Files in this archive are kept for historical reference but are not actively maintained or used.

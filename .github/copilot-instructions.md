@@ -32,12 +32,12 @@ This file contains concise, actionable guidance for AI coding agents to be immed
 - **PostHog Analytics (REQUIRED for new features)**:
   - **ALL user-facing actions must be tracked in PostHog**. This is mandatory for every new feature.
   - PostHog is available globally via `@/lib/posthog` - no initialization needed.
-  - Use standardized event names (see `docs/POSTHOG_DEVELOPER_GUIDE.md`).
+  - Use standardized event names (see `docs/features/POSTHOG_DEVELOPER_GUIDE.md`).
   - Session replay is automatically enabled - no additional setup needed.
   - Track events after successful actions, not before.
   - Include relevant properties (product_id, user_id, etc.) but never PII.
   - Test events appear in PostHog dashboard before completing feature.
-  - See `docs/POSTHOG_DEVELOPER_GUIDE.md` for complete integration guide.
+  - See `docs/features/POSTHOG_DEVELOPER_GUIDE.md` for complete integration guide.
   - Always check for: horizontal overflow, text wrapping, touch targets (min 44x44px), readable font sizes (min 11-12px on mobile).
   - When fixing or adding UI components, always verify mobile responsiveness and fix any issues immediately.
   - Use `flex-wrap`, `overflow-x-auto`, `whitespace-nowrap` carefully - ensure they work on mobile.

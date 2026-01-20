@@ -4,7 +4,7 @@ Quick reference checklist for ensuring PostHog works with new features.
 
 ## Pre-Development
 
-- [ ] Review `docs/POSTHOG_DEVELOPER_GUIDE.md` for patterns and best practices
+- [ ] Review `docs/features/POSTHOG_DEVELOPER_GUIDE.md` for patterns and best practices
 - [ ] Identify key user actions that need tracking
 - [ ] Choose standardized event names (snake_case, descriptive)
 
@@ -63,4 +63,4 @@ Quick reference checklist for ensuring PostHog works with new features.
 
 ---
 
-**Quick Reference**: See `docs/POSTHOG_DEVELOPER_GUIDE.md` for detailed examples and patterns.
+**Quick Reference**: See `docs/features/POSTHOG_DEVELOPER_GUIDE.md` for detailed examples and patterns.

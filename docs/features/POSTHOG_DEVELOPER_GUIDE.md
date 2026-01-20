@@ -559,7 +559,7 @@ When adding a new feature, use this checklist:
 If you encounter issues:
 
 1. Check this guide first
-2. Review `docs/POSTHOG_SETUP.md` for setup details
+2. Review `docs/features/POSTHOG_SETUP.md` for setup details
 3. Check PostHog dashboard for event status
 4. Review browser console for errors
 5. Verify environment variables are set correctly
