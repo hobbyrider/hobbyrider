@@ -26,6 +26,10 @@ git push origin main
 **OPTIONAL:**
 - [ ] `ADMIN_PASSWORD` - For admin delete functionality
 - [ ] `BLOB_READ_WRITE_TOKEN` - Usually auto-configured by Vercel
+- [ ] `SENTRY_DSN` or `NEXT_PUBLIC_SENTRY_DSN` - Sentry error tracking (fallback hardcoded in config)
+- [ ] `SENTRY_AUTH_TOKEN` - For uploading source maps (optional, recommended)
+- [ ] `SENTRY_ORG` - Sentry organization (already set in next.config.ts as "hobbyrider")
+- [ ] `SENTRY_PROJECT` - Sentry project (already set in next.config.ts as "javascript-nextjs")
 
 ### 3. Generate NEXTAUTH_SECRET
 ```bash
