@@ -29,12 +29,12 @@ Directus is a modern, open-source headless CMS that works seamlessly with your e
 **Directus is open-source and completely free to self-host!** You just need to pay for hosting infrastructure (or use free tiers).
 
 **Free Hosting Options:**
-1. **Railway** - $5/month free credit, then pay-as-you-go (very cheap)
+1. **Railway** - $5/month free credit, then ~$5-10/month (recommended)
 2. **Render** - Free tier available (with limitations)
 3. **Fly.io** - Generous free tier
 4. **Your own server** - Free if you already have one
 
-See `directus/SETUP.md` for self-hosting instructions.
+**📖 See `directus/RAILWAY_SETUP.md` for step-by-step Railway deployment instructions.**
 
 ### Option 2: Self-Hosted Directus (Full Control)
 
