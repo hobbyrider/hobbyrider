@@ -41,13 +41,14 @@ export async function GET(request: Request) {
       message: 'PayloadCMS database tables initialized successfully',
       note: 'You can now access /admin to create your first user',
     })
-  } catch (error: any) {
-    console.error('❌ Database initialization failed:', error.message)
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+    console.error('❌ Database initialization failed:', errorMessage)
     
     return NextResponse.json(
       {
         success: false,
-        error: error.message,
+        error: errorMessage,
         details: 'Check Vercel function logs for more information',
       },
       { status: 500 }
