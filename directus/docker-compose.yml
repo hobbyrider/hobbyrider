@@ -1,0 +1,47 @@
+# Directus Docker Compose Setup
+# Run: docker-compose up -d
+# Access Directus at: http://localhost:8055
+
+version: '3.8'
+
+services:
+  directus:
+    image: directus/directus:latest
+    container_name: hobbyrider-directus
+    ports:
+      - "8055:8055"
+    environment:
+      # Database connection - use your existing PostgreSQL
+      DB_CLIENT: "pg"
+      DB_HOST: "${DB_HOST:-db.prisma.io}"
+      DB_PORT: "${DB_PORT:-5432}"
+      DB_DATABASE: "${DB_DATABASE:-postgres}"
+      DB_USER: "${DB_USER}"
+      DB_PASSWORD: "${DB_PASSWORD}"
+      
+      # Directus configuration
+      KEY: "${DIRECTUS_KEY:-your-super-secret-key-change-me}"
+      SECRET: "${DIRECTUS_SECRET:-your-super-secret-secret-change-me}"
+      
+      # Admin user (created on first run)
+      ADMIN_EMAIL: "${ADMIN_EMAIL:-admin@hobbyrider.io}"
+      ADMIN_PASSWORD: "${ADMIN_PASSWORD:-your-secure-password}"
+      
+      # Public URL
+      PUBLIC_URL: "${PUBLIC_URL:-http://localhost:8055}"
+      
+      # Storage
+      STORAGE_LOCATIONS: "local"
+      STORAGE_LOCAL_ROOT: "/directus/uploads"
+      
+      # Optional: CORS for Next.js
+      CORS_ENABLED: "true"
+      CORS_ORIGIN: "${CORS_ORIGIN:-http://localhost:3000,https://hobbyrider.io}"
+    volumes:
+      - ./uploads:/directus/uploads
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8055/server/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
