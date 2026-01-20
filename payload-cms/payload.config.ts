@@ -46,6 +46,7 @@ export default buildConfig({
       connectionString: getDatabaseUrl(),
     },
     push: true, // Allow PayloadCMS to create its own tables
+    migrationDir: path.resolve(process.cwd(), 'src/migrations'),
   }),
   typescript: {
     outputFile: path.resolve(process.cwd(), 'payload-types.ts'),
