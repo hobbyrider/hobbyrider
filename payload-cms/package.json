@@ -8,7 +8,11 @@
     "start": "next start -p 3001",
     "lint": "next lint",
     "generate:importmap": "payload generate:importmap",
-    "create-admin": "tsx scripts/create-admin.ts"
+    "init-db": "tsx scripts/init-db.ts",
+    "create-admin": "tsx scripts/create-admin.ts",
+    "migrate:create": "tsx --no-warnings node_modules/payload/dist/bin/migrate.js migrate:create",
+    "migrate": "tsx --no-warnings node_modules/payload/dist/bin/migrate.js migrate",
+    "migrate:status": "tsx --no-warnings node_modules/payload/dist/bin/migrate.js migrate:status"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "^3.0.0",

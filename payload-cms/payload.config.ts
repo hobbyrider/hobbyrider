@@ -2,10 +2,10 @@ import { buildConfig } from 'payload'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'path'
-import BlogPosts from './collections/BlogPosts'
-import Pages from './collections/Pages'
-import Media from './collections/Media'
-import Users from './collections/Users'
+import BlogPosts from './collections/BlogPosts.js'
+import Pages from './collections/Pages.js'
+import Media from './collections/Media.js'
+import Users from './collections/Users.js'
 
 // Get DATABASE_URL with proper error handling
 function getDatabaseUrl() {
@@ -45,9 +45,10 @@ export default buildConfig({
     pool: {
       connectionString: getDatabaseUrl(),
     },
-    // Use push mode for local development (auto-creates tables)
-    // For production, you'll need to use migrations
-    push: true,
+    // Push mode has issues with empty databases (Drizzle introspection fails)
+    // Use migrations instead - run: npm run migrate:create init && npm run migrate
+    push: false,
+    migrationDir: path.resolve(process.cwd(), 'migrations'),
   }),
   typescript: {
     outputFile: path.resolve(process.cwd(), 'payload-types.ts'),

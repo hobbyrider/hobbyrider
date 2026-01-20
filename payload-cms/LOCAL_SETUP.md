@@ -44,17 +44,9 @@ FIRST_ADMIN_PASSWORD=your-secure-password-here
 openssl rand -base64 32
 ```
 
-## Step 3: Generate Import Map
+## Step 3: Start Development Server
 
-PayloadCMS needs an import map for the admin UI:
-
-```bash
-npm run generate:importmap
-```
-
-This creates `app/admin/importMap.js` automatically.
-
-## Step 4: Start Development Server
+**Note:** You can skip the import map generation step - PayloadCMS will generate it automatically on first run!
 
 ```bash
 npm run dev
@@ -62,7 +54,12 @@ npm run dev
 
 This starts PayloadCMS on **http://localhost:3001** (different port from main app).
 
-## Step 5: Access Admin Panel
+**On first run:**
+- PayloadCMS will automatically generate the import map
+- Create database tables (using `push: true`)
+- If `CREATE_FIRST_ADMIN=true` is set, create the admin user
+
+## Step 4: Access Admin Panel
 
 1. Open http://localhost:3001/admin in your browser
 2. On first visit, PayloadCMS will:
@@ -79,7 +76,7 @@ This starts PayloadCMS on **http://localhost:3001** (different port from main ap
    - Fill in email and password
    - Click "Create First User"
 
-## Step 6: Test Everything
+## Step 5: Test Everything
 
 Once logged in, test:
 
@@ -145,6 +142,10 @@ If port 3001 is in use, change it in `package.json`:
 ```json
 "dev": "next dev -p 3002"
 ```
+
+### Import Map Generation Error
+
+**You can skip this step!** PayloadCMS will automatically generate the import map when you start the dev server. The import map is created automatically on first run.
 
 ## Next Steps
 
