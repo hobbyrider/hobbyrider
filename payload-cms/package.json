@@ -8,7 +8,10 @@
     "start": "next start",
     "lint": "next lint",
     "generate:importmap": "payload generate:importmap",
-    "create-admin": "tsx scripts/create-admin.ts"
+    "create-admin": "tsx scripts/create-admin.ts",
+    "migrate:create": "payload migrate:create",
+    "migrate": "payload migrate",
+    "migrate:status": "payload migrate:status"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "^3.0.0",

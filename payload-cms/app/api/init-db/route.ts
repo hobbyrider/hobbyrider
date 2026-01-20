@@ -30,24 +30,57 @@ export async function GET(request: Request) {
   try {
     console.log('Initializing PayloadCMS...')
     
-    // Initialize PayloadCMS
-    // With push: true in config, PayloadCMS will automatically create tables
-    // when it first accesses the database
+    // Initialize PayloadCMS - this will connect to the database
     const payload = await getPayload({ config: configPromise })
     
     console.log('PayloadCMS initialized')
     
-    // Try to access the users collection to trigger table creation
-    // This will cause PayloadCMS to create tables if they don't exist (with push: true)
+    // Access the database adapter to force schema push
+    // In production, push: true may not work automatically, so we need to trigger it
+    const dbAdapter = payload.db
+    
+    // Try to access any collection - this will trigger table creation if push is enabled
+    // Even in production, if push: true is set, accessing the collection should create tables
     try {
+      // First, try to query users - this will fail if table doesn't exist
+      // But it may trigger table creation
       await payload.find({
         collection: 'users',
-        limit: 0, // Don't fetch any data, just check if table exists
+        limit: 0,
       })
       console.log('✅ Users table exists')
+    } catch (queryError) {
+      const errorMsg = queryError instanceof Error ? queryError.message : 'Unknown error'
       
-      // If CREATE_FIRST_ADMIN is set and no users exist, create the first admin
-      if (process.env.CREATE_FIRST_ADMIN === 'true') {
+      if (errorMsg.includes('does not exist') || errorMsg.includes('relation')) {
+        console.log('⚠️ Tables do not exist yet')
+        console.log('Note: push: true may not work in production. You may need to use migrations.')
+        console.log('Trying to create tables by accessing database directly...')
+        
+        // In production, push: true might not work automatically
+        // We'll need to create tables manually or use migrations
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'Tables do not exist',
+            message: 'PayloadCMS tables have not been created yet',
+            solution: 'push: true only works in development. For production, use migrations or manually create tables',
+            instructions: [
+              '1. Generate migrations: npx payload migrate:create init',
+              '2. Apply migrations: npx payload migrate',
+              'Or visit /admin and PayloadCMS may create tables automatically on first access',
+            ],
+          },
+          { status: 500 }
+        )
+      } else {
+        throw queryError
+      }
+    }
+    
+    // If we got here, tables exist - create admin user if needed
+    if (process.env.CREATE_FIRST_ADMIN === 'true') {
+      try {
         const existingUsers = await payload.find({
           collection: 'users',
           limit: 1,
@@ -58,40 +91,40 @@ export async function GET(request: Request) {
           const password = process.env.FIRST_ADMIN_PASSWORD
 
           if (password) {
-            try {
-              await payload.create({
-                collection: 'users',
-                data: {
-                  email,
-                  password,
-                  name: 'Admin',
-                  role: 'admin',
-                },
-              })
-              console.log(`✅ First admin user created: ${email}`)
-            } catch (createError) {
-              console.error('Failed to create admin user:', createError)
-            }
+            await payload.create({
+              collection: 'users',
+              data: {
+                email,
+                password,
+                name: 'Admin',
+                role: 'admin',
+              },
+            })
+            console.log(`✅ First admin user created: ${email}`)
+            return NextResponse.json({
+              success: true,
+              message: 'Database initialized and first admin user created',
+              email,
+              note: 'You can now log in at /admin',
+            })
           }
+        } else {
+          console.log('✅ Admin user already exists')
         }
-      }
-    } catch (queryError) {
-      const errorMsg = queryError instanceof Error ? queryError.message : 'Unknown error'
-      
-      // If the error is about missing table, PayloadCMS should create it on next request
-      if (errorMsg.includes('does not exist') || errorMsg.includes('relation')) {
-        console.log('⚠️ Tables may not exist yet - they will be created automatically with push: true')
-        console.log('Try accessing /admin - PayloadCMS will create tables on first use')
-        console.log('You can also call this endpoint again after tables are created')
-      } else {
-        throw queryError
+      } catch (createError) {
+        console.error('Failed to create admin user:', createError)
+        return NextResponse.json({
+          success: true,
+          message: 'Database initialized',
+          warning: 'Failed to create admin user. Check logs for details.',
+        })
       }
     }
     
     return NextResponse.json({
       success: true,
       message: 'PayloadCMS initialized successfully',
-      note: 'With push: true enabled, tables are created automatically. Try accessing /admin now.',
+      note: 'Tables exist. You can access /admin now.',
     })
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
