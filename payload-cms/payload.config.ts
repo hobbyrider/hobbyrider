@@ -57,6 +57,9 @@ export default buildConfig({
     // Set CREATE_FIRST_ADMIN=true and FIRST_ADMIN_EMAIL, FIRST_ADMIN_PASSWORD in Vercel env vars
     if (process.env.CREATE_FIRST_ADMIN === 'true') {
       try {
+        // Wait a bit to ensure tables are created (push: true should create them)
+        await new Promise(resolve => setTimeout(resolve, 1000))
+
         const existingUsers = await payload.find({
           collection: 'users',
           limit: 1,
@@ -87,7 +90,12 @@ export default buildConfig({
         }
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-        payload.logger.error(`❌ Failed to create first admin user: ${errorMessage}`)
+        // If tables don't exist yet, that's okay - they'll be created on first request
+        if (errorMessage.includes('does not exist') || errorMessage.includes('relation')) {
+          payload.logger.info('ℹ️ Tables not created yet. First admin user will be created after tables are initialized.')
+        } else {
+          payload.logger.error(`❌ Failed to create first admin user: ${errorMessage}`)
+        }
       }
     }
   },

@@ -45,6 +45,36 @@ export async function GET(request: Request) {
         limit: 0, // Don't fetch any data, just check if table exists
       })
       console.log('✅ Users table exists')
+      
+      // If CREATE_FIRST_ADMIN is set and no users exist, create the first admin
+      if (process.env.CREATE_FIRST_ADMIN === 'true') {
+        const existingUsers = await payload.find({
+          collection: 'users',
+          limit: 1,
+        })
+
+        if (existingUsers.totalDocs === 0) {
+          const email = process.env.FIRST_ADMIN_EMAIL || 'admin@hobbyrider.io'
+          const password = process.env.FIRST_ADMIN_PASSWORD
+
+          if (password) {
+            try {
+              await payload.create({
+                collection: 'users',
+                data: {
+                  email,
+                  password,
+                  name: 'Admin',
+                  role: 'admin',
+                },
+              })
+              console.log(`✅ First admin user created: ${email}`)
+            } catch (createError) {
+              console.error('Failed to create admin user:', createError)
+            }
+          }
+        }
+      }
     } catch (queryError) {
       const errorMsg = queryError instanceof Error ? queryError.message : 'Unknown error'
       
@@ -52,6 +82,7 @@ export async function GET(request: Request) {
       if (errorMsg.includes('does not exist') || errorMsg.includes('relation')) {
         console.log('⚠️ Tables may not exist yet - they will be created automatically with push: true')
         console.log('Try accessing /admin - PayloadCMS will create tables on first use')
+        console.log('You can also call this endpoint again after tables are created')
       } else {
         throw queryError
       }
