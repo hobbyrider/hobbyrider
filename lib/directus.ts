@@ -28,19 +28,26 @@ if (!DIRECTUS_URL) {
   console.warn('⚠️ DIRECTUS_URL not set. Directus integration will not work.')
 }
 
-// Create Directus client
-export const directusClient = DIRECTUS_URL
-  ? createDirectus<DirectusSchema>(DIRECTUS_URL)
-      .with(rest())
-      .with(staticToken(process.env.DIRECTUS_TOKEN || ''))
-  : null
-
 // Type-safe schema for your Directus collections
 type DirectusSchema = {
   blog_posts: BlogPost[]
   pages: Page[]
   directus_files: DirectusFile[]
 }
+
+// Create Directus client
+export const directusClient = DIRECTUS_URL
+  ? (() => {
+      const client = createDirectus<DirectusSchema>(DIRECTUS_URL).with(rest())
+      
+      // Add static token if provided
+      if (process.env.DIRECTUS_TOKEN) {
+        return client.with(staticToken(process.env.DIRECTUS_TOKEN))
+      }
+      
+      return client
+    })()
+  : null
 
 // Type definitions (adjust based on your Directus collections)
 type BlogPost = {
@@ -101,13 +108,15 @@ export const directus = {
       filter.status = { _eq: params.status }
     }
 
-    return await directusClient.request(
+    const result = await directusClient.request(
       readItems('blog_posts', {
         filter,
         limit: params?.limit || 100,
         sort: params?.sort || ['-published_at'],
       })
     )
+    
+    return result as BlogPost[]
   },
 
   // Get a single blog post by slug
@@ -116,12 +125,12 @@ export const directus = {
       throw new Error('Directus client not configured.')
     }
 
-    const posts = await directusClient.request(
+    const posts = (await directusClient.request(
       readItems('blog_posts', {
         filter: { slug: { _eq: slug } },
         limit: 1,
       })
-    )
+    )) as BlogPost[]
 
     return posts[0] || null
   },
@@ -137,11 +146,13 @@ export const directus = {
       filter.published = { _eq: params.published }
     }
 
-    return await directusClient.request(
+    const result = await directusClient.request(
       readItems('pages', {
         filter,
       })
     )
+    
+    return result as Page[]
   },
 
   // Get a single page by slug
@@ -150,12 +161,12 @@ export const directus = {
       throw new Error('Directus client not configured.')
     }
 
-    const pages = await directusClient.request(
+    const pages = (await directusClient.request(
       readItems('pages', {
         filter: { slug: { _eq: slug } },
         limit: 1,
       })
-    )
+    )) as Page[]
 
     return pages[0] || null
   },
