@@ -108,11 +108,13 @@ export const directus = {
       filter.status = { _eq: params.status }
     }
 
+    const sortArray = params?.sort || ['-published_at']
+    
     const result = await directusClient.request(
       readItems('blog_posts', {
         filter,
         limit: params?.limit || 100,
-        sort: params?.sort || ['-published_at'],
+        sort: sortArray as any, // Directus SDK type is too strict, cast to any
       })
     )
     
