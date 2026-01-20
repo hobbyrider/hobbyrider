@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "generate:importmap": "tsx --no-warnings payload.config.ts && payload generate:importmap"
+    "generate:importmap": "payload generate:importmap",
+    "db:push": "tsx scripts/init-db.ts",
+    "postbuild": "echo 'PayloadCMS tables will be created on first request or via /api/init-db'"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "^3.0.0",
