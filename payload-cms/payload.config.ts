@@ -86,7 +86,8 @@ export default buildConfig({
           payload.logger.info('✅ Admin user already exists. Skipping creation.')
         }
       } catch (error) {
-        payload.logger.error('❌ Failed to create first admin user:', error)
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+        payload.logger.error(`❌ Failed to create first admin user: ${errorMessage}`)
       }
     }
   },
