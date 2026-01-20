@@ -12,6 +12,12 @@ function PostHogInner({ children }: { children: React.ReactNode }) {
     // Initialize PostHog only if API key is provided
     // RESPONSIBILITY: Product analytics, pageviews, key events, and session replay.
     // Sentry handles: error tracking only.
+    //
+    // IMPORTANT: This provider ensures PostHog works globally for all features.
+    // - Session replay is automatically enabled (unless disabled via env var)
+    // - Pageviews are automatically tracked on route changes
+    // - All components can import and use PostHog functions from @/lib/posthog
+    // - See docs/POSTHOG_DEVELOPER_GUIDE.md for integration guidelines
     if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_POSTHOG_KEY) {
       posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
         api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com",
@@ -21,6 +27,7 @@ function PostHogInner({ children }: { children: React.ReactNode }) {
         // Privacy settings
         respect_dnt: true,
         // Session replay enabled - PostHog handles this (Sentry does not)
+        // Set NEXT_PUBLIC_POSTHOG_DISABLE_SESSION_RECORDING=true to disable
         disable_session_recording: process.env.NEXT_PUBLIC_POSTHOG_DISABLE_SESSION_RECORDING === "true",
         // Load callback
         loaded: (posthog) => {

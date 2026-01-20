@@ -16,6 +16,16 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Analytics & Monitoring
+
+- **PostHog**: Product analytics, session replay, and user behavior tracking
+  - See `docs/POSTHOG_SETUP.md` for setup instructions
+  - See `docs/POSTHOG_DEVELOPER_GUIDE.md` for integration guidelines
+  - **Important**: All new features must integrate with PostHog tracking
+
+- **Sentry**: Error tracking and monitoring
+  - See `docs/SENTRY_SETUP.md` for configuration details
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.

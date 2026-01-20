@@ -51,11 +51,13 @@ const requiresSSL = databaseUrl.includes('sslmode=require') ||
 
 const pool = new Pool({
   connectionString: databaseUrl,
-  // Connection pool configuration optimized for serverless environments
-  max: 10, // Maximum number of clients in the pool
+  // Connection pool configuration optimized for serverless environments (Vercel)
+  max: 5, // Reduced for serverless - fewer concurrent connections per function
   min: 0, // Start with 0 connections (better for serverless cold starts)
-  idleTimeoutMillis: 30000, // Close idle clients after 30 seconds
-  connectionTimeoutMillis: 30000, // Increase timeout to 30 seconds for slower connections
+  idleTimeoutMillis: 20000, // Close idle clients after 20 seconds (faster cleanup)
+  connectionTimeoutMillis: 10000, // 10 second timeout for initial connection
+  statement_timeout: 30000, // 30 second timeout for queries
+  query_timeout: 30000, // 30 second timeout for queries
   // Handle connection errors - allow idle connections to close in serverless
   allowExitOnIdle: true, // Better for serverless (allows connections to close when not in use)
   // SSL configuration for Prisma and production databases
@@ -66,45 +68,106 @@ const pool = new Pool({
       servername: 'db.prisma.io', // SNI (Server Name Indication) for Prisma databases
     } : {}),
   } : false,
-  // Keep-alive settings to prevent connection drops (if supported)
-  ...(typeof process !== 'undefined' && process.env ? {} : {}),
+  // Keep connections alive to prevent premature termination
+  keepAlive: true,
+  keepAliveInitialDelayMillis: 10000, // Send keep-alive after 10 seconds
 })
 
 // Handle pool errors gracefully - log but don't crash
 pool.on('error', (err: any) => {
-  console.error('❌ Database pool error:', err.message)
+  const errorMessage = err.message || String(err)
+  const errorCode = err.code || ''
+  
+  console.error('❌ Database pool error:', errorMessage)
   console.error('Database host:', databaseUrl.includes('db.prisma.io') ? 'db.prisma.io (Prisma Accelerate)' : 'Custom database')
+  
+  // Capture connection errors in Sentry (only in production)
+  if (process.env.NODE_ENV === 'production') {
+    try {
+      // Dynamic import to avoid issues if Sentry isn't available
+      import('@sentry/nextjs').then((Sentry) => {
+        Sentry.captureException(err, {
+          tags: {
+            error_type: 'database_connection',
+            error_code: errorCode,
+            database_host: databaseUrl.includes('db.prisma.io') ? 'prisma_accelerate' : 'custom',
+          },
+          extra: {
+            error_message: errorMessage,
+            error_code: errorCode,
+            stack: err.stack,
+          },
+          level: 'error',
+        })
+      }).catch(() => {
+        // Sentry not available, continue without it
+      })
+    } catch {
+      // Ignore Sentry import errors
+    }
+  }
   
   // Provide helpful error messages
   if (err.code === 'ECONNREFUSED') {
     console.error('⚠️  Connection refused. Check if database server is running and accessible.')
-  } else if (err.code === 'ETIMEDOUT' || err.code === 'ECONNRESET' || err.message?.includes('timeout')) {
+  } else if (err.code === 'ETIMEDOUT' || err.code === 'ECONNRESET' || errorMessage.includes('timeout')) {
     console.error('⚠️  Connection timeout. This can happen if:')
     console.error('   1. Database server is slow to respond')
     console.error('   2. Network connectivity issues')
     console.error('   3. Firewall blocking connections')
     console.error('   4. Prisma Accelerate database is paused (check https://console.prisma.io)')
-  } else if (err.message?.includes('password authentication')) {
+  } else if (errorMessage.includes('password authentication')) {
     console.error('⚠️  Authentication failed. Check DATABASE_URL credentials.')
-  } else if (err.message?.includes('terminated')) {
+  } else if (errorMessage.includes('terminated')) {
     console.error('⚠️  Connection terminated. Possible causes:')
     console.error('   1. Connection timeout (server too slow)')
     console.error('   2. Database server closed connection')
     console.error('   3. Network interruption')
+    console.error('   4. Serverless function timeout')
   }
   
   // The pool will automatically create a new client if needed
 })
 
-// Handle connection errors and reconnect
+// Handle connection lifecycle and errors
 pool.on('connect', (client) => {
   // Monitor connection lifecycle
-  client.on('error', (err) => {
-    console.error('Unexpected error on PostgreSQL client', err)
+  client.on('error', (err: any) => {
+    const errorMessage = err.message || String(err)
+    console.error('Unexpected error on PostgreSQL client:', errorMessage)
+    
+    // Capture client errors in Sentry (only in production)
+    if (process.env.NODE_ENV === 'production' && 
+        (errorMessage.includes('terminated') || errorMessage.includes('timeout'))) {
+      try {
+        import('@sentry/nextjs').then((Sentry) => {
+          Sentry.captureException(err, {
+            tags: {
+              error_type: 'database_client_error',
+              error_code: err.code || 'unknown',
+            },
+            extra: {
+              error_message: errorMessage,
+            },
+            level: 'warning', // Client errors are less critical than pool errors
+          })
+        }).catch(() => {
+          // Sentry not available, continue without it
+        })
+      } catch {
+        // Ignore Sentry import errors
+      }
+    }
   })
   
   client.on('end', () => {
     // Connection ended - pool will create a new one if needed
+    // This is normal in serverless environments
+  })
+  
+  // Set statement timeout on the client to prevent hanging queries
+  client.query('SET statement_timeout = 30000').catch(() => {
+    // Ignore if query fails - connection might be closing
   })
 })
 
@@ -174,4 +237,76 @@ export const prisma = prismaInstance
 
 if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = prisma
+}
+
+/**
+ * Retry wrapper for database queries to handle connection timeouts in serverless environments
+ * Automatically retries queries that fail due to connection issues
+ */
+export async function withRetry<T>(
+  queryFn: () => Promise<T>,
+  options: {
+    maxRetries?: number
+    retryDelay?: number
+    retryableErrors?: string[]
+  } = {}
+): Promise<T> {
+  const {
+    maxRetries = 3,
+    retryDelay = 1000, // Start with 1 second delay
+    retryableErrors = [
+      'Connection terminated',
+      'Connection terminated unexpectedly',
+      'Connection timeout',
+      'timeout',
+      'ECONNRESET',
+      'ETIMEDOUT',
+      'ENOTFOUND',
+      'ECONNREFUSED',
+    ],
+  } = options
+
+  let lastError: Error | unknown
+
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await queryFn()
+    } catch (error: any) {
+      lastError = error
+
+      // Check if error is retryable
+      const errorMessage = error?.message || String(error)
+      const errorCode = error?.code || ''
+      const isRetryable = retryableErrors.some(
+        (retryableError) =>
+          errorMessage.includes(retryableError) ||
+          errorCode.includes(retryableError)
+      )
+
+      // Don't retry if it's not a connection error or we've exhausted retries
+      if (!isRetryable || attempt === maxRetries) {
+        throw error
+      }
+
+      // Exponential backoff: 1s, 2s, 4s
+      const delay = retryDelay * Math.pow(2, attempt)
+      
+      console.warn(
+        `⚠️  Database query failed (attempt ${attempt + 1}/${maxRetries + 1}): ${errorMessage}. Retrying in ${delay}ms...`
+      )
+
+      // Wait before retrying
+      await new Promise((resolve) => setTimeout(resolve, delay))
+
+      // Try to reconnect if connection was lost
+      try {
+        await prisma.$connect()
+      } catch (connectError) {
+        // Ignore connection errors during retry - will be caught in next attempt
+      }
+    }
+  }
+
+  // This should never be reached, but TypeScript needs it
+  throw lastError
 }

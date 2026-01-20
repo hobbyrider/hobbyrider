@@ -245,3 +245,17 @@ If you see PostHog-related build errors:
 1. Create PostHog account and get API key
 2. Add environment variables
 3. Deploy and monitor events in PostHog dashboard
+
+---
+
+## Developer Guide
+
+For detailed guidance on integrating PostHog into new features, see:
+- **[POSTHOG_DEVELOPER_GUIDE.md](./POSTHOG_DEVELOPER_GUIDE.md)** - Comprehensive guide for developers
+
+**Key Points**:
+- ✅ PostHog is available globally - no initialization needed
+- ✅ Session replay is automatically enabled
+- ✅ Use standardized event names (see developer guide)
+- ✅ Track all user-facing actions
+- ✅ Test events in PostHog dashboard before deploying
