@@ -52,4 +52,42 @@ export default buildConfig({
   },
   serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL || 'https://payload.hobbyrider.io',
   secret: getPayloadSecret(),
+  onInit: async (payload) => {
+    // Create first admin user if none exists
+    // Set CREATE_FIRST_ADMIN=true and FIRST_ADMIN_EMAIL, FIRST_ADMIN_PASSWORD in Vercel env vars
+    if (process.env.CREATE_FIRST_ADMIN === 'true') {
+      try {
+        const existingUsers = await payload.find({
+          collection: 'users',
+          limit: 1,
+        })
+
+        if (existingUsers.totalDocs === 0) {
+          const email = process.env.FIRST_ADMIN_EMAIL || 'admin@hobbyrider.io'
+          const password = process.env.FIRST_ADMIN_PASSWORD
+
+          if (!password) {
+            payload.logger.warn('⚠️ CREATE_FIRST_ADMIN=true but FIRST_ADMIN_PASSWORD is not set. Skipping user creation.')
+            return
+          }
+
+          await payload.create({
+            collection: 'users',
+            data: {
+              email,
+              password,
+              name: 'Admin',
+              role: 'admin',
+            },
+          })
+
+          payload.logger.info(`✅ First admin user created: ${email}`)
+        } else {
+          payload.logger.info('✅ Admin user already exists. Skipping creation.')
+        }
+      } catch (error) {
+        payload.logger.error('❌ Failed to create first admin user:', error)
+      }
+    }
+  },
 })
