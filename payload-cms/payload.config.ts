@@ -50,10 +50,6 @@ export default buildConfig({
   typescript: {
     outputFile: path.resolve(process.cwd(), 'payload-types.ts'),
   },
-  serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL || 
-             process.env.NEXTAUTH_URL || 
-             (process.env.VERCEL_URL 
-               ? `https://${process.env.VERCEL_URL}` 
-               : 'http://localhost:3000'),
+  serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL || 'https://payload.hobbyrider.io',
   secret: getPayloadSecret(),
 })
