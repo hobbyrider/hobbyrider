@@ -33,10 +33,6 @@ function getPayloadSecret() {
 export default buildConfig({
   admin: {
     user: 'users',
-    // Ensure admin routes are handled correctly
-    routes: {
-      admin: '/admin',
-    },
   },
   collections: [
     Users,
