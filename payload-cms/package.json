@@ -7,8 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "generate:importmap": "payload generate:importmap",
-    "postbuild": "payload generate:importmap"
+    "generate:importmap": "tsx --no-warnings payload.config.ts && payload generate:importmap"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "^3.0.0",
@@ -26,6 +25,7 @@
     "@types/react-dom": "^19.0.0",
     "eslint": "^9",
     "eslint-config-next": "^15.4.10",
+    "tsx": "^4.19.2",
     "typescript": "^5"
   }
 }
