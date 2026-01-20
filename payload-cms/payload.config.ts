@@ -18,6 +18,18 @@ function getDatabaseUrl() {
   return url
 }
 
+// Get PAYLOAD_SECRET with proper error handling
+function getPayloadSecret() {
+  const secret = process.env.PAYLOAD_SECRET
+  if (!secret) {
+    throw new Error(
+      'Missing PAYLOAD_SECRET. Generate with: openssl rand -base64 32\n' +
+      'Add it to .env.local (local) and Vercel Environment Variables (prod).'
+    )
+  }
+  return secret
+}
+
 export default buildConfig({
   admin: {
     user: 'users',
@@ -43,5 +55,5 @@ export default buildConfig({
              (process.env.VERCEL_URL 
                ? `https://${process.env.VERCEL_URL}` 
                : 'http://localhost:3000'),
-  secret: process.env.PAYLOAD_SECRET || '',
+  secret: getPayloadSecret(),
 })
