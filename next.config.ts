@@ -1,8 +1,7 @@
 import type { NextConfig } from "next";
 import { withSentryConfig } from "@sentry/nextjs";
 
-// PayloadCMS is currently disabled - see docs/archive/payloadcms/ for details
-// import { withPayload } from '@payloadcms/next/withPayload'
+// PayloadCMS is archived - see .archive/payloadcms/ for details
 
 const nextConfig: NextConfig = {
   // Turbopack configuration for Next.js 16
@@ -11,17 +10,7 @@ const nextConfig: NextConfig = {
       // Map server-only modules if needed
     },
   },
-  // Exclude archived code and payload-cms from build
   pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
-  // Exclude payload-cms directory from Next.js build (it's a separate app)
-  webpack: (config, { isServer }) => {
-    // Exclude payload-cms from webpack processing
-    config.watchOptions = {
-      ...config.watchOptions,
-      ignored: ['**/node_modules/**', '**/payload-cms/**'],
-    }
-    return config
-  },
   // Image optimization configuration
   images: {
     // Disable image optimization in development for faster local development
