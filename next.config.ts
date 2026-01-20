@@ -11,8 +11,17 @@ const nextConfig: NextConfig = {
       // Map server-only modules if needed
     },
   },
-  // Exclude archived code from build
+  // Exclude archived code and payload-cms from build
   pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
+  // Exclude payload-cms directory from Next.js build (it's a separate app)
+  webpack: (config, { isServer }) => {
+    // Exclude payload-cms from webpack processing
+    config.watchOptions = {
+      ...config.watchOptions,
+      ignored: ['**/node_modules/**', '**/payload-cms/**'],
+    }
+    return config
+  },
   // Image optimization configuration
   images: {
     // Disable image optimization in development for faster local development
