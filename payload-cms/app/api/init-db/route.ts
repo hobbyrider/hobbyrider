@@ -1,23 +1,25 @@
 // API route to initialize PayloadCMS database tables
 // Call this once after deployment to create PayloadCMS tables
-// GET /api/init-db
+// GET /api/init-db?token=YOUR_PAYLOAD_INIT_TOKEN
 
 import { getPayload } from 'payload'
 import configPromise from '@/payload.config'
 import { NextResponse } from 'next/server'
 
-export async function GET() {
-  // Only allow in production with a secret token, or disable after first use
+export async function GET(request: Request) {
+  // Only allow in production with a secret token for security
   const initToken = process.env.PAYLOAD_INIT_TOKEN || 'change-me-in-production'
-  const providedToken = new URLSearchParams(
-    (await import('url')).parse(process.env.VERCEL_URL || 'http://localhost:3000').search || ''
-  ).get('token')
+  const url = new URL(request.url)
+  const providedToken = url.searchParams.get('token')
 
   // For security, require a token (set PAYLOAD_INIT_TOKEN in Vercel)
-  // Or remove this check after first initialization
   if (process.env.NODE_ENV === 'production' && providedToken !== initToken) {
     return NextResponse.json(
-      { error: 'Unauthorized. Provide ?token=YOUR_PAYLOAD_INIT_TOKEN' },
+      { 
+        error: 'Unauthorized', 
+        message: 'Provide ?token=YOUR_PAYLOAD_INIT_TOKEN in the URL',
+        hint: 'Set PAYLOAD_INIT_TOKEN in Vercel environment variables'
+      },
       { status: 401 }
     )
   }
