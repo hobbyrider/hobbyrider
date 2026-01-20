@@ -4,6 +4,7 @@ import { useState } from "react"
 import { reportContent, type ReportReason } from "@/app/actions/moderation"
 import { useRouter } from "next/navigation"
 import { ReportIcon } from "@/app/components/icons"
+import { trackEvent, captureException } from "@/lib/posthog"
 
 type ReportButtonProps = {
   type: "product" | "comment" | "user"
@@ -39,6 +40,13 @@ export function ReportButton({ type, contentId, contentName, variant = "default"
 
     try {
       await reportContent(type, contentId, selectedReason as ReportReason, details || undefined)
+      // Track content reported event
+      trackEvent("content_reported", {
+        content_type: type,
+        content_id: contentId,
+        content_name: contentName,
+        reason: selectedReason,
+      })
       setSuccess(true)
       setIsOpen(false)
       setTimeout(() => {
@@ -48,6 +56,7 @@ export function ReportButton({ type, contentId, contentName, variant = "default"
       }, 3000)
       router.refresh()
     } catch (err: any) {
+      captureException(err, { context: "report_content", type, contentId })
       setError(err.message || "Failed to submit report. Please try again.")
     } finally {
       setSubmitting(false)

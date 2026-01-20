@@ -6,6 +6,7 @@ import { useRouter, usePathname } from "next/navigation"
 import Link from "next/link"
 import { UpvoteIcon } from "@/app/components/icons"
 import toast from "react-hot-toast"
+import { trackProductUpvote } from "@/lib/posthog"
 
 type UpvoteButtonProps = {
   id: string
@@ -32,6 +33,8 @@ export function UpvoteButton({ id, upvotes, hasUpvoted = false, isLoggedIn = fal
     startTransition(async () => {
       try {
         await upvoteSoftware(id)
+        // Track upvote event
+        trackProductUpvote(id, `Product ${id}`)
         router.refresh()
         // Note: We don't show success toast here as the UI updates immediately
       } catch (err: any) {

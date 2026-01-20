@@ -5,6 +5,7 @@ import { FeedItemCard } from "@/app/components/feed-item-card"
 import { getSession } from "@/lib/get-session"
 import { prisma } from "@/lib/prisma"
 import type { Metadata } from "next"
+import { CategoryViewTracker } from "@/app/components/category-view-tracker"
 
 export const dynamic = "force-dynamic"
 export const revalidate = 300 // Revalidate category pages every 5 minutes
@@ -81,6 +82,7 @@ export default async function CategoryPage({
 
   return (
     <main className="min-h-screen">
+      <CategoryViewTracker categorySlug={category.slug} categoryName={category.name} />
       <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
         <Link
           href="/"

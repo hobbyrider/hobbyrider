@@ -3,8 +3,9 @@
 import { useSearchParams, useRouter } from "next/navigation"
 import { ModerationTab } from "./tabs/moderation-tab"
 import { SeedProductsTab } from "./tabs/seed-products-tab"
+import { VisibilityTab } from "./tabs/visibility-tab"
 
-type AdminTab = "moderation" | "seed-products"
+type AdminTab = "moderation" | "seed-products" | "visibility"
 
 const tabs: { id: AdminTab; label: string; description: string }[] = [
   {
@@ -17,6 +18,11 @@ const tabs: { id: AdminTab; label: string; description: string }[] = [
     label: "Seed Products",
     description: "Bulk seed products into Hobbyrider",
   },
+  {
+    id: "visibility",
+    label: "Visibility",
+    description: "Manage product views and upvotes",
+  },
 ]
 
 type AdminTabsProps = {
@@ -24,13 +30,15 @@ type AdminTabsProps = {
   initialArchivedReports?: any[]
   initialProducts?: any[]
   initialClaims?: any[]
+  initialProductsWithStats?: any[]
 }
 
 export function AdminTabs({ 
   initialReports = [],
   initialArchivedReports = [],
   initialProducts = [],
-  initialClaims = []
+  initialClaims = [],
+  initialProductsWithStats = []
 }: AdminTabsProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -82,6 +90,9 @@ export function AdminTabs({
           />
         )}
         {currentTab === "seed-products" && <SeedProductsTab />}
+        {currentTab === "visibility" && (
+          <VisibilityTab initialProducts={initialProductsWithStats} />
+        )}
       </div>
     </div>
   )

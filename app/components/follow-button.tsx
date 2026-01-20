@@ -4,6 +4,7 @@ import { useState, useTransition } from "react"
 import { toggleFollow } from "@/app/actions/follow"
 import { useRouter } from "next/navigation"
 import toast from "react-hot-toast"
+import { trackEvent, captureException } from "@/lib/posthog"
 
 type FollowButtonProps = {
   userId: string
@@ -25,9 +26,14 @@ export function FollowButton({ userId, isFollowing: initialIsFollowing, isOwnPro
       try {
         const result = await toggleFollow(userId)
         setIsFollowing(result.followed)
+        // Track follow/unfollow event
+        trackEvent(result.followed ? "user_followed" : "user_unfollowed", {
+          followed_user_id: userId,
+        })
         router.refresh()
         toast.success(result.followed ? "Following" : "Unfollowed")
       } catch (error: any) {
+        captureException(error, { context: "follow_toggle", userId })
         toast.error(error.message || "Failed to follow user")
       }
     })

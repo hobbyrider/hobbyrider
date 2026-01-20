@@ -6,6 +6,7 @@ import { useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { AuthProviders } from "@/app/components/auth-providers"
+import { identifyUser, trackEvent, captureException } from "@/lib/posthog"
 
 export default function SignupPage() {
   const router = useRouter()
@@ -36,10 +37,22 @@ export default function SignupPage() {
       if (result?.error) {
         setError("Account created but sign in failed. Please try logging in.")
       } else {
+        // Identify user in PostHog and track signup event
+        // Event name: signup_success (standardized for funnels)
+        identifyUser(email, {
+          email: email,
+          username: username,
+          name: name || username,
+        })
+        trackEvent("signup_success", {
+          method: "credentials",
+          username: username,
+        })
         router.push(callbackUrl)
         router.refresh()
       }
     } catch (error: any) {
+      captureException(error, { context: "signup" })
       setError(error.message || "Something went wrong. Please try again.")
     } finally {
       setLoading(false)

@@ -1,7 +1,6 @@
 import { prisma } from "@/lib/prisma"
 import { notFound, redirect } from "next/navigation"
 import { createComment } from "@/app/actions/comments"
-import { trackProductView } from "@/app/actions/analytics"
 import { getRelativeTime } from "@/lib/utils"
 import Link from "next/link"
 import Image from "next/image"
@@ -23,6 +22,7 @@ import { getLaunchTeam } from "@/app/actions/launch-team"
 import { getProductOwnershipClaim } from "@/app/actions/ownership"
 import { extractIdFromSlugId, getProductUrl, getProductFullUrl, isCanonicalSlugId, generateSlug } from "@/lib/slug"
 import { getProductOGImage, buildOpenGraphMetadata, buildTwitterMetadata, truncateText } from "@/lib/metadata"
+import { ProductViewTracker } from "@/app/components/product-view-tracker"
 
 export const dynamic = "force-dynamic"
 export const revalidate = 60 // Revalidate product pages every 60 seconds
@@ -230,11 +230,6 @@ export default async function ProductPage({
     })
   }
 
-  // Track product view asynchronously (don't block page render)
-  trackProductView(productId).catch((error) => {
-    console.error("Failed to track product view:", error)
-  })
-
   // Check if user has upvoted this product
   let hasUpvoted = false
   if (session?.user?.id) {
@@ -286,6 +281,7 @@ export default async function ProductPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
+      <ProductViewTracker productId={product.id} productName={product.name} />
       <main className="min-h-screen">
       <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8 min-w-0">
         <Link

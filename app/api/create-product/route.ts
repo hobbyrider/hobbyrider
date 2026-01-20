@@ -1,6 +1,7 @@
 import { createSoftware } from "@/app/actions/software"
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { getPostHogClient } from "@/lib/posthog-server"
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,10 +18,26 @@ export async function POST(request: NextRequest) {
     // Fetch product to get slug for canonical URL
     const product = await prisma.software.findUnique({
       where: { id: productId },
-      select: { slug: true },
+      select: { slug: true, name: true, makerId: true },
     })
 
-    return NextResponse.json({ 
+    // Track product created event server-side
+    const posthog = getPostHogClient()
+    if (posthog) {
+      const distinctId = request.headers.get("x-posthog-distinct-id") || product?.makerId || "anonymous"
+      posthog.capture({
+        distinctId,
+        event: "product_created",
+        properties: {
+          product_id: productId,
+          product_name: product?.name,
+          product_slug: product?.slug,
+          source: "api",
+        },
+      })
+    }
+
+    return NextResponse.json({
       productId,
       slug: product?.slug || null,
     })

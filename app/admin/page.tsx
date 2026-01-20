@@ -2,7 +2,7 @@ import { redirect } from "next/navigation"
 import { getSession } from "@/lib/get-session"
 import { isAdmin } from "@/app/actions/moderation"
 import { getReports } from "@/app/actions/moderation"
-import { getAllProductsForAdmin } from "@/app/actions/software"
+import { getAllProductsForAdmin, getAllProductsWithStats } from "@/app/actions/software"
 import { getPendingOwnershipClaims } from "@/app/actions/ownership"
 import { AdminTabs } from "./admin-tabs"
 
@@ -47,12 +47,13 @@ export default async function AdminPage() {
     )
   }
 
-  // Pre-fetch data for moderation tab
-  const [reports, archivedReports, products, claims] = await Promise.all([
+  // Pre-fetch data for all tabs
+  const [reports, archivedReports, products, claims, productsWithStats] = await Promise.all([
     getReports().catch(() => []),
     getReports(undefined, true).catch(() => []),
     getAllProductsForAdmin().catch(() => []),
     getPendingOwnershipClaims().catch(() => []),
+    getAllProductsWithStats().catch(() => []),
   ])
 
   return (
@@ -69,6 +70,7 @@ export default async function AdminPage() {
         initialArchivedReports={archivedReports}
         initialProducts={products}
         initialClaims={claims}
+        initialProductsWithStats={productsWithStats}
       />
     </main>
   )

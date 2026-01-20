@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
 import Link from "next/link"
 import toast from "react-hot-toast"
+import { trackCommentCreated } from "@/lib/posthog"
 
 export function CommentForm({ productId }: { productId: string }) {
   const { data: session } = useSession()
@@ -43,7 +44,11 @@ export function CommentForm({ productId }: { productId: string }) {
 
     setSubmitting(true)
     try {
-      await createComment(productId, content)
+      const result = await createComment(productId, content)
+      // Track comment creation
+      if (result?.id) {
+        trackCommentCreated(productId, result.id)
+      }
       setContent("")
       toast.success("Comment posted successfully!")
       router.refresh()

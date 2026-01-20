@@ -3,6 +3,7 @@
 import { signIn, getProviders } from "next-auth/react"
 import { useState, useEffect } from "react"
 import { InAppBrowserGate } from "@/app/components/in-app-browser-gate"
+import { trackEvent, captureException } from "@/lib/posthog"
 
 type AuthProvidersProps = {
   email: string
@@ -23,12 +24,17 @@ export function AuthProviders({ email, setEmail, loading = false, callbackUrl = 
   const handleGoogleSignIn = async () => {
     try {
       setError("")
+      // Track OAuth login started
+      trackEvent("oauth_login_started", {
+        provider: "google",
+      })
       await signIn("google", {
         callbackUrl,
         redirect: true,
       })
       // Note: With redirect: true, signIn will redirect and not return
     } catch (error: any) {
+      captureException(error, { context: "google_oauth" })
       console.error("Google sign in error:", error)
       setError(error.message || "Failed to sign in with Google")
     }
@@ -42,8 +48,13 @@ export function AuthProviders({ email, setEmail, loading = false, callbackUrl = 
     try {
       setError("")
       await signIn("email", { email, callbackUrl })
+      // Track magic link sent
+      trackEvent("magic_link_sent", {
+        email_domain: email.split("@")[1],
+      })
       setMagicLinkSent(true)
     } catch (error: any) {
+      captureException(error, { context: "magic_link" })
       console.error("Magic link error:", error)
       setError(error.message || "Failed to send magic link")
     }

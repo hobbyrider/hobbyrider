@@ -11,6 +11,7 @@ import toast from "react-hot-toast"
 import { PageTitle, Muted, Text, SmallHeading, LabelText, Small as SmallText, Caption } from "@/app/components/typography"
 import { MarkdownInfo } from "@/app/components/markdown-info"
 import { getProductUrl } from "@/lib/slug"
+import { trackProductSubmit } from "@/lib/posthog"
 
 type Category = {
   id: string
@@ -439,6 +440,8 @@ export default function SubmitPage() {
 
       toast.success("Product submitted successfully!")
       // Redirect to canonical URL format
+      // Track product submission
+      trackProductSubmit(productId, formData.get("name") as string)
       router.push(getProductUrl(slug || null, productId))
     } catch (error: any) {
       console.error("Submit error:", error)

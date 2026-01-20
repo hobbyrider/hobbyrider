@@ -6,6 +6,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { getRelativeTime } from "@/lib/utils"
 import { getProductUrl } from "@/lib/slug"
+import { trackSearch } from "@/lib/posthog"
 
 type SoftwareItem = {
   id: string
@@ -49,6 +50,8 @@ export default function SearchPage() {
       try {
         const searchResults = await searchSoftware(query)
         setResults(searchResults)
+        // Track search query
+        trackSearch(query, searchResults.length)
       } catch (error) {
         console.error("Search error:", error)
         setResults([])

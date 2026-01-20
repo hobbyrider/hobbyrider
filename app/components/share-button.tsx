@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { CopyIcon } from "@/app/components/icons"
 import { getProductFullUrl } from "@/lib/slug"
+import { trackEvent } from "@/lib/posthog"
 
 type ShareButtonProps = {
   productId: string
@@ -22,9 +23,14 @@ export function ShareButton({ productId, productName, productSlug }: ShareButton
 
   const handleShare = async () => {
     const url = shareUrl || `${window.location.origin}/products/product-${productId}` // Fallback
-    
+
     try {
       await navigator.clipboard.writeText(url)
+      // Track product URL copied event
+      trackEvent("product_url_copied", {
+        product_id: productId,
+        product_name: productName,
+      })
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch (err) {
@@ -37,6 +43,11 @@ export function ShareButton({ productId, productName, productSlug }: ShareButton
       textArea.select()
       try {
         document.execCommand("copy")
+        // Track product URL copied event (fallback)
+        trackEvent("product_url_copied", {
+          product_id: productId,
+          product_name: productName,
+        })
         setCopied(true)
         setTimeout(() => setCopied(false), 2000)
       } catch (fallbackErr) {

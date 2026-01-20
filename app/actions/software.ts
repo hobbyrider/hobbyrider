@@ -524,6 +524,122 @@ export async function getAllProductsForAdmin() {
 }
 
 /**
+ * Get all products with stats for visibility management (admin only)
+ */
+export async function getAllProductsWithStats() {
+  const session = await getSession()
+  if (!session?.user?.id) {
+    throw new Error("You must be logged in")
+  }
+
+  // Check if user is admin
+  const user = await prismaAny.user.findUnique({
+    where: { id: session.user.id },
+    select: { isAdmin: true },
+  })
+
+  if (!user?.isAdmin) {
+    throw new Error("Only admins can view all products")
+  }
+
+  const products = await prismaAny.software.findMany({
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      url: true,
+      ownershipStatus: true,
+      seededBy: true,
+      makerId: true,
+      viewCount: true,
+      upvotes: true,
+      makerUser: {
+        select: {
+          id: true,
+          username: true,
+          name: true,
+        },
+      },
+      seededByUser: {
+        select: {
+          id: true,
+          username: true,
+          name: true,
+        },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  })
+
+  return products
+}
+
+/**
+ * Update product stats (viewCount and upvotes) - admin only
+ */
+export async function updateProductStats(
+  productId: string,
+  viewCount: number | null,
+  upvotes: number | null
+) {
+  const session = await getSession()
+  if (!session?.user?.id) {
+    throw new Error("You must be logged in")
+  }
+
+  // Check if user is admin
+  const user = await prismaAny.user.findUnique({
+    where: { id: session.user.id },
+    select: { isAdmin: true },
+  })
+
+  if (!user?.isAdmin) {
+    throw new Error("Only admins can update product stats")
+  }
+
+  // Validate input
+  if (viewCount !== null && (viewCount < 0 || !Number.isInteger(viewCount))) {
+    throw new Error("View count must be a non-negative integer")
+  }
+
+  if (upvotes !== null && (upvotes < 0 || !Number.isInteger(upvotes))) {
+    throw new Error("Upvotes must be a non-negative integer")
+  }
+
+  // Check if product exists
+  const product = await prismaAny.software.findUnique({
+    where: { id: productId },
+    select: { id: true },
+  })
+
+  if (!product) {
+    throw new Error("Product not found")
+  }
+
+  // Update stats (only update provided values)
+  const updateData: any = {}
+  if (viewCount !== null) {
+    updateData.viewCount = viewCount
+  }
+  if (upvotes !== null) {
+    updateData.upvotes = upvotes
+  }
+
+  await prismaAny.software.update({
+    where: { id: productId },
+    data: updateData,
+  })
+
+  // Revalidate relevant paths
+  revalidatePath("/admin")
+  revalidatePath("/admin?tab=visibility")
+  const productPath = await getProductUrlForRevalidation(productId)
+  revalidatePath(productPath)
+  revalidatePath(`/product/${productId}`)
+  revalidatePath("/")
+}
+
+/**
  * Update product ownership status (admin only)
  */
 export async function updateProductOwnershipStatus(

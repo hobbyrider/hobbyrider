@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation"
 import { searchSoftware, getDiscoverData } from "@/app/actions/search"
 import { getRelativeTime } from "@/lib/utils"
 import { getProductUrl } from "@/lib/slug"
+import { trackEvent } from "@/lib/posthog"
 
 type CategoryItem = {
   id: string
@@ -66,6 +67,9 @@ export function SearchModal({
 
   useEffect(() => {
     if (!open) return
+
+    // Track search modal opened
+    trackEvent("search_modal_opened")
 
     // focus input when opening
     const t = setTimeout(() => inputRef.current?.focus(), 50)
@@ -137,7 +141,15 @@ export function SearchModal({
       .slice(0, 8)
   }, [categories])
 
-  const goTo = (href: string) => {
+  const goTo = (href: string, item?: { id: string; name: string }) => {
+    // Track search result click if item provided
+    if (item) {
+      trackEvent("search_result_clicked", {
+        product_id: item.id,
+        product_name: item.name,
+        search_query: trimmed || undefined,
+      })
+    }
     router.push(href)
     onClose()
   }
@@ -224,7 +236,7 @@ export function SearchModal({
                       <li key={item.id} className="group rounded-lg border border-gray-200 bg-white p-4 transition-all hover:border-gray-300 hover:bg-gray-50">
                         <button
                           type="button"
-                          onClick={() => goTo(getProductUrl(item.slug || null, item.id))}
+                          onClick={() => goTo(getProductUrl(item.slug || null, item.id), { id: item.id, name: item.name })}
                           className="w-full text-left"
                         >
                           <div className="flex items-start justify-between gap-4">
@@ -336,7 +348,7 @@ export function SearchModal({
                         <li key={p.id} className="group rounded-lg border border-gray-200 bg-white p-3 transition-all hover:border-gray-300 hover:bg-gray-50">
                           <button
                             type="button"
-                            onClick={() => goTo(getProductUrl(p.slug || null, p.id))}
+                            onClick={() => goTo(getProductUrl(p.slug || null, p.id), { id: p.id, name: p.name })}
                             className="w-full text-left"
                           >
                             <div className="flex items-center justify-between gap-3">

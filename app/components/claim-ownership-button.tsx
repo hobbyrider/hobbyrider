@@ -4,6 +4,7 @@ import { useState, useTransition } from "react"
 import { requestOwnership } from "@/app/actions/ownership"
 import { useRouter, usePathname } from "next/navigation"
 import toast from "react-hot-toast"
+import { trackEvent, captureException } from "@/lib/posthog"
 
 type ClaimOwnershipButtonProps = {
   productId: string
@@ -39,11 +40,17 @@ export function ClaimOwnershipButton({ productId, productName, isLoggedIn = fals
     startTransition(async () => {
       try {
         await requestOwnership(productId, reason)
+        // Track ownership claimed event
+        trackEvent("ownership_claimed", {
+          product_id: productId,
+          product_name: productName,
+        })
         toast.success("Ownership claim submitted! We'll review it soon.")
         setIsOpen(false)
         setReason("")
         router.refresh()
       } catch (error: any) {
+        captureException(error, { context: "ownership_claim", productId })
         toast.error(error.message || "Failed to submit ownership claim")
       }
     })

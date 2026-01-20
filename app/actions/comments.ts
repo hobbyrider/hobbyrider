@@ -6,7 +6,7 @@ import { sanitizeInput } from "@/lib/utils"
 import { getSession } from "@/lib/get-session"
 import { checkRateLimit, RATE_LIMITS } from "@/lib/rate-limit"
 import { sendCommentNotification } from "@/lib/email"
-import { getProductFullUrl } from "@/lib/slug"
+import { getProductFullUrl, getProductUrl } from "@/lib/slug"
 
 function getBaseUrl() {
   if (process.env.NEXTAUTH_URL) {
@@ -65,12 +65,15 @@ export async function createComment(
   })
 
   // Create the comment
-  await prisma.comment.create({
+  const comment = await prisma.comment.create({
     data: {
       content: sanitizedContent,
       author: user?.username || user?.name || "Unknown", // Backward compatibility
       authorId: session.user.id,
       productId,
+    },
+    select: {
+      id: true,
     },
   })
 
@@ -113,6 +116,9 @@ export async function createComment(
   }
 
   revalidatePath(`/product/${productId}`)
+
+  // Return comment ID for tracking
+  return { id: comment.id }
 }
 
 export async function updateComment(
