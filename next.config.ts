@@ -41,10 +41,14 @@ const nextConfig: NextConfig = {
     // Content Security Policy for images (if needed)
     minimumCacheTTL: 60, // Cache optimized images for 60 seconds minimum
   },
+  // Exclude payload-cms from page detection
+  // PayloadCMS is for local development only - not included in production builds
+  // Note: TypeScript exclusion in tsconfig.json and webpack config below handle the exclusion
 }
 
 // Wrap the config with Sentry's config wrapper
 export default withSentryConfig(nextConfig, {
+  // Exclude payload-cms from Sentry source maps (moved to webpack config)
   // For all available options, see:
   // https://www.npmjs.com/package/@sentry/webpack-plugin#options
 
@@ -79,5 +83,8 @@ export default withSentryConfig(nextConfig, {
       // Automatically tree-shake Sentry logger statements to reduce bundle size
       removeDebugLogging: true,
     },
+
+    // Exclude payload-cms routes from Sentry source maps
+    excludeServerRoutes: ['/payload-cms/**'],
   },
 });
