@@ -6,6 +6,7 @@ Guides for resolving common issues and debugging problems.
 
 - **`DATABASE_CONNECTION_FIX.md`** - Database connection troubleshooting
 - **`TROUBLESHOOTING_DATABASE.md`** - Database troubleshooting guide
+- **`CSS_NOT_LOADING.md`** - CSS not loading on custom domain (hobbyrider.io)
 
 ## Adding New Troubleshooting Guides
 

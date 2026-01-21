@@ -80,7 +80,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                     pass: process.env.SMTP_PASSWORD!,
                   },
                 },
-            from: process.env.SMTP_FROM || process.env.EMAIL_FROM || "noreply@hobbyrider.vercel.app",
+            from: process.env.SMTP_FROM || process.env.EMAIL_FROM || "noreply@hobbyrider.io",
             sendVerificationRequest: async ({ identifier, url, provider }) => {
               // Use Resend if API key is available (recommended)
               if (process.env.RESEND_API_KEY) {

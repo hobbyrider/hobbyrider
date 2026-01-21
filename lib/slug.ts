@@ -131,7 +131,7 @@ export function getProductFullUrl(
   id: string,
   baseUrl?: string
 ): string {
-  const base = baseUrl || "https://hobbyrider.vercel.app"
+  const base = baseUrl || "https://hobbyrider.io"
   return `${base}${getProductUrl(slug, id)}`
 }
 

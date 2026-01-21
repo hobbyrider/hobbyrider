@@ -5,6 +5,7 @@
  */
 
 import { Resend } from "resend"
+import { getBaseUrl } from "./metadata"
 
 // Initialize Resend client
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
@@ -234,7 +235,7 @@ export async function sendWelcomeEmail({
         <li>Engaging with the community through comments and upvotes</li>
       </ul>
       <div style="text-align: center; margin: 30px 0;">
-        <a href="https://hobbyrider.vercel.app" style="display: inline-block; background: #171717; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600;">Get Started</a>
+        <a href="${getBaseUrl()}" style="display: inline-block; background: #171717; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600;">Get Started</a>
       </div>
       <p style="color: #999; font-size: 12px; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
         Happy riding! 🚀
@@ -244,7 +245,7 @@ export async function sendWelcomeEmail({
 </html>
   `.trim()
 
-  const text = `Welcome to hobbyrider!\n\nHi ${userName},\n\nThanks for joining hobbyrider! We're excited to have you here.\n\nGet started by discovering amazing software products, submitting your own, and engaging with the community.\n\nVisit: https://hobbyrider.vercel.app`
+  const text = `Welcome to hobbyrider!\n\nHi ${userName},\n\nThanks for joining hobbyrider! We're excited to have you here.\n\nGet started by discovering amazing software products, submitting your own, and engaging with the community.\n\nVisit: ${getBaseUrl()}`
 
   return sendEmail({
     to: userEmail,

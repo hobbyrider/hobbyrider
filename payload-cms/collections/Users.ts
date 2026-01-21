@@ -5,6 +5,7 @@ const Users: CollectionConfig = {
   auth: {
     tokenExpiration: 7200, // 2 hours
     useAPIKey: false,
+    useSessions: false, // Disable sessions to avoid users_sessions table issues
     depth: 0,
     verify: false,
     maxLoginAttempts: 5,

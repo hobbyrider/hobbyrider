@@ -17,7 +17,7 @@ function getBaseUrl() {
   if (process.env.VERCEL_URL) {
     return `https://${process.env.VERCEL_URL}`
   }
-  return "https://hobbyrider.vercel.app"
+  return "https://hobbyrider.io"
 }
 
 export async function generateMetadata({

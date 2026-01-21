@@ -16,7 +16,7 @@ function getBaseUrl() {
   if (process.env.VERCEL_URL) {
     return `https://${process.env.VERCEL_URL}`
   }
-  return "https://hobbyrider.vercel.app"
+  return "https://hobbyrider.io"
 }
 
 // NOTE: We cast Prisma client to `any` to avoid occasional stale Prisma type issues
