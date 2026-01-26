@@ -2,6 +2,9 @@
   "name": "ph-clone",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=20.9.0 <23.0.0"
+  },
   "scripts": {
     "dev": "prisma generate && next dev",
     "dev:clean": "rm -rf .next && prisma generate && next dev",

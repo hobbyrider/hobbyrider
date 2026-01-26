@@ -5,7 +5,6 @@ import { ShareButton } from "@/app/components/share-button"
 import type { SoftwareItem } from "@/app/(main)/page"
 import { CardTitle, Small } from "@/app/components/typography"
 import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { getProductUrl } from "@/lib/slug"
 
 type FeedItemCardProps = {
@@ -93,11 +92,9 @@ export function FeedItemCard({ item, hasUpvoted, isLoggedIn }: FeedItemCardProps
                       <Link
                         key={category.id}
                         href={`/?category=${category.slug}`}
-                        className="focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-gray-700 rounded"
+                        className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-200 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-gray-700"
                       >
-                        <Badge variant="secondary" className="text-xs font-medium cursor-pointer">
-                          {category.name}
-                        </Badge>
+                        {category.name}
                       </Link>
                     ))}
                   </div>
@@ -149,11 +146,9 @@ export function FeedItemCard({ item, hasUpvoted, isLoggedIn }: FeedItemCardProps
                       <Link
                         key={category.id}
                         href={`/?category=${category.slug}`}
-                        className="focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-gray-700 rounded"
+                        className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-200 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-gray-700"
                       >
-                        <Badge variant="secondary" className="text-xs font-medium cursor-pointer">
-                          {category.name}
-                        </Badge>
+                        {category.name}
                       </Link>
                     ))}
                   </div>

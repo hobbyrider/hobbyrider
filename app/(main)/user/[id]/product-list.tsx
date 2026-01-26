@@ -122,7 +122,7 @@ export function ProductList({ products, isOwnProfile }: ProductListProps) {
                 {isOwnProfile && (
                   <div className="flex items-center gap-3 flex-shrink-0">
                     <Link
-                      href={`${getProductUrl(product.slug || null, product.id)}/edit`}
+                      href={`/product/${product.id}/edit`}
                       className="text-sm text-gray-700 hover:text-gray-900 font-medium transition-colors"
                     >
                       Edit
@@ -147,6 +147,7 @@ export function ProductList({ products, isOwnProfile }: ProductListProps) {
           onConfirm={handleDeleteConfirm}
           onCancel={handleDeleteCancel}
           isDeleting={isDeleting}
+          open={!!deletingProductId}
         />
       )}
     </>

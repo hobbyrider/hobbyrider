@@ -18,12 +18,20 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        // Upvote button variants
+        upvote: "bg-white border-2 border-border text-foreground hover:border-input hover:bg-accent",
+        upvoted: "bg-green-50 border-2 border-green-300 text-green-700 hover:bg-green-100 hover:border-green-400",
+        // Success variant
+        success: "bg-green-600 text-white hover:bg-green-700",
       },
       size: {
         default: "h-10 px-4 py-2",
         sm: "h-9 rounded-md px-3",
         lg: "h-11 rounded-md px-8",
         icon: "h-10 w-10",
+        // Upvote specific sizes
+        upvote: "min-w-[100px] py-3 px-4 rounded-xl",
+        upvoteCompact: "h-auto px-0 py-0",
       },
     },
     defaultVariants: {

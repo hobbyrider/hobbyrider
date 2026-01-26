@@ -1,12 +1,21 @@
 "use client"
 
-import { useState } from "react"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
 
 type DeleteConfirmProps = {
   productName: string
   onConfirm: () => void
   onCancel: () => void
   isDeleting?: boolean
+  open: boolean
 }
 
 export function DeleteConfirm({
@@ -14,32 +23,37 @@ export function DeleteConfirm({
   onConfirm,
   onCancel,
   isDeleting = false,
+  open,
 }: DeleteConfirmProps) {
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-        <h3 className="text-lg font-semibold mb-2">Delete Product</h3>
-        <p className="text-gray-600 mb-4">
-          Are you sure you want to delete <strong>{productName}</strong>? This
-          action cannot be undone.
-        </p>
-        <div className="flex gap-3 justify-end">
-          <button
+    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onCancel()}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Delete Product</DialogTitle>
+          <DialogDescription>
+            Are you sure you want to delete <strong>{productName}</strong>? This
+            action cannot be undone.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter className="flex-col-reverse sm:flex-row gap-2 sm:gap-0">
+          <Button
+            variant="outline"
             onClick={onCancel}
             disabled={isDeleting}
-            className="px-4 py-2 rounded-lg border hover:bg-gray-100 transition disabled:opacity-50"
+            className="w-full sm:w-auto"
           >
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="destructive"
             onClick={onConfirm}
             disabled={isDeleting}
-            className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition disabled:opacity-50"
+            className="w-full sm:w-auto"
           >
             {isDeleting ? "Deleting..." : "Delete"}
-          </button>
-        </div>
-      </div>
-    </div>
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 }

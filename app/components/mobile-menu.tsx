@@ -19,9 +19,11 @@ export function MobileMenu() {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <button
+        <Button
           type="button"
-          className="inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white p-2.5 hover:border-gray-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 transition-colors"
+          variant="outline"
+          size="icon"
+          className="h-10 w-10"
           aria-label="Open menu"
           aria-expanded={open}
           suppressHydrationWarning
@@ -30,7 +32,7 @@ export function MobileMenu() {
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 20 20"
             fill="currentColor"
-            className="h-5 w-5 text-gray-700"
+            className="h-5 w-5"
             aria-hidden="true"
           >
             <path
@@ -39,9 +41,9 @@ export function MobileMenu() {
               clipRule="evenodd"
             />
           </svg>
-        </button>
+        </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-[280px] sm:w-[320px] bg-white">
+      <SheetContent side="right" className="w-[280px] sm:w-[320px]">
         <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
         <nav className="flex flex-col gap-1 mt-6">
           {/* Primary CTA - Full width Button */}
@@ -55,75 +57,66 @@ export function MobileMenu() {
 
           {/* Navigation Links */}
           <SheetClose asChild>
-            <Link
-              href="/categories"
-              onClick={handleLinkClick}
-              className="flex items-center px-4 py-3 rounded-lg text-base font-medium text-gray-900 transition-colors hover:bg-gray-100 focus-visible:bg-gray-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
-            >
-              <NavLinkText>Categories</NavLinkText>
-            </Link>
+            <Button asChild variant="ghost" className="w-full justify-start">
+              <Link href="/categories" onClick={handleLinkClick}>
+                <NavLinkText>Categories</NavLinkText>
+              </Link>
+            </Button>
           </SheetClose>
           <SheetClose asChild>
-            <Link
-              href="/pricing"
-              onClick={handleLinkClick}
-              className="flex items-center px-4 py-3 rounded-lg text-base font-medium text-gray-900 transition-colors hover:bg-gray-100 focus-visible:bg-gray-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
-            >
-              <NavLinkText>Pricing</NavLinkText>
-            </Link>
+            <Button asChild variant="ghost" className="w-full justify-start">
+              <Link href="/pricing" onClick={handleLinkClick}>
+                <NavLinkText>Pricing</NavLinkText>
+              </Link>
+            </Button>
           </SheetClose>
           
           {/* Divider before auth actions */}
-          <div className="my-2 border-t border-gray-200"></div>
+          <div className="my-2 border-t border-border"></div>
           
           {/* Auth Actions */}
           {session ? (
             <>
               <SheetClose asChild>
-                <Link
-                  href={`/user/${session.user.username || session.user.id}`}
-                  onClick={handleLinkClick}
-                  className="flex items-center px-4 py-3 rounded-lg text-base font-medium text-gray-900 transition-colors hover:bg-gray-100 focus-visible:bg-gray-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
-                >
-                  <NavLinkText>Profile</NavLinkText>
-                </Link>
+                <Button asChild variant="ghost" className="w-full justify-start">
+                  <Link href={`/user/${session.user.username || session.user.id}`} onClick={handleLinkClick}>
+                    <NavLinkText>Profile</NavLinkText>
+                  </Link>
+                </Button>
               </SheetClose>
               
               {/* Divider before logout */}
-              <div className="my-2 border-t border-gray-200"></div>
+              <div className="my-2 border-t border-border"></div>
               
               {/* Logout - At the bottom */}
               <SheetClose asChild>
-                <button
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start"
                   onClick={() => {
                     handleLinkClick()
                     signOut({ callbackUrl: "/" })
                   }}
-                  className="flex w-full items-center px-4 py-3 rounded-lg text-base font-medium text-gray-900 transition-colors hover:bg-gray-100 focus-visible:bg-gray-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
                 >
                   <NavLinkText>Logout</NavLinkText>
-                </button>
+                </Button>
               </SheetClose>
             </>
           ) : (
             <>
               <SheetClose asChild>
-                <Link
-                  href="/login"
-                  onClick={handleLinkClick}
-                  className="flex items-center px-4 py-3 rounded-lg text-base font-medium text-gray-900 transition-colors hover:bg-gray-100 focus-visible:bg-gray-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
-                >
-                  <NavLinkText>Login</NavLinkText>
-                </Link>
+                <Button asChild variant="ghost" className="w-full justify-start">
+                  <Link href="/login" onClick={handleLinkClick}>
+                    <NavLinkText>Login</NavLinkText>
+                  </Link>
+                </Button>
               </SheetClose>
               <SheetClose asChild>
-                <Link
-                  href="/signup"
-                  onClick={handleLinkClick}
-                  className="flex items-center px-4 py-3 rounded-lg text-base font-medium text-gray-900 border-2 border-gray-300 transition-colors hover:bg-gray-50 hover:border-gray-400 focus-visible:bg-gray-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
-                >
-                  <NavLinkText>Sign up</NavLinkText>
-                </Link>
+                <Button asChild variant="outline" className="w-full justify-start">
+                  <Link href="/signup" onClick={handleLinkClick}>
+                    <NavLinkText>Sign up</NavLinkText>
+                  </Link>
+                </Button>
               </SheetClose>
             </>
           )}

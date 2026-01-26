@@ -8,16 +8,16 @@ import { PageTitle, NavLinkText } from "@/app/components/typography"
 
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur-sm">
+    <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur-sm">
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between gap-2 sm:gap-4 py-2 sm:py-3">
           {/* Logo and primary nav */}
           <div className="flex items-center gap-3 sm:gap-6 flex-shrink-0 min-w-0">
             <Link 
               href="/" 
-              className="hover:text-gray-700 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded flex-shrink-0"
+              className="hover:text-muted-foreground transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded flex-shrink-0"
             >
-              <PageTitle as="span" className="text-xl text-gray-900 truncate">
+              <PageTitle as="span" className="text-xl text-foreground truncate">
                 hobbyrider
               </PageTitle>
             </Link>
@@ -27,21 +27,21 @@ export function SiteHeader() {
             <SearchTrigger />
             <Link
               href="/pricing"
-              className="rounded-lg px-3 py-1.5 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-700"
+              className="rounded-lg px-3 py-1.5 transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
             >
-              <NavLinkText className="text-base text-gray-700">Pricing</NavLinkText>
+              <NavLinkText className="text-base text-foreground">Pricing</NavLinkText>
             </Link>
             <Link
               href="/categories"
-              className="rounded-lg px-3 py-1.5 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-700"
+              className="rounded-lg px-3 py-1.5 transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
             >
-              <NavLinkText className="text-base text-gray-700">Categories</NavLinkText>
+              <NavLinkText className="text-base text-foreground">Categories</NavLinkText>
             </Link>
             <Link
               href="/submit"
-              className="rounded-lg px-3 py-1.5 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-700"
+              className="rounded-lg px-3 py-1.5 transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
             >
-              <NavLinkText className="text-base text-gray-700">Submit a product</NavLinkText>
+              <NavLinkText className="text-base text-foreground">Submit a product</NavLinkText>
             </Link>
           </nav>
         </div>

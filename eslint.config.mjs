@@ -12,8 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
-    // Exclude payload-cms from linting (local development only)
-    "payload-cms/**",
+    // Exclude archived Payload attempts from linting
+    "_archive_payload_attempts/**",
   ]),
 ]);
 

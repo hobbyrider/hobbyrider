@@ -28,7 +28,6 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   // Next.js requires <html> and <body> at root layout
-  // PayloadCMS's RootLayout also renders these, causing nesting
   // suppressHydrationWarning prevents React from throwing errors
   return (
     <html lang="en" suppressHydrationWarning className={inter.variable}>

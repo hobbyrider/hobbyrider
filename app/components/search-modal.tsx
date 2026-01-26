@@ -8,6 +8,14 @@ import { searchSoftware, getDiscoverData } from "@/app/actions/search"
 import { getRelativeTime } from "@/lib/utils"
 import { getProductUrl } from "@/lib/slug"
 import { trackEvent } from "@/lib/posthog"
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
 type CategoryItem = {
   id: string
@@ -119,21 +127,12 @@ export function SearchModal({
     }
   }, [open, trimmed])
 
-  // Close on Escape and prevent background scroll while open
+  // Focus input when opening (Dialog handles Escape and body scroll)
   useEffect(() => {
     if (!open) return
-    const prevOverflow = document.body.style.overflow
-    document.body.style.overflow = "hidden"
-
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose()
-    }
-    window.addEventListener("keydown", onKeyDown)
-    return () => {
-      document.body.style.overflow = prevOverflow
-      window.removeEventListener("keydown", onKeyDown)
-    }
-  }, [open, onClose])
+    const t = setTimeout(() => inputRef.current?.focus(), 50)
+    return () => clearTimeout(t)
+  }, [open])
 
   const popularCategories = useMemo(() => {
     return [...categories]
@@ -154,27 +153,18 @@ export function SearchModal({
     onClose()
   }
 
-  if (!open) return null
-
   return (
-    <div className="fixed inset-0 z-[100]">
-      {/* Overlay */}
-      <button
-        aria-label="Close search"
-        className="absolute inset-0 bg-black/40"
-        onClick={onClose}
-      />
-
-      {/* Modal */}
-      <div className="relative mx-auto mt-12 sm:mt-20 w-[min(920px,calc(100%-1rem))] sm:w-[min(920px,calc(100%-2rem))] rounded-xl sm:rounded-2xl border border-gray-200 bg-white shadow-xl">
+    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
+      <DialogContent className="max-w-[920px] w-[calc(100%-1rem)] sm:w-[calc(100%-2rem)] p-0 gap-0 max-h-[90vh] overflow-hidden flex flex-col top-[5%] sm:top-[8%] translate-y-0 left-[50%] translate-x-[-50%] [&>button.absolute]:hidden">
+        <DialogTitle className="sr-only">Search for products or builders</DialogTitle>
         {/* Search Input Header */}
-        <div className="flex items-center gap-2 sm:gap-3 border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4">
-          <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-lg bg-gray-100">
+        <div className="flex items-center gap-2 sm:gap-3 border-b border-border px-4 sm:px-6 py-3 sm:py-4">
+          <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-lg bg-muted">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 20 20"
               fill="currentColor"
-              className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600"
+              className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground"
               aria-hidden="true"
             >
               <path
@@ -185,23 +175,25 @@ export function SearchModal({
             </svg>
           </div>
 
-          <input
+          <Input
             ref={inputRef}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search for products or builders..."
-            className="flex-1 bg-transparent text-sm sm:text-base text-gray-900 outline-none placeholder:text-gray-500"
+            className="flex-1 border-0 bg-transparent text-sm sm:text-base text-foreground placeholder:text-muted-foreground focus-visible:ring-0 shadow-none"
           />
 
           <div className="flex items-center gap-2">
             {searching && (
-              <span className="text-xs text-gray-500">Searching…</span>
+              <span className="text-xs text-muted-foreground">Searching…</span>
             )}
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="icon"
               onClick={onClose}
               aria-label="Close search"
-              className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
+              className="h-9 w-9 sm:h-10 sm:w-10"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -216,33 +208,34 @@ export function SearchModal({
                   clipRule="evenodd"
                 />
               </svg>
-            </button>
+            </Button>
           </div>
         </div>
 
-        <div className="max-h-[calc(100vh-8rem)] sm:max-h-[70vh] overflow-y-auto">
+        <div className="flex-1 overflow-y-auto">
           {/* Main Content */}
           <div className="px-4 sm:px-6 py-4 sm:py-6 min-w-0">
             {showSearchResults ? (
               <>
                 {results.length === 0 && !searching ? (
                   <div className="py-12 text-center">
-                    <p className="text-sm text-gray-600">No results found for "{trimmed}"</p>
-                    <p className="mt-2 text-xs text-gray-500">Try different keywords or browse categories</p>
+                    <p className="text-sm text-muted-foreground">No results found for "{trimmed}"</p>
+                    <p className="mt-2 text-xs text-muted-foreground">Try different keywords or browse categories</p>
                   </div>
                 ) : (
                   <ul className="space-y-2">
                     {results.slice(0, 3).map((item) => (
-                      <li key={item.id} className="group rounded-lg border border-gray-200 bg-white p-4 transition-all hover:border-gray-300 hover:bg-gray-50">
-                        <button
+                      <li key={item.id} className="group rounded-lg border border-border bg-card p-4 transition-all hover:border-input hover:bg-accent">
+                        <Button
                           type="button"
+                          variant="ghost"
                           onClick={() => goTo(getProductUrl(item.slug || null, item.id), { id: item.id, name: item.name })}
-                          className="w-full text-left"
+                          className="w-full justify-start h-auto p-0 hover:bg-transparent text-left"
                         >
-                          <div className="flex items-start justify-between gap-4">
-                            <div className="flex gap-3 flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-4 w-full">
+                            <div className="flex gap-3 flex-1 min-w-0 text-left">
                               {item.thumbnail && (
-                                <div className="h-12 w-12 flex-shrink-0 rounded-lg overflow-hidden relative bg-white">
+                                <div className="h-12 w-12 flex-shrink-0 rounded-lg overflow-hidden relative bg-background">
                                   <Image
                                     src={item.thumbnail}
                                     alt={item.name}
@@ -253,20 +246,20 @@ export function SearchModal({
                                   />
                                 </div>
                               )}
-                              <div className="flex-1 min-w-0">
+                              <div className="flex-1 min-w-0 text-left">
                                 <div className="flex items-center gap-2 flex-wrap">
-                                  <span className="font-semibold text-gray-900">{item.name}</span>
-                                  <span className="text-xs text-gray-500">
+                                  <span className="font-semibold text-foreground">{item.name}</span>
+                                  <span className="text-xs text-muted-foreground">
                                     {getRelativeTime(item.createdAt)}
                                   </span>
                                 </div>
-                                <p className="mt-1 text-sm text-gray-600 line-clamp-1">{item.tagline}</p>
+                                <p className="mt-1 text-sm text-muted-foreground line-clamp-1 text-left">{item.tagline}</p>
                                 {item.categories?.length > 0 && (
                                   <div className="mt-2 flex flex-wrap gap-1.5">
                                     {item.categories.slice(0, 3).map((c) => (
                                       <span
                                         key={c.id}
-                                        className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700"
+                                        className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-200"
                                       >
                                         {c.name}
                                       </span>
@@ -276,24 +269,22 @@ export function SearchModal({
                               </div>
                             </div>
 
-                            <div className="flex-shrink-0">
-                              <div className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 text-sm">
-                                <span className="font-semibold text-gray-900">{item.upvotes}</span>
-                                <span className="ml-1 text-gray-600">upvotes</span>
-                              </div>
+                            <div className="flex-shrink-0 text-sm text-left">
+                              <span className="font-semibold text-foreground">{item.upvotes}</span>
+                              <span className="ml-1 text-muted-foreground">upvotes</span>
                             </div>
                           </div>
-                        </button>
+                        </Button>
                       </li>
                     ))}
                   </ul>
                 )}
                 {results.length > 3 && (
-                  <div className="mt-4 pt-4 border-t border-gray-200 text-center">
+                  <div className="mt-4 pt-4 border-t border-border text-center">
                     <Link
                       href={`/search?q=${encodeURIComponent(trimmed)}`}
                       onClick={onClose}
-                      className="text-sm font-medium text-gray-700 hover:text-gray-900 underline underline-offset-4"
+                      className="text-sm font-medium text-foreground hover:text-primary underline underline-offset-4"
                     >
                       View all {results.length} results →
                     </Link>
@@ -305,31 +296,33 @@ export function SearchModal({
                 {/* Popular Categories */}
                 <div className="mb-8">
                   <div className="mb-3 flex items-center justify-between">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                       Popular Categories
                     </p>
                     <Link
                       href="/categories"
                       onClick={onClose}
-                      className="text-xs font-medium text-gray-600 transition-colors hover:text-gray-900 hover:underline underline-offset-4"
+                      className="text-xs font-medium text-muted-foreground transition-colors hover:text-foreground hover:underline underline-offset-4"
                     >
                       View all →
                     </Link>
                   </div>
 
                   {discoverLoading ? (
-                    <p className="text-sm text-gray-600">Loading…</p>
+                    <p className="text-sm text-muted-foreground">Loading…</p>
                   ) : (
                     <div className="flex flex-wrap gap-2">
                       {popularCategories.map((c) => (
-                        <button
+                        <Button
                           key={c.id}
                           type="button"
+                          variant="outline"
+                          size="sm"
                           onClick={() => goTo(`/?category=${c.slug}`)}
-                          className="rounded-full border border-gray-300 bg-white px-3.5 py-1.5 text-sm font-medium text-gray-700 transition-all hover:border-gray-400 hover:bg-gray-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
+                          className="rounded-full"
                         >
                           {c.name}
-                        </button>
+                        </Button>
                       ))}
                     </div>
                   )}
@@ -337,24 +330,25 @@ export function SearchModal({
 
                 {/* Top Products */}
                 <div>
-                  <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                  <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                     Top Products
                   </p>
                   {discoverLoading ? (
-                    <p className="text-sm text-gray-600">Loading…</p>
+                    <p className="text-sm text-muted-foreground">Loading…</p>
                   ) : (
                     <ul className="space-y-2">
                       {topProducts.slice(0, 3).map((p) => (
-                        <li key={p.id} className="group rounded-lg border border-gray-200 bg-white p-3 transition-all hover:border-gray-300 hover:bg-gray-50">
-                          <button
+                        <li key={p.id} className="group rounded-lg border border-border bg-card p-3 transition-all hover:border-input hover:bg-accent">
+                          <Button
                             type="button"
+                            variant="ghost"
                             onClick={() => goTo(getProductUrl(p.slug || null, p.id), { id: p.id, name: p.name })}
-                            className="w-full text-left"
+                            className="w-full justify-start h-auto p-0 hover:bg-transparent text-left"
                           >
-                            <div className="flex items-center justify-between gap-3">
-                              <div className="flex items-center gap-3 flex-1 min-w-0">
+                            <div className="flex items-center justify-between gap-3 w-full">
+                              <div className="flex items-center gap-3 flex-1 min-w-0 text-left">
                                 {p.thumbnail && (
-                                  <div className="h-10 w-10 flex-shrink-0 rounded-lg overflow-hidden border border-gray-200 relative">
+                                  <div className="h-10 w-10 flex-shrink-0 rounded-lg overflow-hidden border border-border relative">
                                     <Image
                                       src={p.thumbnail}
                                       alt={p.name}
@@ -365,18 +359,18 @@ export function SearchModal({
                                     />
                                   </div>
                                 )}
-                                <div className="flex-1 min-w-0">
-                                  <div className="font-semibold text-gray-900">{p.name}</div>
-                                  <div className="mt-0.5 text-sm text-gray-600 line-clamp-1">
+                                <div className="flex-1 min-w-0 text-left">
+                                  <div className="font-semibold text-foreground">{p.name}</div>
+                                  <div className="mt-0.5 text-sm text-muted-foreground line-clamp-1">
                                     {p.tagline}
                                   </div>
                                 </div>
                               </div>
-                              <div className="flex-shrink-0 rounded-lg border border-gray-200 bg-gray-50 px-2.5 py-1 text-sm">
-                                <span className="font-semibold text-gray-900">{p.upvotes}</span>
+                              <div className="flex-shrink-0 text-sm text-left">
+                                <span className="font-semibold text-foreground">{p.upvotes}</span>
                               </div>
                             </div>
-                          </button>
+                          </Button>
                         </li>
                       ))}
                     </ul>
@@ -386,8 +380,8 @@ export function SearchModal({
             )}
           </div>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   )
 }
 

@@ -26,6 +26,7 @@ All project documentation is organized in the `docs/` directory:
 - 🏗️ **Architecture** (`docs/architecture/`) - Technical architecture
 - 🔧 **Troubleshooting** (`docs/troubleshooting/`) - Problem resolution
 - 📋 **Planning** (`docs/planning/`) - Roadmap and planning
+- 🎨 **Design System** (`docs/design-system/`) - shadcn/ui design system guide
 
 See [docs/README.md](docs/README.md) for complete documentation index.
 
@@ -33,6 +34,7 @@ See [docs/README.md](docs/README.md) for complete documentation index.
 
 - **Development Setup**: [`docs/setup/DEVELOPMENT.md`](docs/setup/DEVELOPMENT.md)
 - **Deployment Guide**: [`docs/setup/DEPLOYMENT.md`](docs/setup/DEPLOYMENT.md)
+- **Design System**: [`docs/design-system/USAGE_GUIDE.md`](docs/design-system/USAGE_GUIDE.md) - **Read this before building UI**
 - **PostHog Integration**: [`docs/features/POSTHOG_DEVELOPER_GUIDE.md`](docs/features/POSTHOG_DEVELOPER_GUIDE.md)
 - **Sentry Setup**: [`docs/features/SENTRY_SETUP.md`](docs/features/SENTRY_SETUP.md)
 - **Project Roadmap**: [`docs/planning/ROADMAP.md`](docs/planning/ROADMAP.md)

@@ -30,5 +30,5 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules", ".archive", "payload-cms"]
+  "exclude": ["node_modules", ".archive", "_archive_payload_attempts", "scripts"]
 }

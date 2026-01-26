@@ -7,6 +7,8 @@ import Link from "next/link"
 import { UpvoteIcon } from "@/app/components/icons"
 import toast from "react-hot-toast"
 import { trackProductUpvote } from "@/lib/posthog"
+import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
 type UpvoteButtonProps = {
   id: string
@@ -24,7 +26,6 @@ export function UpvoteButton({ id, upvotes, hasUpvoted = false, isLoggedIn = fal
 
   const handleUpvote = () => {
     if (!isLoggedIn) {
-      // Redirect to login page
       router.push(`/login?callbackUrl=${encodeURIComponent(pathname)}`)
       return
     }
@@ -33,10 +34,8 @@ export function UpvoteButton({ id, upvotes, hasUpvoted = false, isLoggedIn = fal
     startTransition(async () => {
       try {
         await upvoteSoftware(id)
-        // Track upvote event
         trackProductUpvote(id, `Product ${id}`)
         router.refresh()
-        // Note: We don't show success toast here as the UI updates immediately
       } catch (err: any) {
         const errorMessage = err.message || "Failed to upvote"
         setError(errorMessage)
@@ -46,61 +45,46 @@ export function UpvoteButton({ id, upvotes, hasUpvoted = false, isLoggedIn = fal
   }
 
   const isDisabled = isPending || !isLoggedIn
+  const ariaLabel = !isLoggedIn
+    ? "Login to upvote"
+    : hasUpvoted
+      ? `Remove upvote (currently ${upvotes} upvotes)`
+      : `Upvote (currently ${upvotes} upvotes)`
   
   // Compact variant for feed cards
   if (variant === "compact") {
     return (
-      <button
+      <Button
         type="button"
         onClick={handleUpvote}
         disabled={isDisabled}
-        className={`flex items-center gap-1.5 transition-colors ${
-          hasUpvoted
-            ? "text-green-600 hover:text-green-700"
-            : "text-gray-600 hover:text-gray-900"
-        } disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 rounded`}
+        variant="ghost"
+        size="upvoteCompact"
+        className={cn(
+          "flex items-center gap-1.5",
+          hasUpvoted && "text-green-600 hover:text-green-700",
+          !hasUpvoted && "text-muted-foreground hover:text-foreground"
+        )}
         title={hasUpvoted ? "Downvote" : "Upvote"}
-        aria-label={
-          !isLoggedIn
-            ? "Login to upvote"
-            : hasUpvoted
-              ? `Downvote (currently ${upvotes} upvotes)`
-              : `Upvote (currently ${upvotes} upvotes)`
-        }
+        aria-label={ariaLabel}
       >
         <UpvoteIcon filled={hasUpvoted} />
         <span className="text-sm font-medium">{upvotes}</span>
-      </button>
+      </Button>
     )
   }
 
   return (
     <div className="flex flex-col items-center gap-1.5">
-      <button
+      <Button
         type="button"
         onClick={handleUpvote}
         disabled={isDisabled}
-        className={`flex flex-col items-center justify-center gap-1 rounded-xl border-2 min-w-[100px] py-3 px-4 transition-all duration-200 ${
-          hasUpvoted
-            ? "bg-green-50 border-green-300 text-green-700 hover:bg-green-100 hover:border-green-400"
-            : isLoggedIn
-            ? "bg-white border-gray-200 text-gray-900 hover:border-gray-300 hover:bg-gray-50"
-            : "bg-white border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50"
-        } disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900`}
-        aria-label={
-          !isLoggedIn
-            ? "Login to upvote"
-            : hasUpvoted
-              ? `Remove upvote (currently ${upvotes} upvotes)`
-              : `Upvote (currently ${upvotes} upvotes)`
-        }
-        title={
-          !isLoggedIn
-            ? "Login to upvote"
-            : hasUpvoted
-              ? "Click to remove your upvote"
-              : "Click to upvote"
-        }
+        variant={hasUpvoted ? "upvoted" : "upvote"}
+        size="upvote"
+        className="flex flex-col items-center justify-center gap-1"
+        aria-label={ariaLabel}
+        title={!isLoggedIn ? "Login to upvote" : hasUpvoted ? "Click to remove your upvote" : "Click to upvote"}
       >
         {hasUpvoted ? (
           <svg
@@ -121,7 +105,7 @@ export function UpvoteButton({ id, upvotes, hasUpvoted = false, isLoggedIn = fal
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 20 20"
             fill="currentColor"
-            className="w-5 h-5 text-gray-600"
+            className="w-5 h-5 text-muted-foreground"
             aria-hidden="true"
           >
             <path
@@ -132,18 +116,18 @@ export function UpvoteButton({ id, upvotes, hasUpvoted = false, isLoggedIn = fal
           </svg>
         )}
         <span className="text-xl font-semibold leading-none">{upvotes}</span>
-        <span className="text-xs font-medium text-gray-600 uppercase tracking-wide">
+        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
           {isPending ? "..." : hasUpvoted ? "Upvoted" : "Upvote"}
         </span>
-      </button>
+      </Button>
       {error && (
-        <p className="text-xs text-red-600 text-center" role="alert">{error}</p>
+        <p className="text-xs text-destructive text-center" role="alert">{error}</p>
       )}
       {!isLoggedIn && (
-        <p className="text-xs text-gray-500 text-center">
+        <p className="text-xs text-muted-foreground text-center">
           <Link 
             href={`/login?callbackUrl=${encodeURIComponent(pathname)}`} 
-            className="underline hover:text-gray-700 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-gray-600 rounded"
+            className="underline hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring rounded"
           >
             Login
           </Link> to upvote

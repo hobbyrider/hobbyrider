@@ -1,6 +1,7 @@
 import { MetadataRoute } from "next"
 import { prisma } from "@/lib/prisma"
 import { getProductUrl, generateSlug } from "@/lib/slug"
+import { getBlogPosts } from "@/lib/payload"
 
 function getBaseUrl() {
   if (process.env.NEXTAUTH_URL) {
@@ -12,53 +13,50 @@ function getBaseUrl() {
   return "https://hobbyrider.io"
 }
 
+/**
+ * Format date to YYYY-MM-DD (date-only format required by Google)
+ */
+function formatDateOnly(date: Date | string): string {
+  const d = typeof date === "string" ? new Date(date) : date
+  const year = d.getFullYear()
+  const month = String(d.getMonth() + 1).padStart(2, "0")
+  const day = String(d.getDate()).padStart(2, "0")
+  return `${year}-${month}-${day}`
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = getBaseUrl()
+  const today = formatDateOnly(new Date())
 
-  // Static pages
+  // Static pages - Google-compliant: only url and lastModified (date-only)
   const staticPages: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
-      lastModified: new Date(),
-      changeFrequency: "daily",
-      priority: 1,
+      lastModified: today,
     },
     {
       url: `${baseUrl}/submit`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.8,
+      lastModified: today,
     },
     {
       url: `${baseUrl}/categories`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.8,
+      lastModified: today,
     },
-    // Blog route disabled (depends on PayloadCMS - see docs/archive/payloadcms/)
-    // {
-    //   url: `${baseUrl}/blog`,
-    //   lastModified: new Date(),
-    //   changeFrequency: "daily",
-    //   priority: 0.7,
-    // },
+    {
+      url: `${baseUrl}/blog`,
+      lastModified: today,
+    },
     {
       url: `${baseUrl}/privacy`,
-      lastModified: new Date(),
-      changeFrequency: "yearly",
-      priority: 0.3,
+      lastModified: today,
     },
     {
       url: `${baseUrl}/terms`,
-      lastModified: new Date(),
-      changeFrequency: "yearly",
-      priority: 0.3,
+      lastModified: today,
     },
     {
       url: `${baseUrl}/pricing`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
+      lastModified: today,
     },
   ]
 
@@ -83,43 +81,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       const canonicalUrl = getProductUrl(canonicalSlug, product.id)
       return {
         url: `${baseUrl}${canonicalUrl}`,
-        lastModified: product.createdAt,
-        changeFrequency: "weekly",
-        priority: 0.7,
+        lastModified: formatDateOnly(product.createdAt),
       }
     })
 
-    // Blog posts from PayloadCMS (currently disabled - see docs/archive/payloadcms/)
-    // When PayloadCMS is re-enabled, uncomment this section
-    const blogPages: MetadataRoute.Sitemap = []
-    // try {
-    //   const { getPayload } = await import('payload')
-    //   const configPromise = await import('@/payload.config')
-    //   const payload = await getPayload({ config: await configPromise.default })
-    //   
-    //   const { docs: blogPosts } = await payload.find({
-    //     collection: 'blog-posts',
-    //     where: {
-    //       status: {
-    //         equals: 'published',
-    //       },
-    //     },
-    //     select: {
-    //       slug: true,
-    //       updatedAt: true,
-    //     },
-    //     limit: 1000,
-    //   })
-    //
-    //   blogPages = blogPosts.map((post: any) => ({
-    //     url: `${baseUrl}/blog/${post.slug}`,
-    //     lastModified: post.updatedAt || new Date(),
-    //     changeFrequency: "monthly",
-    //     priority: 0.6,
-    //   }))
-    // } catch (error) {
-    //   console.warn('Could not fetch blog posts for sitemap:', error)
-    // }
+    // Blog posts from PayloadCMS
+    let blogPages: MetadataRoute.Sitemap = []
+    try {
+      const response = await getBlogPosts({ limit: 1000 })
+      blogPages = response.docs.map((post) => ({
+        url: `${baseUrl}/blog/${post.slug}`,
+        lastModified: formatDateOnly(post.updatedAt || post.createdAt || new Date()),
+      }))
+    } catch (error) {
+      console.warn("Could not fetch blog posts for sitemap:", error)
+    }
 
     // Category pages
     const categories = await prisma.category.findMany({
@@ -130,9 +106,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     const categoryPages: MetadataRoute.Sitemap = categories.map((category) => ({
       url: `${baseUrl}/category/${category.slug}`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.6,
+      lastModified: today,
     }))
 
     return [...staticPages, ...productPages, ...categoryPages, ...blogPages]

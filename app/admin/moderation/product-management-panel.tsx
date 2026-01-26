@@ -167,7 +167,7 @@ export function ProductManagementPanel({ initialProducts }: ProductManagementPan
                   <td className="px-4 py-3 whitespace-nowrap">
                     <div className="flex gap-2">
                       <Link
-                        href={`${getProductUrl(product.slug || generateSlug(product.name), product.id)}/edit`}
+                        href={`/product/${product.id}/edit`}
                         className="px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition-colors"
                       >
                         Edit

@@ -122,11 +122,35 @@
   animation: loading-progress 1.5s ease-out infinite;
 }
 
+@theme {
+  /* Color mappings for Tailwind v4 - maps CSS variables to theme colors */
+  /* Using @theme (not inline) because these values change in dark mode */
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+}
+
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  /* Static values that don't change - use inline for better performance */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  --radius: var(--radius);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -171,6 +195,24 @@ body {
 /* Refined link styles */
 a {
   transition: color 200ms ease;
+}
+
+/* Prevent default button grey backgrounds in search modal */
+[role="dialog"] button:not([class*="bg-"]):not(.bg-white):not(.bg-gray),
+[role="dialog"] button[class*="bg-transparent"] {
+  background-color: transparent !important;
+}
+
+[role="dialog"] button:active:not([class*="bg-"]),
+[role="dialog"] button:focus:not([class*="bg-"]) {
+  background-color: transparent !important;
+}
+
+/* Allow explicit backgrounds */
+[role="dialog"] button[class*="bg-white"],
+[role="dialog"] button[class*="bg-gray-100"],
+[role="dialog"] button[class*="bg-gray-50"] {
+  background-color: revert;
 }
 
 /* Better focus states for all interactive elements */

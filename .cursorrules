@@ -46,3 +46,44 @@
 - Use Next.js App Router conventions
 - Follow existing patterns in the codebase
 - Use `cn()` utility from `lib/cn.ts` for className merging
+
+## Design System Protection (CRITICAL)
+
+**The global design system is PROTECTED and must NOT be modified unless explicitly requested.**
+
+### Protected Files - DO NOT MODIFY:
+- `app/globals.css` - Contains all design tokens, CSS variables, and global styles
+  - **NEVER** modify this file unless:
+    - User explicitly requests a design system upgrade
+    - Fixing a critical bug that breaks the design system
+    - User explicitly approves the change
+- `app/components/typography.tsx` - Typography components (only modify to add new components or fix bugs)
+- `components/ui/*.tsx` - shadcn/ui components (button, badge, input, etc.)
+  - **NEVER** modify these files unless:
+    - User explicitly requests changes to shadcn components
+    - Fixing critical bugs
+    - User explicitly approves the change
+
+### Rules for Feature Development:
+- **DO**: Use existing typography components, design tokens (CSS variables), and existing patterns
+- **DON'T**: 
+  - Modify `app/globals.css` without explicit permission
+  - Add global CSS rules that affect the entire application
+  - Override design tokens
+  - Use `prose` classes or similar that add default styles (bullet points, blue links, etc.)
+  - Add global link styles (no-underline, color changes)
+  - Add global list styles (list-style, padding, margin)
+
+### When Adding New Features:
+- Use scoped Tailwind classes for component-specific styling
+- Use design tokens (CSS variables) for colors and spacing
+- Follow existing component patterns in the codebase
+- Test that your changes don't affect other pages/components
+
+### Design System Changes:
+- Only modify the design system when explicitly requested by the user
+- Document any design system changes
+- Test thoroughly across all pages before deployment
+
+See `docs/architecture/DESIGN_SYSTEM_PROTECTION.md` for full details.
+See `docs/architecture/SHADCN_DESIGN_SYSTEM.md` for shadcn/ui component configuration.
