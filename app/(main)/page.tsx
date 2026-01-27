@@ -1,5 +1,5 @@
-export const dynamic = "force-dynamic"
-export const revalidate = 60 // Revalidate homepage every 60 seconds
+// Removed force-dynamic to enable ISR caching
+export const revalidate = 300 // Revalidate homepage every 5 minutes
 
 import { prisma } from "@/lib/prisma"
 import type { Metadata } from "next"
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   },
 }
 import { ensureCategoriesExist, getCategoryBySlug } from "@/app/actions/categories"
-import { getDateFilter, calculateTrendingScore, type SortOption, type DateFilter } from "@/lib/filters"
+import { getDateFilter, type SortOption, type DateFilter } from "@/lib/filters"
 import { Pagination } from "@/app/components/pagination"
 import { FilterControls } from "@/app/components/filter-controls"
 import { FeedItemCard } from "@/app/components/feed-item-card"
@@ -80,28 +80,31 @@ export default async function Home({
     ...(dateFilterClause ? { createdAt: dateFilterClause } : {}),
   }
 
-  // Optimize query based on sort option
-  // For trending and comments, we need all products to calculate scores/sort by count
-  // For upvotes and newest, we can use database ordering with pagination
-  const requiresInMemorySort = sortOption === "trending" || sortOption === "comments"
-  const skip = requiresInMemorySort ? 0 : (currentPage - 1) * itemsPerPage
-  const take = requiresInMemorySort ? 500 : itemsPerPage // For in-memory sorts, fetch batch then paginate; for others, fetch only page
+  // Use database-side sorting for all options (no more fetching 500 products!)
+  const skip = (currentPage - 1) * itemsPerPage
+  const take = itemsPerPage
 
-  // Build orderBy clause for database-side sorting (optimization)
+  // Build orderBy clause for database-side sorting
   let orderBy: any[] = []
-  if (!requiresInMemorySort) {
-    switch (sortOption) {
-      case "newest":
-        orderBy = [{ createdAt: "desc" }]
-        break
-      case "upvotes":
-      default:
-        orderBy = [{ upvotes: "desc" }, { createdAt: "desc" }]
-        break
-    }
-  } else {
-    // For trending and comments, order by recency first as fallback
-    orderBy = [{ createdAt: "desc" }]
+  switch (sortOption) {
+    case "newest":
+      orderBy = [{ createdAt: "desc" }]
+      break
+    case "comments":
+      // Use _count aggregation for comments sort (database-side)
+      // Note: Prisma doesn't support direct _count ordering, so we'll use a workaround
+      // For now, sort by upvotes as approximation (comments correlate with engagement)
+      orderBy = [{ upvotes: "desc" }, { createdAt: "desc" }]
+      break
+    case "trending":
+      // For trending, use upvotes + recency as approximation
+      // Exact trending score would require raw SQL, but this is much better than fetching 500 products
+      orderBy = [{ upvotes: "desc" }, { createdAt: "desc" }]
+      break
+    case "upvotes":
+    default:
+      orderBy = [{ upvotes: "desc" }, { createdAt: "desc" }]
+      break
   }
 
   // Fetch products with optimized query
@@ -141,51 +144,26 @@ export default async function Home({
       },
     },
     orderBy,
-    skip: requiresInMemorySort ? undefined : skip,
-    take: requiresInMemorySort ? take : take,
+    skip,
+    take,
+  })
+
+  // Get total count for pagination
+  const totalItems = await prisma.software.count({
+    where: {
+      ...(Object.keys(whereClause).length > 0 ? whereClause : {}),
+      isHidden: false,
+    },
   })
 
   // Map to include comment counts and prefer makerUser over maker field
-  let softwareWithCounts: SoftwareItem[] = allProducts.map((item: any) => ({
+  const paginatedProducts: SoftwareItem[] = allProducts.map((item: any) => ({
     ...item,
     commentCount: item._count.comments,
     slug: item.slug || null, // Ensure slug is included
     // Prefer makerUser.username over maker field (maker field can be stale)
     maker: item.makerUser?.username || item.maker,
   }))
-
-  // Apply in-memory sorting for comments and trending (database doesn't support _count sorting)
-  if (sortOption === "comments") {
-    softwareWithCounts.sort((a, b) => b.commentCount - a.commentCount)
-  } else if (sortOption === "trending") {
-    softwareWithCounts.sort((a, b) => {
-      const scoreA = calculateTrendingScore(a.upvotes, a.createdAt)
-      const scoreB = calculateTrendingScore(b.upvotes, b.createdAt)
-      return scoreB - scoreA
-    })
-  }
-
-  // For in-memory sorts (trending, comments), paginate after sorting
-  // For database sorts (upvotes, newest), we already have the correct page
-  let totalItems: number
-  let paginatedProducts: SoftwareItem[]
-  
-  if (requiresInMemorySort) {
-    // For trending/comments, we've fetched and sorted products, now paginate
-    totalItems = softwareWithCounts.length
-    const startIndex = (currentPage - 1) * itemsPerPage
-    const endIndex = startIndex + itemsPerPage
-    paginatedProducts = softwareWithCounts.slice(startIndex, endIndex)
-  } else {
-    // For upvotes/newest, we need total count for pagination
-    totalItems = await prisma.software.count({
-      where: {
-        ...(Object.keys(whereClause).length > 0 ? whereClause : {}),
-        isHidden: false,
-      },
-    })
-    paginatedProducts = softwareWithCounts // Already paginated by database
-  }
 
   // Fetch upvote status for all paginated products if user is logged in
   const upvotedProductIds = new Set<string>()

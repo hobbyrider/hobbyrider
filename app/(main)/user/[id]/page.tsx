@@ -11,7 +11,8 @@ import { getFollowCounts, getFollowStatus } from "@/app/actions/follow"
 import { getRelativeTime } from "@/lib/utils"
 import type { Metadata } from "next"
 
-export const dynamic = "force-dynamic"
+// Removed force-dynamic to enable ISR caching
+export const revalidate = 300 // Revalidate user pages every 5 minutes
 
 function getBaseUrl() {
   if (process.env.NEXTAUTH_URL) {

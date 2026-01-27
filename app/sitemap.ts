@@ -1,4 +1,5 @@
 import { MetadataRoute } from "next"
+import { unstable_cache } from "next/cache"
 import { prisma } from "@/lib/prisma"
 import { getProductUrl, generateSlug } from "@/lib/slug"
 import { getBlogPosts } from "@/lib/payload"
@@ -24,44 +25,45 @@ function formatDateOnly(date: Date | string): string {
   return `${year}-${month}-${day}`
 }
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = getBaseUrl()
-  const today = formatDateOnly(new Date())
+// Cached sitemap generator - caches for 1 hour to reduce DB operations
+const getCachedSitemap = unstable_cache(
+  async (): Promise<MetadataRoute.Sitemap> => {
+    const baseUrl = getBaseUrl()
+    const today = formatDateOnly(new Date())
 
-  // Static pages - Google-compliant: only url and lastModified (date-only)
-  const staticPages: MetadataRoute.Sitemap = [
-    {
-      url: baseUrl,
-      lastModified: today,
-    },
-    {
-      url: `${baseUrl}/submit`,
-      lastModified: today,
-    },
-    {
-      url: `${baseUrl}/categories`,
-      lastModified: today,
-    },
-    {
-      url: `${baseUrl}/blog`,
-      lastModified: today,
-    },
-    {
-      url: `${baseUrl}/privacy`,
-      lastModified: today,
-    },
-    {
-      url: `${baseUrl}/terms`,
-      lastModified: today,
-    },
-    {
-      url: `${baseUrl}/pricing`,
-      lastModified: today,
-    },
-  ]
+    // Static pages - Google-compliant: only url and lastModified (date-only)
+    const staticPages: MetadataRoute.Sitemap = [
+      {
+        url: baseUrl,
+        lastModified: today,
+      },
+      {
+        url: `${baseUrl}/submit`,
+        lastModified: today,
+      },
+      {
+        url: `${baseUrl}/categories`,
+        lastModified: today,
+      },
+      {
+        url: `${baseUrl}/blog`,
+        lastModified: today,
+      },
+      {
+        url: `${baseUrl}/privacy`,
+        lastModified: today,
+      },
+      {
+        url: `${baseUrl}/terms`,
+        lastModified: today,
+      },
+      {
+        url: `${baseUrl}/pricing`,
+        lastModified: today,
+      },
+    ]
 
-  // Dynamic product pages (using canonical URLs)
-  try {
+    // Dynamic product pages (using canonical URLs)
     const products = await prisma.software.findMany({
       where: {
         isHidden: false,
@@ -110,9 +112,30 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }))
 
     return [...staticPages, ...productPages, ...categoryPages, ...blogPages]
+  },
+  ['sitemap'], // Cache key
+  {
+    revalidate: 3600, // Cache for 1 hour (3600 seconds)
+    tags: ['sitemap'], // For manual revalidation if needed
+  }
+)
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  try {
+    return await getCachedSitemap()
   } catch (error) {
     console.error("Error generating sitemap:", error)
-    // Return at least static pages if database query fails
-    return staticPages
+    // Return at least static pages if cache fails
+    const baseUrl = getBaseUrl()
+    const today = formatDateOnly(new Date())
+    return [
+      { url: baseUrl, lastModified: today },
+      { url: `${baseUrl}/submit`, lastModified: today },
+      { url: `${baseUrl}/categories`, lastModified: today },
+      { url: `${baseUrl}/blog`, lastModified: today },
+      { url: `${baseUrl}/privacy`, lastModified: today },
+      { url: `${baseUrl}/terms`, lastModified: today },
+      { url: `${baseUrl}/pricing`, lastModified: today },
+    ]
   }
 }

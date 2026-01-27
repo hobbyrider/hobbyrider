@@ -24,8 +24,8 @@ import { extractIdFromSlugId, getProductUrl, getProductFullUrl, isCanonicalSlugI
 import { getProductOGImage, buildOpenGraphMetadata, buildTwitterMetadata, truncateText } from "@/lib/metadata"
 import { ProductViewTracker } from "@/app/components/product-view-tracker"
 
-export const dynamic = "force-dynamic"
-export const revalidate = 60 // Revalidate product pages every 60 seconds
+// Removed force-dynamic to enable ISR caching
+export const revalidate = 600 // Revalidate product pages every 10 minutes
 
 // Helper function to get base URL
 function getBaseUrl(): string {

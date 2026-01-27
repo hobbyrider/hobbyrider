@@ -7,7 +7,7 @@ import { prisma } from "@/lib/prisma"
 import type { Metadata } from "next"
 import { CategoryViewTracker } from "@/app/components/category-view-tracker"
 
-export const dynamic = "force-dynamic"
+// Removed force-dynamic to enable ISR caching
 export const revalidate = 300 // Revalidate category pages every 5 minutes
 
 function getBaseUrl() {
