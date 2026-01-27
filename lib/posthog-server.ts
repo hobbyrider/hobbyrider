@@ -11,6 +11,11 @@ let posthogClient: PostHog | null = null
  * Get or create PostHog client instance (server-side)
  */
 export function getPostHogClient(): PostHog | null {
+  // Only initialize in production (skip localhost/development)
+  if (process.env.NODE_ENV !== "production") {
+    return null
+  }
+  
   // Only initialize if API key is provided
   if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) {
     return null

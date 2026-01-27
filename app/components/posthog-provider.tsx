@@ -18,7 +18,8 @@ function PostHogInner({ children }: { children: React.ReactNode }) {
     // - Pageviews are automatically tracked on route changes
     // - All components can import and use PostHog functions from @/lib/posthog
     // - See docs/features/POSTHOG_DEVELOPER_GUIDE.md for integration guidelines
-    if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_POSTHOG_KEY) {
+    // Only initialize PostHog in production (skip localhost/development)
+    if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_POSTHOG_KEY && process.env.NODE_ENV === "production") {
       posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
         api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com",
         // Capture pageviews automatically
@@ -41,7 +42,8 @@ function PostHogInner({ children }: { children: React.ReactNode }) {
 
   // Track pageviews on route change
   useEffect(() => {
-    if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_POSTHOG_KEY) {
+    // Only track in production
+    if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_POSTHOG_KEY && process.env.NODE_ENV === "production") {
       const url = pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : "")
       
       // Try to capture pageview - PostHog will queue if not ready yet

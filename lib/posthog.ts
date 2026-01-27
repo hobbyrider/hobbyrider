@@ -9,7 +9,8 @@ import posthog from "posthog-js"
  * Track a custom event
  */
 export function trackEvent(eventName: string, properties?: Record<string, any>) {
-  if (typeof window !== "undefined") {
+  // Only track in production
+  if (typeof window !== "undefined" && process.env.NODE_ENV === "production") {
     // Check if PostHog is loaded, if not, wait a bit and try again
     if (posthog.__loaded) {
       posthog.capture(eventName, properties)
@@ -30,7 +31,8 @@ export function trackEvent(eventName: string, properties?: Record<string, any>) 
  * Uses user ID as distinct_id and sets person properties
  */
 export function identifyUser(userId: string, properties?: Record<string, any>) {
-  if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_POSTHOG_KEY) {
+  // Only identify in production
+  if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_POSTHOG_KEY && process.env.NODE_ENV === "production") {
     try {
       if (posthog.__loaded) {
         posthog.identify(userId, properties)
@@ -48,7 +50,8 @@ export function identifyUser(userId: string, properties?: Record<string, any>) {
  * Reset user identification (call on logout)
  */
 export function resetUser() {
-  if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_POSTHOG_KEY) {
+  // Only reset in production
+  if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_POSTHOG_KEY && process.env.NODE_ENV === "production") {
     try {
       if (posthog.__loaded) {
         posthog.reset()
@@ -78,7 +81,8 @@ export function captureException(error: Error | unknown, properties?: Record<str
  * Get the current PostHog distinct ID (useful for passing to server-side)
  */
 export function getDistinctId(): string | undefined {
-  if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_POSTHOG_KEY) {
+  // Only get ID in production
+  if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_POSTHOG_KEY && process.env.NODE_ENV === "production") {
     try {
       if (posthog.__loaded) {
         return posthog.get_distinct_id()
@@ -94,7 +98,8 @@ export function getDistinctId(): string | undefined {
  * Get the current PostHog session ID (useful for passing to server-side)
  */
 export function getSessionId(): string | undefined {
-  if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_POSTHOG_KEY) {
+  // Only get session ID in production
+  if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_POSTHOG_KEY && process.env.NODE_ENV === "production") {
     try {
       if (posthog.__loaded) {
         return posthog.get_session_id()
@@ -110,7 +115,8 @@ export function getSessionId(): string | undefined {
  * Set user properties
  */
 export function setUserProperties(properties: Record<string, any>) {
-  if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_POSTHOG_KEY) {
+  // Only set properties in production
+  if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_POSTHOG_KEY && process.env.NODE_ENV === "production") {
     try {
       if (posthog.__loaded) {
         posthog.setPersonProperties(properties)

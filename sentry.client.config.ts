@@ -8,7 +8,8 @@
 import * as Sentry from "@sentry/nextjs"
 
 // Only initialize Sentry in browser context, not in edge runtime
-if (typeof window !== "undefined") {
+// Skip initialization in development/localhost
+if (typeof window !== "undefined" && process.env.NODE_ENV === "production") {
   Sentry.init({
     dsn: process.env.NEXT_PUBLIC_SENTRY_DSN || "https://83f51bceb33bdb41982a70ab5191c954@o4510739808124928.ingest.de.sentry.io/4510739814023248",
 

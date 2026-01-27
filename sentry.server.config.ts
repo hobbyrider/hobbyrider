@@ -7,7 +7,9 @@
 
 import * as Sentry from "@sentry/nextjs";
 
-Sentry.init({
+// Only initialize Sentry in production
+if (process.env.NODE_ENV === "production") {
+  Sentry.init({
   dsn: process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN || "https://83f51bceb33bdb41982a70ab5191c954@o4510739808124928.ingest.de.sentry.io/4510739814023248",
 
   // Disable performance tracing - PostHog handles this
@@ -25,4 +27,5 @@ Sentry.init({
   // Enable sending user PII (Personally Identifiable Information)
   // https://docs.sentry.io/platforms/javascript/guides/nextjs/configuration/options/#sendDefaultPii
   sendDefaultPii: true,
-});
+  })
+}
