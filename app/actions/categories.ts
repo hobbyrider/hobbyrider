@@ -8,32 +8,83 @@ export async function getAllCategories() {
   })
 }
 
-export async function getCategoryBySlug(slug: string) {
-  return await prisma.category.findUnique({
+export async function getCategoryBySlug(
+  slug: string,
+  options?: {
+    page?: number
+    limit?: number
+  }
+) {
+  const page = options?.page || 1
+  const limit = options?.limit || 20
+  const skip = (page - 1) * limit
+
+  // Get category metadata (without products)
+  const category = await prisma.category.findUnique({
     where: { slug },
-    include: {
-      products: {
-        orderBy: [{ upvotes: "desc" }, { createdAt: "desc" }],
-        select: {
-          id: true,
-          name: true,
-          slug: true, // Include slug for canonical URLs
-          tagline: true,
-          url: true,
-          maker: true,
-          thumbnail: true,
-          upvotes: true,
-          viewCount: true,
-          createdAt: true,
-          _count: {
-            select: {
-              comments: true,
-            },
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      description: true,
+    },
+  })
+
+  if (!category) {
+    return null
+  }
+
+  // Get paginated products separately
+  const [products, totalCount] = await Promise.all([
+    prisma.software.findMany({
+      where: {
+        categories: {
+          some: {
+            slug,
+          },
+        },
+        isHidden: false,
+      },
+      orderBy: [{ upvotes: "desc" }, { createdAt: "desc" }],
+      select: {
+        id: true,
+        name: true,
+        slug: true, // Include slug for canonical URLs
+        tagline: true,
+        url: true,
+        maker: true,
+        thumbnail: true,
+        upvotes: true,
+        viewCount: true,
+        createdAt: true,
+        _count: {
+          select: {
+            comments: true,
           },
         },
       },
-    },
-  })
+      skip,
+      take: limit,
+    }),
+    prisma.software.count({
+      where: {
+        categories: {
+          some: {
+            slug,
+          },
+        },
+        isHidden: false,
+      },
+    }),
+  ])
+
+  return {
+    ...category,
+    products,
+    totalCount,
+    currentPage: page,
+    totalPages: Math.ceil(totalCount / limit),
+  }
 }
 
 export async function ensureCategoriesExist() {

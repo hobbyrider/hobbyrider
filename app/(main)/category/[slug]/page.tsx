@@ -6,6 +6,147 @@ import { getSession } from "@/lib/get-session"
 import { prisma } from "@/lib/prisma"
 import type { Metadata } from "next"
 import { CategoryViewTracker } from "@/app/components/category-view-tracker"
+// Simple pagination component for category pages
+function CategoryPagination({
+  currentPage,
+  totalPages,
+  categorySlug,
+}: {
+  currentPage: number
+  totalPages: number
+  categorySlug: string
+}) {
+  const getPageUrl = (page: number) => {
+    if (page === 1) {
+      return `/category/${categorySlug}`
+    }
+    return `/category/${categorySlug}?page=${page}`
+  }
+
+  return (
+    <nav className="flex items-center justify-center gap-1 sm:gap-2 flex-wrap" aria-label="Pagination">
+      {/* Previous Button */}
+      {currentPage > 1 ? (
+        <Link
+          href={getPageUrl(currentPage - 1)}
+          className="inline-flex items-center gap-1 sm:gap-1.5 rounded-lg border border-gray-300 bg-white px-2.5 sm:px-3.5 py-2 text-xs sm:text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:border-gray-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            className="h-3 w-3 sm:h-4 sm:w-4"
+            aria-hidden="true"
+          >
+            <path
+              fillRule="evenodd"
+              d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z"
+              clipRule="evenodd"
+            />
+          </svg>
+          <span className="hidden sm:inline">Previous</span>
+        </Link>
+      ) : (
+        <span className="inline-flex items-center gap-1 sm:gap-1.5 rounded-lg border border-gray-200 bg-gray-50 px-2.5 sm:px-3.5 py-2 text-xs sm:text-sm font-medium text-gray-400 cursor-not-allowed">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            className="h-3 w-3 sm:h-4 sm:w-4"
+            aria-hidden="true"
+          >
+            <path
+              fillRule="evenodd"
+              d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z"
+              clipRule="evenodd"
+            />
+          </svg>
+          <span className="hidden sm:inline">Previous</span>
+        </span>
+      )}
+
+      {/* Page Numbers */}
+      <div className="flex items-center gap-1">
+        {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+          let pageNum: number
+          if (totalPages <= 7) {
+            pageNum = i + 1
+          } else if (currentPage <= 4) {
+            pageNum = i + 1
+          } else if (currentPage >= totalPages - 3) {
+            pageNum = totalPages - 6 + i
+          } else {
+            pageNum = currentPage - 3 + i
+          }
+
+          const isActive = pageNum === currentPage
+
+          return (
+            <Link
+              key={pageNum}
+              href={getPageUrl(pageNum)}
+              className={`inline-flex items-center justify-center min-w-[2rem] sm:min-w-[2.5rem] px-2 sm:px-3 py-2 rounded-lg border text-xs sm:text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 ${
+                isActive
+                  ? "bg-gray-900 text-white border-gray-900"
+                  : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50 hover:border-gray-400"
+              }`}
+              aria-label={`Go to page ${pageNum}`}
+              aria-current={isActive ? "page" : undefined}
+            >
+              {pageNum}
+            </Link>
+          )
+        })}
+      </div>
+
+      {/* Next Button */}
+      {currentPage < totalPages ? (
+        <Link
+          href={getPageUrl(currentPage + 1)}
+          className="inline-flex items-center gap-1 sm:gap-1.5 rounded-lg border border-gray-300 bg-white px-2.5 sm:px-3.5 py-2 text-xs sm:text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:border-gray-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
+        >
+          <span className="hidden sm:inline">Next</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            className="h-3 w-3 sm:h-4 sm:w-4"
+            aria-hidden="true"
+          >
+            <path
+              fillRule="evenodd"
+              d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+              clipRule="evenodd"
+            />
+          </svg>
+        </Link>
+      ) : (
+        <span className="inline-flex items-center gap-1 sm:gap-1.5 rounded-lg border border-gray-200 bg-gray-50 px-2.5 sm:px-3.5 py-2 text-xs sm:text-sm font-medium text-gray-400 cursor-not-allowed">
+          <span className="hidden sm:inline">Next</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            className="h-3 w-3 sm:h-4 sm:w-4"
+            aria-hidden="true"
+          >
+            <path
+              fillRule="evenodd"
+              d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+              clipRule="evenodd"
+            />
+          </svg>
+        </span>
+      )}
+
+      {/* Page Info */}
+      <div className="ml-2 sm:ml-4 text-xs sm:text-sm text-gray-600 whitespace-nowrap">
+        Page <span className="font-medium text-gray-900">{currentPage}</span> of{" "}
+        <span className="font-medium text-gray-900">{totalPages}</span>
+      </div>
+    </nav>
+  )
+}
 
 // Removed force-dynamic to enable ISR caching
 export const revalidate = 300 // Revalidate category pages every 5 minutes
@@ -26,7 +167,8 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>
 }): Promise<Metadata> {
   const { slug } = await params
-  const category = await getCategoryBySlug(slug)
+  // Get category metadata only (no products needed for metadata)
+  const category = await getCategoryBySlug(slug, { page: 1, limit: 1 })
 
   if (!category) {
     return {
@@ -56,12 +198,21 @@ export async function generateMetadata({
 
 export default async function CategoryPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>
+  searchParams: Promise<{ page?: string }>
 }) {
   const { slug } = await params
+  const { page } = await searchParams
+  const currentPage = Math.max(1, parseInt(page || "1", 10))
+  const itemsPerPage = 20
+
   const session = await getSession()
-  const category = await getCategoryBySlug(slug)
+  const category = await getCategoryBySlug(slug, {
+    page: currentPage,
+    limit: itemsPerPage,
+  })
 
   if (!category) {
     notFound()
@@ -104,42 +255,55 @@ export default async function CategoryPage({
             Curated, community-ranked products directory. Built for builders, by builders.
           </p>
           <p className="text-sm text-gray-600">
-            {category.products.length}{" "}
-            {category.products.length === 1 ? "product" : "products"}
+            {category.totalCount}{" "}
+            {category.totalCount === 1 ? "product" : "products"}
           </p>
         </header>
 
         <section>
-          {category.products.length === 0 ? (
+          {category.totalCount === 0 ? (
             <div className="rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 p-12 text-center">
               <p className="text-base text-gray-600">
                 No products in this category yet.
               </p>
             </div>
           ) : (
-            <ul className="space-y-3">
-              {category.products.map((product) => (
-                <FeedItemCard
-                  key={product.id}
-                  item={{
-                    id: product.id,
-                    name: product.name,
-                    slug: product.slug || null, // Include slug for canonical URLs
-                    tagline: product.tagline,
-                    url: product.url,
-                    maker: product.maker,
-                    thumbnail: product.thumbnail,
-                    upvotes: product.upvotes,
-                    viewCount: product.viewCount || 0,
-                    commentCount: product._count.comments,
-                    categories: [],
-                    createdAt: product.createdAt,
-                  }}
-                  hasUpvoted={upvotedProductIds.has(product.id)}
-                  isLoggedIn={!!session?.user?.id}
-                />
-              ))}
-            </ul>
+            <>
+              <ul className="space-y-3">
+                {category.products.map((product) => (
+                  <FeedItemCard
+                    key={product.id}
+                    item={{
+                      id: product.id,
+                      name: product.name,
+                      slug: product.slug || null, // Include slug for canonical URLs
+                      tagline: product.tagline,
+                      url: product.url,
+                      maker: product.maker,
+                      thumbnail: product.thumbnail,
+                      upvotes: product.upvotes,
+                      viewCount: product.viewCount || 0,
+                      commentCount: product._count.comments,
+                      categories: [],
+                      createdAt: product.createdAt,
+                    }}
+                    hasUpvoted={upvotedProductIds.has(product.id)}
+                    isLoggedIn={!!session?.user?.id}
+                  />
+                ))}
+              </ul>
+
+              {/* Pagination */}
+              {category.totalPages > 1 && (
+                <div className="mt-6 sm:mt-8">
+                  <CategoryPagination
+                    currentPage={currentPage}
+                    totalPages={category.totalPages}
+                    categorySlug={slug}
+                  />
+                </div>
+              )}
+            </>
           )}
         </section>
       </div>
